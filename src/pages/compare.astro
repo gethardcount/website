@@ -1,0 +1,132 @@
+---
+import Base from '../layouts/Base.astro';
+import { doc } from '../site';
+
+const peers = [
+  {
+    name: 'Stripe Billing',
+    ahead: 'hosted, with nothing to run',
+    lines: [
+      'Stripe Billing is a hosted service, so there is no server to run. Simple per-seat pricing paid by card is a job it already does well.',
+      'Its pay-as-you-go plan takes 0.7% of what you bill. Its basic usage billing can’t price by model and token type on one meter, so each rate needs its own meter. For that, Stripe points you to Metronome.',
+      'Hardcount does the billing itself and asks Stripe only to charge the card. There is no guide for moving from Stripe Billing yet.',
+    ],
+  },
+  {
+    name: 'Lago',
+    ahead: 'more payment providers and methods',
+    lines: [
+      'Lago takes payments through Stripe, GoCardless, Cashfree, Adyen, Flutterwave and Moneyhash. Through Stripe it also takes bank debits such as SEPA, ACH and BACS.',
+      'It prices by event properties too, with charge filters. It lists 8 SDKs; the Java and C# ones are archived.',
+      'Its licence is AGPL-3.0, and a licence key unlocks premium features, such as automatic retries of failed payments, invoice preview and recurring wallet top-ups. There is no guide for moving from Lago yet.',
+    ],
+  },
+  {
+    name: 'OpenMeter',
+    ahead: 'the payment methods your Stripe account allows',
+    lines: [
+      'With its Stripe app, OpenMeter collects through Stripe Invoicing, so its invoices offer the payment methods turned on in your Stripe account. Stripe’s Invoicing fee applies.',
+      'It has SDKs for JavaScript, Python and Go, all pre-release, and an endpoint that simulates an invoice.',
+      'Its licence is Apache-2.0. The open-source version has no operator UI, and its Compose file runs 11 services, described as “not a production topology”.',
+    ],
+  },
+  {
+    name: 'Flexprice',
+    ahead: 'more payment gateways, and wallets with auto top-up',
+    lines: [
+      'Flexprice connects to Stripe, Razorpay, Nomod, Moyasar, Paddle, Whop and Chargebee.',
+      'Its wallets have prepaid and promotional credits, auto top-up, expiry and a real-time balance. It has SDKs for Go, Python and TypeScript, and previews subscription changes.',
+      'Its root licence is AGPL-3.0, but the services that ingest events, make invoices and run wallets are under a licence that allows production use only with a Flexprice Enterprise licence.',
+    ],
+  },
+  {
+    name: 'Kill Bill',
+    ahead: 'the fewest services, and many payment plugins',
+    lines: [
+      'Kill Bill’s Compose file runs 3 services. It has plugins for Adyen, Braintree, Qualpay, Stripe and Hyperswitch, and clients in Java, PHP, Python, Ruby, Node and Go.',
+      'It includes failed-payment retries with overdue states, and a dry run that previews subscription changes.',
+      'Its licence is Apache-2.0. The open-source core bills usage you have already added up; a commercial plugin, Aviate, adds raw-event metering, wallets and coupons.',
+    ],
+  },
+];
+---
+<Base
+  title="How Hardcount compares with Stripe Billing, Lago, OpenMeter, Flexprice and Kill Bill"
+  description="Where Hardcount differs from Stripe Billing and four open-source billing engines, and where each of them is ahead."
+>
+  <section class="top">
+    <div class="wrap prose">
+      <h1>How Hardcount compares</h1>
+      <p class="lede">An open-source alternative to Stripe Billing and Lago for usage-based and AI billing. It runs on your own servers and uses Stripe to charge the card.</p>
+      <p>Hardcount is pre-1.0 and has no production users yet. Stripe Billing and the four projects below are in production use at other companies. Weigh everything here with that in mind.</p>
+      <p class="small muted">From <a href={doc('comparison.md')}>How Hardcount compares</a>, checked in October 2026. Projects change: re-check any point you plan to rely on.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="peers">
+        {peers.map((p) => (
+          <article class="card">
+            <h2>{p.name}</h2>
+            <p class="ahead">Ahead on: {p.ahead}</p>
+            {p.lines.map((l) => <p>{l}</p>)}
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap two">
+      <div>
+        <h2>Where Hardcount differs</h2>
+        <ul>
+          <li>One MIT licence, and every feature is in it.</li>
+          <li>A test clock for each test customer, on your normal install.</li>
+          <li>On most API requests, Postgres row-level security keeps accounts apart, on top of the application code.</li>
+          <li>Failed-payment retries are included. Kill Bill includes them too.</li>
+          <li>Webhooks are signed, with a timestamp, without running another service.</li>
+          <li>The throughput figure comes with its hardware and method: <a href={doc('scale.md')}>How it scales</a>.</li>
+        </ul>
+      </div>
+      <div>
+        <h2>Where another project is ahead</h2>
+        <ul>
+          <li>Payment providers: Hardcount supports Stripe cards only.</li>
+          <li>SDKs: Hardcount has none yet.</li>
+          <li>Invoice preview: Hardcount’s leaves out tax and credits.</li>
+          <li>Fewest services: Kill Bill’s Compose file has three. Hardcount’s has five, including a front proxy that the others’ files don’t have.</li>
+          <li>Previewing a plan change: Flexprice and Kill Bill both do it, and Lago does with a premium licence.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="wrap">
+      <p class="small"><a href={doc('comparison.md')}>Every point, and where it came from →</a></p>
+    </div>
+  </section>
+
+  <section class="end">
+    <div class="wrap">
+      <h2>Try it on your computer</h2>
+      <p class="prose muted">Start Hardcount in test mode and run its demo.</p>
+      <a class="btn btn-primary" href="/#try">Run it locally</a>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .top { padding-top: 72px; }
+  .lede { font-size: 20px; color: var(--ink-soft); }
+  .peers { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
+  .peers h2 { font-size: 26px; margin-bottom: 4px; }
+  .peers p { font-size: 16px; }
+  .ahead { color: var(--copper-ink); font-weight: 500; }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+  .two h2 { font-size: 26px; }
+  .two ul { padding-left: 20px; }
+  .two li { margin-bottom: 10px; }
+  @media (max-width: 900px) {
+    .peers, .two { grid-template-columns: 1fr; }
+  }
+</style>
