@@ -1,0 +1,13 @@
+---
+// Tally of five: four counted strokes, and the copper stroke that closes the group.
+const { size = 28 } = Astro.props;
+---
+<svg width={size * 60 / 52} height={size} viewBox="0 0 60 52" aria-hidden="true" class="logo">
+  <g stroke="currentColor" stroke-width="5" stroke-linecap="round">
+    <line x1="10" y1="6" x2="10" y2="46" />
+    <line x1="22" y1="6" x2="22" y2="46" />
+    <line x1="34" y1="6" x2="34" y2="46" />
+    <line x1="46" y1="6" x2="46" y2="46" />
+  </g>
+  <line x1="3" y1="40" x2="56" y2="12" stroke="var(--copper)" stroke-width="5" stroke-linecap="round" />
+</svg>

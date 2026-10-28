@@ -1,0 +1,27 @@
+---
+// Frame only. Every word on this page comes from the copy deck once it is final.
+import Base from '../layouts/Base.astro';
+import { QUICKSTART, CONTACT_EMAIL } from '../site';
+---
+<Base
+  title="Hardcount"
+  description="Usage billing for AI products, on your own servers."
+>
+  <section class="hero">
+    <div class="wrap">
+      <h1>Usage billing for AI products, <span class="accent">on your own servers.</span></h1>
+      <p class="lede muted prose">Price tokens per model, sell prepaid credit, and see what each customer costs you.</p>
+      <div class="actions">
+        <a class="btn btn-primary" href={QUICKSTART}>Run it locally</a>
+        <a class="btn btn-quiet" href={`mailto:${CONTACT_EMAIL}`}>Talk to the maintainer</a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .hero { padding-top: 88px; }
+  .accent { color: var(--copper); }
+  .lede { font-size: 21px; margin-top: 8px; }
+  .actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 28px; }
+</style>

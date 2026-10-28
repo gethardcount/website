@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60">
+  <style>
+    .s { stroke: #221D18; }
+    @media (prefers-color-scheme: dark) { .s { stroke: #EFE7DA; } }
+  </style>
+  <g class="s" stroke-width="6" stroke-linecap="round">
+    <line x1="10" y1="8" x2="10" y2="52" />
+    <line x1="23" y1="8" x2="23" y2="52" />
+    <line x1="36" y1="8" x2="36" y2="52" />
+    <line x1="49" y1="8" x2="49" y2="52" />
+  </g>
+  <line x1="3" y1="45" x2="57" y2="15" stroke="#B4612A" stroke-width="6" stroke-linecap="round" />
+</svg>
