@@ -15,13 +15,13 @@ const rules = [
   {
     title: 'Fail loudly.',
     body: 'If a read that a bill needs fails, the bill stops with an error. It never bills a default. A subscription that keeps failing is parked for you to look at.',
-    proof: 'The design record says how, and why.',
+    proof: 'How it works, and why, is in its design record.',
     link: ['Design record 119', '/docs/internals/decisions/119-billing-failure-record-keyed-to-the-due-instant/'],
   },
   {
     title: 'For card charges, Stripe’s record decides what was paid.',
-    body: 'A charge with an unclear result is held until Stripe settles it. Hardcount never charges again blind.',
-    proof: 'Every case, and the known gaps, are written down.',
+    body: 'A charge with an unclear result is held while Hardcount checks Stripe for the payment. If Stripe shows none 24 hours after the attempt, the invoice is charged again.',
+    proof: 'Each case, and the known gaps, are listed in one place.',
     link: ['Card payment failure handling', doc('payments.md')],
   },
   {
@@ -41,14 +41,14 @@ const checks = [
 ];
 ---
 <Base
-  title="How Hardcount keeps a bill right"
+  title="Reliability: how Hardcount keeps a bill right"
   description="What can go wrong in usage billing, what Hardcount does about each case, how it is tested, and what is not handled yet."
 >
   <section class="top">
     <div class="wrap prose">
       <p class="preview">Preview: the structure for review. More failure cases, re-checked at the release, come in step 5.</p>
       <h1>How Hardcount keeps a bill right</h1>
-      <p class="lede">Hardcount moves money, so it is built to rules, and each rule comes with its proof. Where a case is not fully handled yet, this page says so.</p>
+      <p class="lede">Hardcount decides what each customer is charged, so it is built to rules, and each rule comes with its evidence. Where a case is not fully handled yet, this page says so.</p>
     </div>
   </section>
 
@@ -81,7 +81,7 @@ const checks = [
         <div class="rule">
           <h3>{r.title}</h3>
           <p>{r.body}</p>
-          <p class="proof"><strong>Proof:</strong> {r.proof} <a href={r.link[1]}>{r.link[0]} →</a></p>
+          <p class="proof"><strong>Evidence:</strong> {r.proof} <a href={r.link[1]}>{r.link[0]} →</a></p>
         </div>
       ))}
     </div>

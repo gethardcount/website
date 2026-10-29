@@ -52,7 +52,10 @@ h1#_top {
 
 /* Tables use the full width; on a phone a wide one scrolls inside itself. */
 .sl-markdown-content table { display: table; width: 100%; }
-.sl-markdown-content td code { word-break: break-word; }
 @media (max-width: 50rem) {
   .sl-markdown-content table { display: block; overflow-x: auto; }
 }
+
+/* Flowcharts keep a readable size; a wide one scrolls inside itself. */
+.sl-markdown-content .mermaid { overflow-x: auto; }
+.sl-markdown-content .mermaid svg { min-width: 720px; height: auto; }

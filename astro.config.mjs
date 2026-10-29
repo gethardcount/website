@@ -22,7 +22,7 @@ export default defineConfig({
   site: 'https://gethardcount.com',
   trailingSlash: 'ignore',
   integrations: [
-    mermaid({ theme: 'neutral', autoTheme: true }),
+    mermaid({ theme: 'neutral', autoTheme: true, enableLog: false }),
     starlight({
       title: 'Hardcount',
       customCss: ['./src/styles/starlight.css'],

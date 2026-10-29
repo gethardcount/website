@@ -7,8 +7,8 @@ export const failures = [
   {
     id: 'charged-twice',
     title: 'A customer was charged twice for one invoice.',
-    short: 'Every charge carries one fixed key, so a resend is the same charge.',
-    body: 'Every charge carries one fixed key, so if Hardcount sends it again, Stripe treats it as the same charge. Only one charge runs for an invoice at a time.',
+    short: 'Each charge attempt carries one fixed key, so a resent attempt is the same charge.',
+    body: 'Each charge attempt carries one fixed key, so if Hardcount resends that attempt, Stripe treats it as the same charge. Only one charge runs for an invoice at a time.',
     partly: 'If Stripe’s answer is lost before it names the payment, Hardcount tries again a day later. If Stripe finishes the first charge after that, the customer pays twice, and Hardcount flags it for you to refund.',
     link: { label: 'How card payments are handled', href: doc('payments.md') },
   },

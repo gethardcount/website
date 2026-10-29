@@ -32,9 +32,10 @@ export const STATUS_LINE =
 
 export const NAV: { label: string; href: string }[] = [
   { label: 'Product', href: '/product/' },
-  { label: 'Engineering', href: '/engineering/' },
+  { label: 'Reliability', href: '/reliability/' },
   { label: 'Pricing', href: '/pricing/' },
   { label: 'Compare', href: '/compare/' },
+  { label: 'FAQ', href: '/faq/' },
   { label: 'Docs', href: '/docs/' },
   { label: 'GitHub', href: REPO },
 ];

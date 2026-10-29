@@ -155,7 +155,6 @@ export const sections = [
   },
   {
     label: 'Self-host',
-    collapsed: true,
     items: [
       { src: 'docs/self-host.md', slug: 'self-host/overview', label: 'Overview' },
       { src: 'docs/production-one-vm.md', slug: 'self-host/production-one-vm', label: 'Production on one VM' },
@@ -180,7 +179,9 @@ export const sections = [
       { src: 'docs/architecture.md', slug: 'internals/architecture', label: 'Architecture' },
       { src: 'docs/testing.md', slug: 'internals/testing', label: 'How we test' },
       { glob: 'docs/benchmarks/', base: 'internals/benchmarks', label: 'Benchmarks' },
-      { glob: 'docs/adr/', index: 'docs/adr/README.md', base: 'internals/decisions', label: 'Design decisions', collapsed: true },
+      { glob: 'docs/adr/', exclude: ['docs/adr/TEMPLATE.md'], index: 'docs/adr/README.md', base: 'internals/decisions', label: 'Design decisions', collapsed: true },
+      { glob: 'docs/dev/records/', index: 'docs/dev/records/README.md', base: 'internals/records', label: 'Records: reviews, audits and run journals', collapsed: true },
+      { glob: 'docs/dev/design/', index: 'docs/dev/design/README.md', base: 'internals/design-notes', label: 'Design notes', collapsed: true },
     ],
   },
   {
@@ -202,18 +203,18 @@ export const sections = [
       { src: 'CLAUDE.md', slug: 'contribute/rules-at-a-glance', label: 'Rules at a glance (people and coding agents)' },
       { src: 'web-v2/README.md', slug: 'contribute/dashboard', label: 'The dashboard (web-v2)' },
       { src: 'web-v2/e2e/README.md', slug: 'contribute/dashboard-tests', label: 'Dashboard tests' },
-      { glob: 'docs/dev/design/', index: 'docs/dev/design/README.md', base: 'contribute/design', label: 'Design notes', collapsed: true },
-      { glob: 'docs/dev/records/', index: 'docs/dev/records/README.md', base: 'contribute/records', label: 'Records', collapsed: true },
+      { src: 'docs/adr/TEMPLATE.md', slug: 'contribute/design-record-template', label: 'Design record template' },
     ],
   },
   {
-    // Preview only: the big pages step 5 splits into the planned pages above.
-    label: 'Being split (preview only)',
+    // Preview only: today's big pages, which are split into the planned pages
+    // above before launch.
+    label: 'Today’s pages, being split up',
     collapsed: true,
     items: [
-      { src: 'docs/api-surface.md', slug: 'old/api-surface' },
-      { src: 'docs/ai-pricing.md', slug: 'old/ai-pricing' },
-      { src: 'docs/webhooks.md', slug: 'old/webhooks' },
+      { src: 'docs/api-surface.md', slug: 'being-split/api-surface', label: 'The Hardcount API' },
+      { src: 'docs/ai-pricing.md', slug: 'being-split/ai-pricing', label: 'AI pricing reference' },
+      { src: 'docs/webhooks.md', slug: 'being-split/webhooks', label: 'Webhooks' },
     ],
   },
 ];
@@ -223,7 +224,7 @@ export const movedToSite = {
   'docs/features.md': '/product/',
   'docs/why-hardcount.md': '/compare/',
   'docs/comparison.md': '/compare/',
-  'docs/ENGINEERING.md': '/engineering/',
+  'docs/ENGINEERING.md': '/reliability/',
   'README.md': '/',
   'docs/README.md': '/docs/',
 };

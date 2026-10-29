@@ -40,7 +40,7 @@ const blocks = [
   {
     id: 'payments',
     title: 'Get paid, and retry when a card fails',
-    body: 'Stripe charges the saved card. When a charge fails, Hardcount retries on your schedule and emails the customer. When Stripe\'s answer is unclear, it checks with Stripe instead of charging again.',
+    body: 'Stripe charges the saved card. When a charge fails, Hardcount retries on your schedule and emails the customer. When Stripe\'s answer is unclear, it checks Stripe for the payment before charging again.',
     shot: null,
     shotNote: 'Screenshot to capture: the Dunning page with an invoice being retried.',
     links: [['Payments and retries', doc('payments.md')]],
@@ -56,7 +56,7 @@ const blocks = [
   {
     id: 'developers',
     title: 'Built for developers',
-    body: 'A REST API, usage events that count once even when resent, signed webhooks kept in the database and retried, LiteLLM support with no SDK, CSV exports, and an audit log the database will not let anyone edit.',
+    body: 'A REST API, usage events that count once even when resent, signed webhooks kept in the database and retried, LiteLLM support with no SDK, CSV exports, and an audit log that Hardcount’s own database user cannot change or delete.',
     shot: null,
     shotNote: 'Code, not a screenshot: one usage event with curl.',
     links: [['API reference', '/docs/api/endpoints/'], ['LiteLLM', doc('integrations/litellm.md')]],
@@ -64,7 +64,7 @@ const blocks = [
   {
     id: 'self-host',
     title: 'Run it yourself',
-    body: 'One Go program plus Postgres, and Redis for rate limits. Your billing data stays in your own database. MIT, with no paid edition and no telemetry.',
+    body: 'One Go program and Postgres, plus Redis for rate limits; the ready-made Docker Compose setup runs five small containers. Your billing data stays in your own database. MIT, with no paid edition and no telemetry.',
     shot: null,
     shotNote: null,
     links: [['Self-host', doc('self-host.md')], ['Pricing', '/pricing/']],

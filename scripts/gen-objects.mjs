@@ -109,7 +109,7 @@ fs.writeFileSync(
     'description: "Every object the Hardcount API returns, with each field explained."',
     '---',
     '',
-    'Every object the API returns, with each field explained. Each page is generated from `api/openapi.yaml`, so it always matches the code.',
+    'Every object the API returns, with each field explained. Each page is generated from `api/openapi.yaml`, the file the server code is built from, so field names and types match the code. Some descriptions are still missing; the count is on each page.',
     '',
     '| Object | Fields described |',
     '|---|---|',

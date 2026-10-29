@@ -20,7 +20,7 @@ const usd = (n: number) => '$' + n.toLocaleString('en-US');
     <div class="wrap prose">
       <h2>What you pay for</h2>
       <ul class="plain">
-        <li><strong>Your server.</strong> One server listed at €6.49 a month before VAT (2 shared CPUs, 4 GB memory) took 12 usage events a second for 20 minutes with no errors, about 1 million a day at that rate. The test used v0.8.0, and disk runs out first. <a href={doc('scale.md')}>How it was measured →</a></li>
+        <li><strong>Your server.</strong> One server listed at €6.49 a month before VAT (2 shared CPUs, 4 GB memory) handled a steady 12 usage events a second for 20 minutes, about 1 million a day, with no errors and its CPU 12% busy. That was the load sent, not a limit. The test used v0.8.0; at that rate the disk fills first. <a href={doc('scale.md')}>How it was measured →</a></li>
         <li><strong>Stripe’s normal card fee</strong> on each payment, and Stripe Tax’s fee if you turn it on.</li>
         <li><strong>Your time to run it:</strong> one program plus Postgres and Redis. <a href={doc('self-host.md')}>What running it takes →</a></li>
       </ul>

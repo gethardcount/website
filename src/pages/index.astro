@@ -8,9 +8,9 @@ import { doc, DISCUSSIONS, CONTACT_EMAIL } from '../site';
 // Why choose it over the alternatives. What it does lives on /product.
 const gets = [
   { lead: 'No Stripe Billing fee.', rest: 'Stripe charges the card at its normal fee. Hardcount takes nothing on what you bill.', link: ['Pricing', '/pricing/'] },
-  { lead: 'Every model on one meter.', rest: 'Each model and token type gets its own price, on one meter.', link: ['How pricing works', '/product/#pricing'] },
+  { lead: 'Every model on one meter.', rest: 'Each model and token type gets its own price, on one meter.', link: ['Price per model', '/product/#pricing'] },
   { lead: 'One free edition.', rest: 'MIT, with no paid edition: every feature is in the same code.', link: ['Pricing', '/pricing/'] },
-  { lead: 'Light to run.', rest: 'One server program plus Postgres and Redis, on your own servers.', link: ['Self-host', '/docs/self-host/overview/'] },
+  { lead: 'Light to run.', rest: 'One Go program and Postgres, plus Redis for rate limits, on your own servers.', link: ['Self-host', '/docs/self-host/overview/'] },
 ];
 
 
@@ -24,11 +24,11 @@ const gets = [
       <h1>Usage billing for AI products, <span class="accent">on your own servers.</span></h1>
       <p class="lede prose">Price tokens per model, sell prepaid credit, and see what each customer costs you. Hardcount makes the invoices, and Stripe charges the card.</p>
       <div class="actions">
-        <a class="btn btn-primary" href="#try">Run it locally</a>
+        <a class="btn btn-primary" href="/docs/get-started/quick-start/">Run it locally</a>
         <a class="btn btn-quiet" href={DISCUSSIONS}>Talk to the maintainer</a>
       </div>
       <p class="small muted prose under">
-        Try it before you trust it: the demo runs on your computer in test mode, where no real money moves.
+        Free and open source (MIT). Try it before you trust it: the demo runs on your computer in test mode, where no real money moves.
         Questions go to Sagar, the one maintainer, by <a href={`mailto:${CONTACT_EMAIL}`}>email</a> or <a href={DISCUSSIONS}>GitHub Discussions</a>.
       </p>
     </div>
@@ -37,7 +37,7 @@ const gets = [
   <section id="looks">
     <div class="wrap">
       <h2>What it looks like</h2>
-      <p class="prose muted">One month of AI usage for one customer, from the <a href="#try">demo</a> in test mode.</p>
+      <p class="prose muted">One month of AI usage for one customer, from the <a href="#try">demo</a> in test mode. Its dates follow the demo’s test clock, a month ahead.</p>
       <div class="shots">
         <figure>
           <figcaption><strong>The demo invoice.</strong> One line per model and token type, priced per million tokens.</figcaption>
@@ -61,23 +61,6 @@ const gets = [
     </div>
   </section>
 
-  <section id="why">
-    <div class="wrap">
-      <h2>Why Hardcount</h2>
-      <p class="prose big">A usage bill looks like arithmetic: count what each customer used, multiply by the price, charge the card. The real work is in what can go wrong.</p>
-      <div class="cards">
-        {failures.map((c) => (
-          <a class="card case" href={`/engineering/#${c.id}`}>
-            {c.partly && <span class="tag-partly">Partly handled</span>}
-            <h3>“{c.title}”</h3>
-            <p>{c.short}</p>
-            <span class="more">How it works, and what isn’t handled yet →</span>
-          </a>
-        ))}
-      </div>
-    </div>
-  </section>
-
   <section id="gets">
     <div class="wrap">
       <h2>What you get</h2>
@@ -89,6 +72,23 @@ const gets = [
         Everything it does: <a href="/product/">Product →</a><br />
         How it compares, including where others are ahead: <a href="/compare/">Compare →</a>
       </p>
+    </div>
+  </section>
+
+  <section id="why">
+    <div class="wrap">
+      <h2>Why Hardcount</h2>
+      <p class="prose big">A usage bill looks like arithmetic: count what each customer used, multiply by the price, charge the card. The real work is in what can go wrong.</p>
+      <div class="cards">
+        {failures.map((c) => (
+          <a class="card case" href={`/reliability/#${c.id}`}>
+            {c.partly && <span class="tag-partly">Partly handled</span>}
+            <h3>“{c.title}”</h3>
+            <p>{c.short}</p>
+            <span class="more">How it works, and what isn’t handled yet →</span>
+          </a>
+        ))}
+      </div>
     </div>
   </section>
 
@@ -162,7 +162,7 @@ cd hardcount/deploy/compose
     Customer: http://localhost:8080/customers/hc_cus_…</code></pre>
       <p class="prose">Done? <code>./quickstart.sh stop</code> keeps your data. <code>./quickstart.sh destroy</code> deletes it.</p>
       <p class="small">
-        Each step, and where to click: <a href={doc('quick-start.md')}>Quick start →</a>
+        The full walkthrough, and where to click: <a href={doc('quick-start.md')}>Quick start →</a>
       </p>
     </div>
   </section>
@@ -183,7 +183,7 @@ cd hardcount/deploy/compose
       <h2>Try it on your computer</h2>
       <p class="prose muted">Start Hardcount in test mode and run its demo. Found something rough? Open an issue or a Discussion.</p>
       <div class="actions">
-        <a class="btn btn-primary" href="#try">Run it locally</a>
+        <a class="btn btn-primary" href="/docs/get-started/quick-start/">Run it locally</a>
         <a class="btn btn-quiet" href={DISCUSSIONS}>Talk to the maintainer</a>
       </div>
     </div>

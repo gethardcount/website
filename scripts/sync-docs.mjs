@@ -138,8 +138,37 @@ function splitFrontmatter(text) {
   return { fm: text.slice(4, end), body: text.slice(end + 5) };
 }
 
+// A planned page points to where its content lives today, so a reader never
+// hits a dead end. `from` entries start with a repo path when they have one.
+function nowAt(from) {
+  const links = from
+    .map((f) => {
+      const src = f.split(':')[0].trim();
+      return urlOf.has(src) ? `- [${titlesByUrl.get(urlOf.get(src)) ?? src}](${urlOf.get(src)})${f.includes(':') ? ':' + f.split(':').slice(1).join(':') : ''}` : null;
+    })
+    .filter(Boolean);
+  if (!links.length) return [];
+  return ['', ':::tip[Until this page is written]', 'Its content lives here today:', '', ...links, ':::', ''];
+}
+
+// Each page being split names the planned pages its parts move to.
+const splitInto = new Map();
+for (const p of pages) {
+  for (const f of p.planned?.from ?? []) {
+    const src = f.split(':')[0].trim();
+    if (!splitInto.has(src)) splitInto.set(src, []);
+    splitInto.get(src).push(p);
+  }
+}
+
+// Not in search: contributor pages, design records, records and design notes,
+// so a reader searching
+// "invoice" finds the user docs first. Design records stay one click away.
+const unsearched = (slug) => slug.startsWith('contribute') || /^internals\/(decisions|records|design-notes)/.test(slug);
+
 // 3. Write each page.
 const titles = new Map();
+const titlesByUrl = new Map();
 
 // The first real paragraph, as plain text, for the page's meta description.
 function firstParagraph(md) {
@@ -167,7 +196,8 @@ function writePage(slug, title, body, extraFm = '') {
   fs.writeFileSync(file, `---\n${fm}\n---\n\n${body.trimStart()}`);
 }
 
-for (const p of pages) {
+// Real pages first, so a planned page can name the pages its content lives on.
+for (const p of [...pages.filter((x) => !x.planned), ...pages.filter((x) => x.planned)]) {
   if (p.planned) {
     const pl = p.planned;
     const body = [
@@ -181,10 +211,7 @@ for (const p of pages) {
       '',
       ...pl.sections.map((s) => `- ${s}`),
       '',
-      '## Written from',
-      '',
-      ...pl.from.map((s) => `- ${s}`),
-      '',
+      ...nowAt(pl.from),
     ].join('\n');
     writePage(p.slug, pl.title, body);
     titles.set(p.slug, pl.title);
@@ -203,8 +230,13 @@ for (const p of pages) {
     body = h1 ? rest.replace(h1[0], '') : rest;
     body = rewriteLinks(body, p.src);
   }
-  writePage(p.slug, title, body);
+  const parts = splitInto.get(p.src)?.filter((x) => p.slug.startsWith('being-split/'));
+  if (parts?.length) {
+    body = [':::note[This page is being split up]', 'Before launch its parts move to:', '', ...parts.map((x) => `- [${x.planned.title}](${pageUrl(x.slug)})`), ':::', '', body].join('\n');
+  }
+  writePage(p.slug, title, body, unsearched(p.slug) ? 'pagefind: false' : '');
   titles.set(p.slug, title);
+  titlesByUrl.set(pageUrl(p.slug), title);
 }
 
 // 4. The sidebar, for astro.config.mjs.

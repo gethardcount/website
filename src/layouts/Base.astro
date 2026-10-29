@@ -38,7 +38,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site).toString();
       </a>
       <nav aria-label="Main">
         {NAV.map((n) => <a href={n.href}>{n.label}</a>)}
-        <a class="btn btn-primary nav-cta" href="/docs/get-started/quick-start/">Quick start</a>
+        <a class="btn btn-primary nav-cta" href="/docs/get-started/quick-start/">Run it locally</a>
       </nav>
     </div>
   </header>
@@ -46,7 +46,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site).toString();
     <div class="wrap"><p>{STATUS_LINE}</p></div>
   </div>
 
-  <main>
+  <main data-pagefind-body>
     <slot />
   </main>
 
@@ -65,9 +65,10 @@ const canonical = new URL(Astro.url.pathname, Astro.site).toString();
       </div>
       <div class="foot-cols">
         <div>
-          <p class="foot-h">Product</p>
+          <p class="foot-h">Hardcount</p>
           <ul>
             <li><a href="/product/">Product</a></li>
+            <li><a href="/reliability/">Reliability</a></li>
             <li><a href="/pricing/">Pricing</a></li>
             <li><a href="/compare/">Compare</a></li>
             <li><a href="/faq/">FAQ</a></li>
