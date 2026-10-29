@@ -42,7 +42,7 @@ const checks = [
 ---
 <Base
   title="Reliability: how Hardcount keeps a bill right"
-  description="What can go wrong in usage billing, what Hardcount does about each case, how it is tested, and what is not handled yet."
+  description="What can go wrong in usage billing, what Hardcount does about each case, how it is tested, and the rare cases still left."
 >
   <section class="top">
     <div class="wrap prose">
@@ -58,13 +58,12 @@ const checks = [
       <div class="cards">
         {failures.map((c) => (
           <article class="card" id={c.id}>
-            {c.partly && <span class="tag-partly">Partly handled</span>}
             <h3>“{c.title}”</h3>
             <p>{c.body}</p>
-            {c.partly && (
+            {c.left && (
               <div class="gap">
-                <p class="gap-label">Not handled yet</p>
-                <p>{c.partly}</p>
+                <p class="gap-label">The rare case left</p>
+                <p>{c.left}</p>
               </div>
             )}
             <a href={c.link.href}>{c.link.label} →</a>
@@ -121,7 +120,6 @@ const checks = [
   .preview { font-size: 14px; color: var(--copper-ink); border: 1px dashed var(--copper); border-radius: 8px; padding: 6px 10px; display: inline-block; }
   .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 24px; }
   .card { display: flex; flex-direction: column; scroll-margin-top: 24px; }
-  .card .tag-partly { align-self: flex-start; margin-bottom: 12px; }
   .card h3 { font-size: 20px; }
   .card p { font-size: 16px; }
   .card > a { margin-top: auto; font-size: 15px; }

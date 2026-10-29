@@ -82,10 +82,9 @@ const gets = [
       <div class="cards">
         {failures.map((c) => (
           <a class="card case" href={`/reliability/#${c.id}`}>
-            {c.partly && <span class="tag-partly">Partly handled</span>}
             <h3>“{c.title}”</h3>
             <p>{c.short}</p>
-            <span class="more">How it works, and what isn’t handled yet →</span>
+            <span class="more">How it works →</span>
           </a>
         ))}
       </div>
@@ -202,14 +201,10 @@ cd hardcount/deploy/compose
   .card h3 { font-size: 20px; }
   .card p { font-size: 16px; }
   .card { display: flex; flex-direction: column; }
-  .card .tag-partly { align-self: flex-start; margin-bottom: 12px; }
   .card > a { margin-top: auto; }
   .case { text-decoration: none; color: inherit; }
   .case:hover { border-color: var(--copper); }
   .case .more { margin-top: auto; color: var(--copper-ink); font-size: 15px; }
-  .gap { background: var(--paper-2); border-left: 3px solid var(--copper); border-radius: 6px; padding: 12px 14px; margin: 4px 0 18px; }
-  .gap p { margin: 0; color: var(--ink-soft); font-size: 15px; }
-  .gap .gap-label { font-weight: 600; color: var(--copper-ink); font-size: 14px; margin-bottom: 4px; }
   .card a { font-size: 15px; }
 
   .gets { list-style: none; padding: 0; margin: 24px 0; display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px 40px; }

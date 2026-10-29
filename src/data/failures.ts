@@ -1,6 +1,6 @@
 // What can go wrong in billing, and what Hardcount does: the one source.
-// The Engineering page shows each case in full; Home shows the title and
-// the one-line short answer.
+// The Reliability page shows each case in full, with the rare case still
+// left; Home shows the title and the one-line short answer.
 import { doc } from '../site';
 
 export const failures = [
@@ -9,7 +9,7 @@ export const failures = [
     title: 'A customer was charged twice for one invoice.',
     short: 'Each charge attempt carries one fixed key, so a resent attempt is the same charge.',
     body: 'Each charge attempt carries one fixed key, so if Hardcount resends that attempt, Stripe treats it as the same charge. Only one charge runs for an invoice at a time.',
-    partly: 'If Stripe’s answer is lost before it names the payment, Hardcount tries again a day later. If Stripe finishes the first charge after that, the customer pays twice, and Hardcount flags it for you to refund.',
+    left: 'When Stripe’s answer is lost, Hardcount looks for the payment at Stripe and charges again only when it finds none. If Stripe finishes the first charge after that, as can happen during an outage at Stripe, the customer pays twice. Hardcount spots the second payment and flags it for you to refund.',
     link: { label: 'How card payments are handled', href: doc('payments.md') },
   },
   {
@@ -17,7 +17,7 @@ export const failures = [
     title: 'Stripe took the money, but our system says the payment failed.',
     short: 'An unclear answer is marked “unknown”, and nothing is charged until Stripe is checked.',
     body: 'When Stripe’s answer is unclear, Hardcount marks the payment “unknown”, not “failed”, and charges nothing more until it has checked with Stripe.',
-    partly: 'If the answer is lost before it names the payment, the invoice waits a day before the next try, even if the charge never reached Stripe.',
+    left: 'If the connection drops before the charge reaches Stripe, Hardcount can’t tell that from a charge Stripe is still working on, so it waits a day before charging again. The cost is a day’s wait for the payment, not a wrong charge.',
     link: { label: 'How card payments are handled', href: doc('payments.md') },
   },
   {
@@ -25,7 +25,7 @@ export const failures = [
     title: 'The billing job ran twice and sent two invoices.',
     short: 'A billing period can be closed only once; the database refuses a second invoice.',
     body: 'Each billing period can be closed only once, so a second run finds it closed and stops. The database also refuses a duplicate invoice for the same period.',
-    partly: null,
+    left: null,
     link: { label: 'The design record', href: '/docs/internals/decisions/115-one-closer-for-the-billing-period/' },
   },
 ];
