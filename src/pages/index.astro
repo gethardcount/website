@@ -5,14 +5,12 @@ import { doc, DISCUSSIONS, CONTACT_EMAIL } from '../site';
 
 
 
+// Why choose it over the alternatives. What it does lives on /product.
 const gets = [
-  ['No Stripe Billing fee.', 'Stripe Billing’s pay-as-you-go plan takes 0.7% of what you bill: $700 a month on $100,000. Hardcount uses Stripe only to charge the card, so you pay Stripe’s normal card fee (and Stripe Tax’s, if you use it).'],
-  ['Price every model on one meter.', 'Each model and token type gets its own price. Stripe Billing’s basic usage billing needs a meter for each.'],
-  ['Sell prepaid credit.', 'A customer pays up front, and their later usage draws it down.'],
-  ['See your margin.', 'What each customer’s usage cost you, next to what you billed for it. Cost comes from your own price table or LiteLLM’s reported cost, not your provider’s bill.'],
-  ['Preview a month first.', 'Move a test customer forward a month on a test clock, and see the invoice before any real customer gets it.'],
-  ['One free edition.', 'MIT, with no paid edition: failed-payment retries, refunds, credit notes, invoice previews and the audit log are all in the same code.'],
-  ['Light to run.', 'One server program plus Postgres and Redis.'],
+  { lead: 'No Stripe Billing fee.', rest: 'Stripe charges the card at its normal fee. Hardcount takes nothing on what you bill.', link: ['Pricing', '/pricing/'] },
+  { lead: 'Every model on one meter.', rest: 'Each model and token type gets its own price, on one meter.', link: ['How pricing works', '/product/#pricing'] },
+  { lead: 'One free edition.', rest: 'MIT, with no paid edition: every feature is in the same code.', link: ['Pricing', '/pricing/'] },
+  { lead: 'Light to run.', rest: 'One server program plus Postgres and Redis, on your own servers.', link: ['Self-host', '/docs/self-host/overview/'] },
 ];
 
 
@@ -72,7 +70,8 @@ const gets = [
           <a class="card case" href={`/engineering/#${c.id}`}>
             {c.partly && <span class="tag-partly">Partly handled</span>}
             <h3>“{c.title}”</h3>
-            <span class="more">How Hardcount handles it →</span>
+            <p>{c.short}</p>
+            <span class="more">How it works, and what isn’t handled yet →</span>
           </a>
         ))}
       </div>
@@ -84,11 +83,11 @@ const gets = [
       <h2>What you get</h2>
       <p class="prose muted">Hardcount is an open-source alternative to Stripe Billing and Lago.</p>
       <ul class="gets">
-        {gets.map(([lead, rest]) => <li><strong>{lead}</strong> {rest}</li>)}
+        {gets.map((g) => <li><strong>{g.lead}</strong> {g.rest} <a href={g.link[1]}>{g.link[0]} →</a></li>)}
       </ul>
       <p class="small">
-        Where other projects are ahead: <a href="/compare">Compare →</a><br />
-        Every gap we found, with its source: <a href={doc('why-hardcount.md')}>Why Hardcount exists →</a>
+        Everything it does: <a href="/product/">Product →</a><br />
+        How it compares, including where others are ahead: <a href="/compare/">Compare →</a>
       </p>
     </div>
   </section>
@@ -137,8 +136,6 @@ const gets = [
        "quantity": 1200,
        "dimensions": &#123;"model": "claude-sonnet-4.5", "token_type": "input"&#125;,
        "idempotency_key": "req-42:input"&#125;'</code></pre>
-      <p class="prose">Each event carries an <code>idempotency_key</code>, your own ID for it. Send the same key twice and it counts once.</p>
-      <p class="prose">Your app hears about changes, such as a paid invoice or a failed payment, through <a href={doc('webhooks.md')}>webhooks</a>. The same webhook can arrive twice, so skip any ID you have already handled.</p>
       <p class="prose">There are no SDKs yet. <a href={doc('first-invoice.md')}>Your first invoice, step by step →</a> does every request with curl.</p>
     </div>
   </section>
@@ -165,8 +162,7 @@ cd hardcount/deploy/compose
     Customer: http://localhost:8080/customers/hc_cus_…</code></pre>
       <p class="prose">Done? <code>./quickstart.sh stop</code> keeps your data. <code>./quickstart.sh destroy</code> deletes it.</p>
       <p class="small">
-        Each step, and where to click: <a href={doc('quick-start.md')}>Quick start →</a><br />
-        Running it for real: <a href={doc('production-one-vm.md')}>Production on one VM →</a>
+        Each step, and where to click: <a href={doc('quick-start.md')}>Quick start →</a>
       </p>
     </div>
   </section>

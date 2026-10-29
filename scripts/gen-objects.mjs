@@ -77,6 +77,7 @@ for (const [name, slug] of objects) {
   const lines = [
     '---',
     `title: ${JSON.stringify(title)}`,
+    `description: ${JSON.stringify(schema.description ? cell(schema.description) : `${title} in the Hardcount API: every field and what it means.`)}`,
     '---',
     '',
     schema.description ? cell(schema.description) : '*This object has no description in the spec yet.*',
@@ -105,6 +106,7 @@ fs.writeFileSync(
   [
     '---',
     'title: "Objects"',
+    'description: "Every object the Hardcount API returns, with each field explained."',
     '---',
     '',
     'Every object the API returns, with each field explained. Each page is generated from `api/openapi.yaml`, so it always matches the code.',

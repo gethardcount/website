@@ -1,0 +1,9 @@
+---
+// The same status line as the website pages, on every docs page.
+import { STATUS_LINE } from '../site';
+---
+<div class="hc-status">{STATUS_LINE}</div>
+
+<style>
+  .hc-status { padding: 0.5rem var(--sl-content-pad-x, 1.5rem); font-size: 0.85rem; color: var(--sl-color-gray-3); background: var(--sl-color-gray-7, var(--sl-color-gray-6)); border-bottom: 1px solid var(--sl-color-hairline-shade); }
+</style>

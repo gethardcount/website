@@ -12,6 +12,10 @@ const canonical = new URL(Astro.url.pathname, Astro.site).toString();
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script is:inline>
+    // Follow a light or dark choice made in the docs; otherwise the system setting.
+    try { const t = localStorage.getItem('starlight-theme'); if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t; } catch {}
+  </script>
   <title>{title}</title>
   <meta name="description" content={description} />
   <link rel="canonical" href={canonical} />
@@ -34,6 +38,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site).toString();
       </a>
       <nav aria-label="Main">
         {NAV.map((n) => <a href={n.href}>{n.label}</a>)}
+        <a class="btn btn-primary nav-cta" href="/docs/get-started/quick-start/">Quick start</a>
       </nav>
     </div>
   </header>
@@ -105,6 +110,9 @@ const canonical = new URL(Astro.url.pathname, Astro.site).toString();
   nav { display: flex; gap: 22px; flex-wrap: wrap; }
   nav a { color: var(--ink-soft); text-decoration: none; font-size: 16px; }
   nav a:hover { color: var(--copper-ink); }
+  nav { align-items: center; }
+  nav a.nav-cta { color: var(--paper); padding: 8px 14px; font-size: 15px; }
+  nav a.nav-cta:hover { color: var(--paper); }
 
   .status { background: var(--paper-2); border-bottom: 1px solid var(--rule); }
   .status p { margin: 0; padding: 8px 0; font-size: 14px; color: var(--ink-soft); }

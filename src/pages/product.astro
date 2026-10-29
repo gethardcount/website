@@ -26,6 +26,7 @@ const blocks = [
     title: 'See your margin per customer and model',
     body: 'Enter what each AI provider charges you per token, once. Hardcount shows each customer\'s usage revenue next to what it cost you, per model. Usage only: base fees, credits and taxes are left out.',
     shot: '/shots/margin-light.png',
+    alt: 'The Margin card for a demo customer: $5.73 billed, $2.76 provider cost, 51.9% margin, with a row per model.',
     links: [['Margin', '/docs/concepts/margin/']],
   },
   {
@@ -33,6 +34,7 @@ const blocks = [
     title: 'Invoices your customers can read',
     body: 'One line per model and token type, a PDF, a hosted invoice page the customer opens from a secure link, credit notes, and tax through Stripe Tax or a flat rate you set.',
     shot: '/shots/invoice-light.png',
+    alt: 'Demo invoice HC-000001: one line per model and token type, priced per 1M tokens, $5.73 due.',
     links: [['Invoices', '/docs/concepts/invoices/'], ['Tax', doc('ops/tax-calculation.md')]],
   },
   {
@@ -78,6 +80,9 @@ const blocks = [
       <p class="preview">Preview: the structure for review. Final words and the missing screenshots come in step 5.</p>
       <h1>What Hardcount does</h1>
       <p class="lede">Usage billing for AI products, from the usage event to the paid invoice, on your own servers.</p>
+      <nav class="jump" aria-label="On this page">
+        {blocks.map((b) => <a href={`#${b.id}`}>{b.title}</a>)}
+      </nav>
     </div>
   </section>
 
@@ -91,7 +96,7 @@ const blocks = [
         </div>
         <div>
           {b.shot
-            ? <img src={b.shot} alt="" loading="lazy" />
+            ? <img src={b.shot} alt={b.alt} loading="lazy" />
             : b.shotNote && <div class="todo">{b.shotNote}</div>}
         </div>
       </div>
@@ -110,6 +115,10 @@ const blocks = [
   .top { padding-top: 72px; }
   .lede { font-size: 20px; color: var(--ink-soft); }
   .preview { font-size: 14px; color: var(--copper-ink); border: 1px dashed var(--copper); border-radius: 8px; padding: 6px 10px; display: inline-block; }
+  .jump { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+  .jump a { font-size: 15px; padding: 6px 12px; border: 1px solid var(--rule); border-radius: 999px; text-decoration: none; color: var(--ink-soft); background: var(--card); }
+  .jump a:hover { border-color: var(--copper); color: var(--copper-ink); }
+  section[id] { scroll-margin-top: 16px; }
   .two { display: grid; grid-template-columns: 1fr 1.1fr; gap: 40px; align-items: center; }
   .two h2 { font-size: 28px; }
   img { width: 100%; border: 1px solid var(--rule); border-radius: 12px; }

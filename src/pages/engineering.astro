@@ -10,13 +10,13 @@ const rules = [
     title: 'A billing period is billed once.',
     body: 'Every close locks the subscription and checks its period has not moved. Behind that, a unique index refuses a second invoice for the same period, so a crash or two racing workers cannot bill it twice.',
     proof: 'A billing process killed at five points left 0 duplicate and 0 lost invoices. With the index dropped, the same test billed 103 invoices for 40 periods, so the test can see a failure.',
-    link: ['Correctness under failure', '/docs/engineering/benchmarks/failure-correctness/'],
+    link: ['Correctness under failure', '/docs/internals/benchmarks/failure-correctness/'],
   },
   {
     title: 'Fail loudly.',
     body: 'If a read that a bill needs fails, the bill stops with an error. It never bills a default. A subscription that keeps failing is parked for you to look at.',
     proof: 'The design record says how, and why.',
-    link: ['Design record 119', '/docs/engineering/decisions/119-billing-failure-record-keyed-to-the-due-instant/'],
+    link: ['Design record 119', '/docs/internals/decisions/119-billing-failure-record-keyed-to-the-due-instant/'],
   },
   {
     title: 'For card charges, Stripe’s record decides what was paid.',
@@ -94,7 +94,7 @@ const checks = [
       <ul class="checks">
         {checks.map(([t, b, href]) => <li><strong>{t}.</strong> {b} <a href={href}>See it →</a></li>)}
       </ul>
-      <p class="small"><a href="/docs/engineering/testing/">How we test →</a> · <a href="/docs/engineering/benchmarks/sustained-throughput/">Sustained throughput →</a></p>
+      <p class="small"><a href="/docs/internals/testing/">How we test →</a> · <a href="/docs/internals/benchmarks/sustained-throughput/">Sustained throughput →</a></p>
     </div>
   </section>
 
@@ -102,7 +102,7 @@ const checks = [
     <div class="wrap prose">
       <h2>How it is built</h2>
       <p>One Go program with its background jobs inside, each job held by one copy at a time. Postgres row-level security keeps accounts apart on most requests. Every decision, including the reversed ones, is written down.</p>
-      <p class="small"><a href="/docs/engineering/architecture/">Architecture →</a> · <a href="/docs/engineering/decisions/">Design decisions →</a> · <a href={`${REPO}`}>The code →</a></p>
+      <p class="small"><a href="/docs/internals/architecture/">Architecture →</a> · <a href="/docs/internals/decisions/">Design decisions →</a> · <a href={`${REPO}`}>The code →</a></p>
     </div>
   </section>
 

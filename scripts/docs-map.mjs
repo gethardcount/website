@@ -1,15 +1,16 @@
 // The docs structure, defined once: every page, its section, its URL and its
 // order. Source files are paths in the gethardcount/hardcount repo. A page
 // with `planned` is not written yet; the sync script renders its outline.
+// `label` is the short sidebar name; the page title stays the doc's heading.
 // Built from velox-ops marketing/site-structure-2026-10-29.md §5.
 
 export const sections = [
   {
     label: 'Get started',
     items: [
-      { src: 'docs/how-hardcount-works.md', slug: 'get-started/how-hardcount-works' },
-      { src: 'docs/quick-start.md', slug: 'get-started/quick-start' },
-      { src: 'docs/first-invoice.md', slug: 'get-started/first-invoice' },
+      { src: 'docs/how-hardcount-works.md', slug: 'get-started/how-hardcount-works', label: 'How it works' },
+      { src: 'docs/quick-start.md', slug: 'get-started/quick-start', label: 'Quick start' },
+      { src: 'docs/first-invoice.md', slug: 'get-started/first-invoice', label: 'Your first invoice' },
     ],
   },
   {
@@ -69,8 +70,8 @@ export const sections = [
           from: ['docs/ai-pricing.md: prepaid credit'],
         },
       },
-      { src: 'docs/payments.md', slug: 'concepts/payments-and-retries' },
-      { src: 'docs/ops/tax-calculation.md', slug: 'concepts/tax' },
+      { src: 'docs/payments.md', slug: 'concepts/payments-and-retries', label: 'Payments and retries' },
+      { src: 'docs/ops/tax-calculation.md', slug: 'concepts/tax', label: 'Tax' },
       {
         slug: 'concepts/test-clocks',
         planned: {
@@ -89,6 +90,7 @@ export const sections = [
           from: ['docs/ai-pricing.md: margin'],
         },
       },
+      { src: 'docs/glossary.md', slug: 'concepts/glossary', label: 'Glossary' },
     ],
   },
   {
@@ -103,8 +105,8 @@ export const sections = [
           from: ['docs/ai-pricing.md', 'internal/recipe/recipes/'],
         },
       },
-      { src: 'docs/stop-usage-when-credit-runs-out.md', slug: 'guides/stop-usage-when-credit-runs-out' },
-      { src: 'docs/integrations/litellm.md', slug: 'guides/litellm' },
+      { src: 'docs/stop-usage-when-credit-runs-out.md', slug: 'guides/stop-usage-when-credit-runs-out', label: 'Stop usage when credit runs out' },
+      { src: 'docs/integrations/litellm.md', slug: 'guides/litellm', label: 'Send usage from LiteLLM' },
       {
         slug: 'guides/receive-webhooks',
         planned: {
@@ -132,8 +134,8 @@ export const sections = [
           from: ['New page'],
         },
       },
-      { src: 'docs/ops/email-setup.md', slug: 'guides/email-setup' },
-      { src: 'docs/api-keys.md', slug: 'guides/api-keys' },
+      { src: 'docs/ops/email-setup.md', slug: 'guides/email-setup', label: 'Set up email' },
+      { src: 'docs/api-keys.md', slug: 'guides/api-keys', label: 'Manage API keys' },
     ],
   },
   {
@@ -143,7 +145,7 @@ export const sections = [
       { planned: { title: 'Errors', intro: 'Every error code, what it means, and what to do.', sections: ['The error body', 'Status codes', 'Error codes'], from: ['docs/api-surface.md: Errors'] }, slug: 'api/errors' },
       { planned: { title: 'Idempotency', intro: 'Retry any request safely.', sections: ['Usage events: the idempotency key', 'Other writes', 'How long keys are kept'], from: ['docs/api-surface.md: Sending usage safely'] }, slug: 'api/idempotency' },
       { planned: { title: 'Pagination', intro: 'How list endpoints return pages.', sections: ['Cursors', 'Which endpoints page, and the limits'], from: ['New page (checked in code)'] }, slug: 'api/pagination' },
-      { src: 'docs/versioning.md', slug: 'api/versioning' },
+      { src: 'docs/versioning.md', slug: 'api/versioning', label: 'Versioning' },
       { planned: { title: 'Rate limits', intro: 'How many requests you can send.', sections: ['General and ingest limits', 'What a 429 looks like', 'Changing the limits'], from: ['docs/settings.md'] }, slug: 'api/rate-limits' },
       { planned: { title: 'Timing and limits', intro: 'Every time window and size limit, as a number.', sections: ['Invoice grace period', 'Idempotency windows', 'Stripe\'s 24-hour window', 'Retry schedules', 'Request size'], from: ['New page (checked in code)'] }, slug: 'api/timing-and-limits' },
       { objects: true, label: 'Objects' },
@@ -153,38 +155,43 @@ export const sections = [
   },
   {
     label: 'Self-host',
+    collapsed: true,
     items: [
-      { src: 'docs/self-host.md', slug: 'self-host/overview' },
-      { src: 'docs/production-one-vm.md', slug: 'self-host/production-one-vm' },
-      { src: 'docs/ops/high-availability.md', slug: 'self-host/high-availability' },
-      { src: 'docs/settings.md', slug: 'self-host/settings' },
-      { src: 'docs/ops/postgres-requirements.md', slug: 'self-host/postgres' },
-      { src: 'docs/ops/backup-considerations.md', slug: 'self-host/backups' },
+      { src: 'docs/self-host.md', slug: 'self-host/overview', label: 'Overview' },
+      { src: 'docs/production-one-vm.md', slug: 'self-host/production-one-vm', label: 'Production on one VM' },
+      { src: 'deploy/compose/README.md', slug: 'self-host/docker-compose', label: 'The Compose files' },
+      { src: 'docs/ops/high-availability.md', slug: 'self-host/high-availability', label: 'High availability' },
+      { src: 'docs/settings.md', slug: 'self-host/settings', label: 'Settings' },
+      { src: 'docs/ops/postgres-requirements.md', slug: 'self-host/postgres', label: 'Postgres' },
+      { src: 'docs/ops/backup-considerations.md', slug: 'self-host/backups', label: 'Backups' },
       { planned: { title: 'Upgrades', intro: 'How to move to a new release.', sections: ['Before you upgrade', 'One VM', 'Two or more copies', 'Going back'], from: ['docs/self-host.md', 'docs/production-one-vm.md'] }, slug: 'self-host/upgrades' },
-      { src: 'docs/scale.md', slug: 'self-host/scale' },
-      { src: 'docs/ops/runbook/monitoring.md', slug: 'self-host/monitoring' },
+      { src: 'docs/scale.md', slug: 'self-host/scale', label: 'How much it handles' },
+      { src: 'docs/ops/runbook/monitoring.md', slug: 'self-host/monitoring', label: 'Monitoring' },
       { glob: 'docs/ops/runbook/', exclude: ['docs/ops/runbook/monitoring.md'], index: 'docs/ops/runbook/index.md', base: 'self-host/runbook', label: 'Runbook' },
       { glob: 'docs/failure-modes/', base: 'self-host/failure-modes', label: 'Failure modes' },
     ],
   },
   {
-    label: 'Engineering',
+    // How it is built and tested: the evidence the website's Engineering
+    // page links to. Named Internals so it does not share that page's name.
+    label: 'Internals',
+    collapsed: true,
     items: [
-      { src: 'docs/architecture.md', slug: 'engineering/architecture' },
-      { src: 'docs/testing.md', slug: 'engineering/testing' },
-      { glob: 'docs/benchmarks/', base: 'engineering/benchmarks', label: 'Benchmarks' },
-      { glob: 'docs/adr/', exclude: ['docs/adr/TEMPLATE.md'], index: 'docs/adr/README.md', base: 'engineering/decisions', label: 'Design decisions', collapsed: true },
+      { src: 'docs/architecture.md', slug: 'internals/architecture', label: 'Architecture' },
+      { src: 'docs/testing.md', slug: 'internals/testing', label: 'How we test' },
+      { glob: 'docs/benchmarks/', base: 'internals/benchmarks', label: 'Benchmarks' },
+      { glob: 'docs/adr/', index: 'docs/adr/README.md', base: 'internals/decisions', label: 'Design decisions', collapsed: true },
     ],
   },
   {
     label: 'Project',
+    collapsed: true,
     items: [
-      { src: 'docs/roadmap.md', slug: 'project/roadmap' },
-      { src: 'CHANGELOG.md', slug: 'project/changelog' },
-      { src: 'docs/glossary.md', slug: 'project/glossary' },
-      { src: 'SECURITY.md', slug: 'project/security' },
-      { src: 'CONTRIBUTING.md', slug: 'project/contributing' },
-      { src: 'LICENSE', slug: 'project/license', title: 'Licence (MIT)' },
+      { src: 'docs/roadmap.md', slug: 'project/roadmap', label: 'Roadmap' },
+      { src: 'CHANGELOG.md', slug: 'project/changelog', label: 'Changelog' },
+      { src: 'SECURITY.md', slug: 'project/security', label: 'Security policy' },
+      { src: 'CONTRIBUTING.md', slug: 'project/contributing', label: 'Contributing' },
+      { src: 'LICENSE', slug: 'project/license', title: 'Licence (MIT)', label: 'Licence' },
     ],
   },
   {
@@ -192,6 +199,9 @@ export const sections = [
     collapsed: true,
     items: [
       { glob: 'docs/dev/', exclude: ['docs/dev/design/', 'docs/dev/records/'], index: 'docs/dev/README.md', base: 'contribute', label: 'Guides for contributors' },
+      { src: 'CLAUDE.md', slug: 'contribute/rules-at-a-glance', label: 'Rules at a glance (people and coding agents)' },
+      { src: 'web-v2/README.md', slug: 'contribute/dashboard', label: 'The dashboard (web-v2)' },
+      { src: 'web-v2/e2e/README.md', slug: 'contribute/dashboard-tests', label: 'Dashboard tests' },
       { glob: 'docs/dev/design/', index: 'docs/dev/design/README.md', base: 'contribute/design', label: 'Design notes', collapsed: true },
       { glob: 'docs/dev/records/', index: 'docs/dev/records/README.md', base: 'contribute/records', label: 'Records', collapsed: true },
     ],

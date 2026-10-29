@@ -33,7 +33,6 @@ export const STATUS_LINE =
 export const NAV: { label: string; href: string }[] = [
   { label: 'Product', href: '/product/' },
   { label: 'Engineering', href: '/engineering/' },
-  { label: 'Self-host', href: '/docs/self-host/overview/' },
   { label: 'Pricing', href: '/pricing/' },
   { label: 'Compare', href: '/compare/' },
   { label: 'Docs', href: '/docs/' },

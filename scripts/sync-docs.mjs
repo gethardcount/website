@@ -73,7 +73,7 @@ for (const section of sections) {
       continue;
     }
     pages.push(item);
-    group.items.push({ pageSlug: item.slug });
+    group.items.push({ pageSlug: item.slug, label: item.label });
   }
   sidebar.push(group);
 }
@@ -90,7 +90,12 @@ for (const [src, url] of Object.entries(movedToSite)) if (!urlOf.has(src)) urlOf
 const IMG = /\.(png|jpe?g|gif|svg|webp)$/i;
 const warnings = [];
 
+const GH_FILE = /^https:\/\/github\.com\/gethardcount\/hardcount\/(?:blob|tree)\/[^/]+\/([^#]+)(#.*)?$/;
+
 function rewrite(target, fromFile) {
+  // An absolute GitHub link to a file the site shows becomes its site page.
+  const gh = target.match(GH_FILE);
+  if (gh && urlOf.has(gh[1])) return urlOf.get(gh[1]) + (movedToSite[gh[1]] ? '' : gh[2] ?? '');
   if (/^(https?:|mailto:|#|\/)/.test(target)) return target;
   const [pathPart, anchor] = target.split('#');
   if (!pathPart) return target;
@@ -136,10 +141,29 @@ function splitFrontmatter(text) {
 // 3. Write each page.
 const titles = new Map();
 
+// The first real paragraph, as plain text, for the page's meta description.
+function firstParagraph(md) {
+  const para = md
+    .replace(/^```[\s\S]*?^```/gm, '')
+    .split(/\n\s*\n/)
+    .map((b) => b.trim())
+    .find((b) => b && !/^(#|\||:::|<|!\[|[-*>] |\d+\.\s|\*\*[^*]+:\*\*\s*$)/.test(b));
+  if (!para) return '';
+  const text = para
+    .replace(/!?\[([^\]]*)\]\([^)]*\)/g, '$1')
+    .replace(/[*_`]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+  return text.length > 200 ? text.slice(0, 197).replace(/\s+\S*$/, '') + '…' : text;
+}
+
 function writePage(slug, title, body, extraFm = '') {
   const file = path.join(OUT, `${slug}.md`);
   fs.mkdirSync(path.dirname(file), { recursive: true });
-  const fm = [`title: ${JSON.stringify(title)}`, extraFm].filter(Boolean).join('\n');
+  const description = firstParagraph(body);
+  const fm = [`title: ${JSON.stringify(title)}`, description && `description: ${JSON.stringify(description)}`, extraFm]
+    .filter(Boolean)
+    .join('\n');
   fs.writeFileSync(file, `---\n${fm}\n---\n\n${body.trimStart()}`);
 }
 
@@ -170,7 +194,7 @@ for (const p of pages) {
   let title = p.title;
   let body;
   if (p.src === 'LICENSE') {
-    body = '```text\n' + raw.trim() + '\n```\n';
+    body = 'Hardcount is released under the MIT licence:\n\n```text\n' + raw.trim() + '\n```\n';
   } else {
     // A source file's own metadata block is not used by the site.
     const { body: rest } = splitFrontmatter(raw);
@@ -188,7 +212,7 @@ function toSidebar(items) {
   return items.map((it) => {
     if (it.objects || it.openapi) return it;
     if (it.items) return { label: it.label, collapsed: it.collapsed, items: toSidebar(it.items) };
-    const label = it.overview ? 'Overview' : titles.get(it.pageSlug) ?? it.pageSlug;
+    const label = it.overview ? 'Overview' : it.label ?? titles.get(it.pageSlug) ?? it.pageSlug;
     return { label, link: `/docs/${it.pageSlug}/` };
   });
 }

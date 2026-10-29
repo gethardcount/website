@@ -15,6 +15,7 @@ import { NAV } from '../site';
     {NAV.map((n) => <a href={n.href}>{n.label}</a>)}
   </nav>
   <div class="hc-right">
+    <a class="hc-cta" href="/docs/get-started/quick-start/">Quick start</a>
     <Search />
     <ThemeSelect />
   </div>
@@ -30,6 +31,8 @@ import { NAV } from '../site';
   .hc-nav { display: flex; gap: 1.1rem; flex-wrap: nowrap; }
   .hc-nav a { color: var(--sl-color-gray-2); text-decoration: none; font-size: 0.95rem; white-space: nowrap; }
   .hc-nav a:hover { color: var(--sl-color-accent); }
+  .hc-cta { background: var(--sl-color-accent); color: var(--sl-color-black); padding: 0.4rem 0.8rem; border-radius: 8px; text-decoration: none; font-weight: 500; font-size: 0.9rem; white-space: nowrap; }
+  @media (max-width: 50rem) { .hc-cta { display: none; } }
   .hc-right { margin-left: auto; display: flex; align-items: center; gap: 1rem; }
   @media (max-width: 1100px) { .hc-nav { display: none; } }
 </style>

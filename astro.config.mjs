@@ -32,13 +32,20 @@ export default defineConfig({
         { tag: 'link', attrs: { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&display=swap' } },
         { tag: 'link', attrs: { rel: 'icon', href: '/favicon.svg', type: 'image/svg+xml' } },
       ],
-      components: { Header: './src/components/DocsHeader.astro', Sidebar: './src/components/DocsSidebar.astro' },
+      components: {
+        Header: './src/components/DocsHeader.astro',
+        Sidebar: './src/components/DocsSidebar.astro',
+        Banner: './src/components/DocsBanner.astro',
+      },
+      routeMiddleware: './src/routeData.ts',
       sidebar: toStarlight(sidebar),
       plugins: [
         starlightOpenAPI([
           { base: 'docs/api/endpoints', schema: './src/generated/openapi.yaml', sidebar: { label: 'Endpoints', collapsed: true } },
         ]),
-        starlightLlmsTxt(),
+        starlightLlmsTxt({
+          description: 'Hardcount is an open-source (MIT), self-hosted usage-billing engine for AI products: it prices tokens per model, sells prepaid credit, shows margin per customer, makes invoices, and charges cards through Stripe.',
+        }),
       ],
     }),
   ],
