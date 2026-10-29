@@ -117,9 +117,9 @@ pre code { background: none; padding: 0; }
   font: 500 13px/1 var(--sans);
   padding: 4px 8px;
   border-radius: 999px;
-  background: var(--paper-2);
+  background: transparent;
   color: var(--copper-ink);
-  border: 1px solid var(--rule);
+  border: 1px solid var(--copper);
 }
 
 section { padding: 64px 0; }
