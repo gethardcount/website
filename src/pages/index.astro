@@ -95,6 +95,33 @@ const faqs = [
     </div>
   </section>
 
+  <section id="looks">
+    <div class="wrap">
+      <h2>What it looks like</h2>
+      <p class="prose muted">One month of AI usage for one customer, from the <a href="#try">demo</a> in test mode.</p>
+      <div class="shots">
+        <figure>
+          <figcaption><strong>The demo invoice.</strong> One line per model and token type, priced per million tokens.</figcaption>
+          <a href="/shots/invoice-light.png" class="shot-link" title="Open full size">
+          <picture>
+            <source media="(prefers-color-scheme: dark)" srcset="/shots/invoice-dark.png" />
+            <img src="/shots/invoice-light.png" width="1400" height="1500" loading="lazy" alt="Invoice HC-000001 in the Hardcount dashboard: input, output and cache_read lines for claude-sonnet-4.5 and input and output lines for claude-haiku-4.5, priced per 1M tokens, $5.73 due." />
+          </picture>
+          </a>
+        </figure>
+        <figure>
+          <figcaption><strong>Your margin, per model.</strong> What you billed against what the AI provider charged you: Sonnet 67.1%, Haiku 20.0%. Only you see this.</figcaption>
+          <a href="/shots/margin-light.png" class="shot-link" title="Open full size">
+          <picture>
+            <source media="(prefers-color-scheme: dark)" srcset="/shots/margin-dark.png" />
+            <img src="/shots/margin-light.png" width="1400" height="507" loading="lazy" alt="The Margin card for the demo customer: $5.73 usage billed, $2.76 provider cost, 51.9% margin, with claude-sonnet-4.5 at 67.1% and claude-haiku-4.5 at 20.0%." />
+          </picture>
+          </a>
+        </figure>
+      </div>
+    </div>
+  </section>
+
   <section id="how">
     <div class="wrap">
       <h2>How it works</h2>
@@ -230,6 +257,13 @@ cd hardcount/deploy/compose
   .gets li { padding-left: 20px; position: relative; font-size: 17px; }
   .gets li::before { content: ''; position: absolute; left: 0; top: 0.55em; width: 9px; height: 9px; border-radius: 2px; background: var(--copper); }
 
+  .shots { display: grid; grid-template-columns: 1.1fr 1fr; gap: 32px; align-items: start; margin-top: 24px; }
+  .shots figure { margin: 0; }
+  .shots figcaption { font-size: 16px; color: var(--ink-soft); margin-bottom: 12px; }
+  .shots figcaption strong { color: var(--ink); }
+  .shot-link { display: block; }
+  .shots img { display: block; width: 100%; height: auto; border: 1px solid var(--rule); border-radius: 12px; box-shadow: 0 2px 14px rgb(34 29 24 / 0.08); }
+
   .steps { padding-left: 22px; max-width: var(--text); }
   .steps li { margin-bottom: 12px; }
 
@@ -249,6 +283,7 @@ cd hardcount/deploy/compose
   @media (max-width: 900px) {
     .cards { grid-template-columns: 1fr; }
     .gets { grid-template-columns: 1fr; }
+    .shots { grid-template-columns: 1fr; }
     .two { grid-template-columns: 1fr; gap: 8px; }
   }
   @media (max-width: 640px) {
