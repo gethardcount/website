@@ -11,6 +11,7 @@ export const STATUS_LINE =
   'Pre-1.0 · one maintainer · Stripe and cards only · no SDKs (client libraries) yet · no production users yet.';
 
 export const NAV: { label: string; href: string }[] = [
+  { label: 'Why', href: '/#why' },
   { label: 'How it works', href: '/#how' },
   { label: 'Compare', href: '/compare' },
   { label: 'Docs', href: doc('README.md') },

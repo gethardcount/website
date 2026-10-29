@@ -62,6 +62,33 @@ const faqs = [
     </div>
   </section>
 
+  <section id="looks">
+    <div class="wrap">
+      <h2>What it looks like</h2>
+      <p class="prose muted">One month of AI usage for one customer, from the <a href="#try">demo</a> in test mode.</p>
+      <div class="shots">
+        <figure>
+          <figcaption><strong>The demo invoice.</strong> One line per model and token type, priced per million tokens.</figcaption>
+          <a href="/shots/invoice-light.png" class="shot-link" title="Open full size">
+          <picture>
+            <source media="(prefers-color-scheme: dark)" srcset="/shots/invoice-dark.png" />
+            <img src="/shots/invoice-light.png" width="1400" height="1500" loading="lazy" alt="Invoice HC-000001 in the Hardcount dashboard: input, output and cache_read lines for claude-sonnet-4.5 and input and output lines for claude-haiku-4.5, priced per 1M tokens, $5.73 due." />
+          </picture>
+          </a>
+        </figure>
+        <figure>
+          <figcaption><strong>Your margin, per model.</strong> What you billed against what the AI provider charged you: Sonnet 67.1%, Haiku 20.0%. Only you see this.</figcaption>
+          <a href="/shots/margin-light.png" class="shot-link" title="Open full size">
+          <picture>
+            <source media="(prefers-color-scheme: dark)" srcset="/shots/margin-dark.png" />
+            <img src="/shots/margin-light.png" width="1400" height="507" loading="lazy" alt="The Margin card for the demo customer: $5.73 usage billed, $2.76 provider cost, 51.9% margin, with claude-sonnet-4.5 at 67.1% and claude-haiku-4.5 at 20.0%." />
+          </picture>
+          </a>
+        </figure>
+      </div>
+    </div>
+  </section>
+
   <section id="why">
     <div class="wrap">
       <h2>Why Hardcount</h2>
@@ -99,56 +126,6 @@ const faqs = [
     </div>
   </section>
 
-  <section id="looks">
-    <div class="wrap">
-      <h2>What it looks like</h2>
-      <p class="prose muted">One month of AI usage for one customer, from the <a href="#try">demo</a> in test mode.</p>
-      <div class="shots">
-        <figure>
-          <figcaption><strong>The demo invoice.</strong> One line per model and token type, priced per million tokens.</figcaption>
-          <a href="/shots/invoice-light.png" class="shot-link" title="Open full size">
-          <picture>
-            <source media="(prefers-color-scheme: dark)" srcset="/shots/invoice-dark.png" />
-            <img src="/shots/invoice-light.png" width="1400" height="1500" loading="lazy" alt="Invoice HC-000001 in the Hardcount dashboard: input, output and cache_read lines for claude-sonnet-4.5 and input and output lines for claude-haiku-4.5, priced per 1M tokens, $5.73 due." />
-          </picture>
-          </a>
-        </figure>
-        <figure>
-          <figcaption><strong>Your margin, per model.</strong> What you billed against what the AI provider charged you: Sonnet 67.1%, Haiku 20.0%. Only you see this.</figcaption>
-          <a href="/shots/margin-light.png" class="shot-link" title="Open full size">
-          <picture>
-            <source media="(prefers-color-scheme: dark)" srcset="/shots/margin-dark.png" />
-            <img src="/shots/margin-light.png" width="1400" height="507" loading="lazy" alt="The Margin card for the demo customer: $5.73 usage billed, $2.76 provider cost, 51.9% margin, with claude-sonnet-4.5 at 67.1% and claude-haiku-4.5 at 20.0%." />
-          </picture>
-          </a>
-        </figure>
-      </div>
-    </div>
-  </section>
-
-  <section id="how">
-    <div class="wrap">
-      <h2>How it works</h2>
-      <ol class="steps">
-        <li><strong>Your app sends usage.</strong> One event for each thing you count, such as the tokens of one AI call. A <a href={doc('integrations/litellm.md')}>LiteLLM proxy</a> can send them for you.</li>
-        <li><strong>Hardcount prices it.</strong> It uses your plan’s prices, and at the end of each billing period it makes the invoice and its PDF.</li>
-        <li><strong>Stripe charges the card.</strong> If a charge fails, Hardcount retries on a schedule and, once email is set up, emails your customer. The subscription doesn’t switch to “past due”: your app decides when to limit access.</li>
-      </ol>
-      <p class="prose">One usage event, sent with curl:</p>
-      <pre><code>curl -X POST http://localhost:8080/v1/usage-events \
-  -H "Authorization: Bearer $HARDCOUNT_KEY" \
-  -H "Content-Type: application/json" \
-  -d '&#123;"event_name": "tokens",
-       "external_customer_id": "acme",
-       "quantity": 1200,
-       "dimensions": &#123;"model": "claude-sonnet-4.5", "token_type": "input"&#125;,
-       "idempotency_key": "req-42:input"&#125;'</code></pre>
-      <p class="prose">Each event carries an <code>idempotency_key</code>, your own ID for it. Send the same key twice and it counts once.</p>
-      <p class="prose">Your app hears about changes, such as a paid invoice or a failed payment, through <a href={doc('webhooks.md')}>webhooks</a>. The same webhook can arrive twice, so skip any ID you have already handled.</p>
-      <p class="prose">There are no SDKs yet. <a href={doc('first-invoice.md')}>Your first invoice, step by step →</a> does every request with curl.</p>
-    </div>
-  </section>
-
   <section id="fit">
     <div class="wrap">
       <h2>Is it right for you?</h2>
@@ -176,6 +153,29 @@ const faqs = [
     </div>
   </section>
 
+  <section id="how">
+    <div class="wrap">
+      <h2>How it works</h2>
+      <ol class="steps">
+        <li><strong>Your app sends usage.</strong> One event for each thing you count, such as the tokens of one AI call. A <a href={doc('integrations/litellm.md')}>LiteLLM proxy</a> can send them for you.</li>
+        <li><strong>Hardcount prices it.</strong> It uses your plan’s prices, and at the end of each billing period it makes the invoice and its PDF.</li>
+        <li><strong>Stripe charges the card.</strong> If a charge fails, Hardcount retries on a schedule and, once email is set up, emails your customer. The subscription doesn’t switch to “past due”: your app decides when to limit access.</li>
+      </ol>
+      <p class="prose">One usage event, sent with curl:</p>
+      <pre><code>curl -X POST http://localhost:8080/v1/usage-events \
+  -H "Authorization: Bearer $HARDCOUNT_KEY" \
+  -H "Content-Type: application/json" \
+  -d '&#123;"event_name": "tokens",
+       "external_customer_id": "acme",
+       "quantity": 1200,
+       "dimensions": &#123;"model": "claude-sonnet-4.5", "token_type": "input"&#125;,
+       "idempotency_key": "req-42:input"&#125;'</code></pre>
+      <p class="prose">Each event carries an <code>idempotency_key</code>, your own ID for it. Send the same key twice and it counts once.</p>
+      <p class="prose">Your app hears about changes, such as a paid invoice or a failed payment, through <a href={doc('webhooks.md')}>webhooks</a>. The same webhook can arrive twice, so skip any ID you have already handled.</p>
+      <p class="prose">There are no SDKs yet. <a href={doc('first-invoice.md')}>Your first invoice, step by step →</a> does every request with curl.</p>
+    </div>
+  </section>
+
   <section id="try">
     <div class="wrap">
       <h2>Run it locally</h2>
@@ -185,6 +185,17 @@ cd hardcount/deploy/compose
 ./quickstart.sh
 ./quickstart.sh demo</code></pre>
       <p class="prose"><code>./quickstart.sh</code> prints your dashboard address and sign-in, and saves them in <code>quickstart-credentials.json</code>. The demo then sets prices for AI tokens, sends a customer’s token usage the way LiteLLM does, moves a test clock to the end of the month, and makes the invoice, its PDF and your margin report.</p>
+      <p class="prose">The demo ends like this, with links to open in the dashboard:</p>
+      <pre class="out"><code>━━━ Done: every step above ran and was checked ━━━
+
+  <span class="ok">✓</span> One call loaded a price for each model and token type
+  <span class="ok">✓</span> LiteLLM-shaped calls to two models became usage events, with no SDK
+  <span class="ok">✓</span> Hardcount recorded what each usage event cost you
+  <span class="ok">✓</span> A test clock moved one month, and Hardcount made the invoice and its PDF
+  <span class="ok">✓</span> Your margin on this customer, by model
+
+    Invoice:  http://localhost:8080/invoices/hc_inv_…
+    Customer: http://localhost:8080/customers/hc_cus_…</code></pre>
       <p class="prose">Done? <code>./quickstart.sh stop</code> keeps your data. <code>./quickstart.sh destroy</code> deletes it.</p>
       <p class="small">
         Each step, and where to click: <a href={doc('quick-start.md')}>Quick start →</a><br />
@@ -271,6 +282,9 @@ cd hardcount/deploy/compose
   .shots figcaption strong { color: var(--ink); }
   .shot-link { display: block; }
   .shots img { display: block; width: 100%; height: auto; border: 1px solid var(--rule); border-radius: 12px; box-shadow: 0 2px 14px rgb(34 29 24 / 0.08); }
+
+  .out { font-size: 13.5px; }
+  .out .ok { color: #3F8F4E; }
 
   .steps { padding-left: 22px; max-width: var(--text); }
   .steps li { margin-bottom: 12px; }
