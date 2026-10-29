@@ -1,0 +1,58 @@
+/* Docs theme: the site's paper, ink and copper, mapped onto Starlight's
+   colour scale. Starlight's default theme is dark; light is the attribute. */
+:root {
+  --sl-font: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --sl-font-mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+  --hc-serif: "Source Serif 4", Georgia, serif;
+  --copper: #D9894F;
+
+  --sl-color-accent-low: #3A2414;
+  --sl-color-accent: #D9894F;
+  --sl-color-accent-high: #F2C9A6;
+  --sl-color-white: #EFE7DA;
+  --sl-color-gray-1: #E3DACB;
+  --sl-color-gray-2: #BDB2A3;
+  --sl-color-gray-3: #8E8476;
+  --sl-color-gray-4: #5E554B;
+  --sl-color-gray-5: #3A332B;
+  --sl-color-gray-6: #24201B;
+  --sl-color-black: #1B1814;
+  /* Note boxes in warm grey instead of Starlight's blue. */
+  --sl-color-blue-low: #2A251F;
+  --sl-color-blue: #8E8476;
+  --sl-color-blue-high: #E3DACB;
+}
+
+:root[data-theme='light'] {
+  --copper: #B4612A;
+  --sl-color-accent-low: #F1DCCB;
+  --sl-color-accent: #B4612A;
+  --sl-color-accent-high: #6E3713;
+  --sl-color-white: #221D18;
+  --sl-color-gray-1: #2E2822;
+  --sl-color-gray-2: #4A4239;
+  --sl-color-gray-3: #5C5248;
+  --sl-color-gray-4: #8A7F73;
+  --sl-color-gray-5: #C9BCA6;
+  --sl-color-gray-6: #E2D6C0;
+  --sl-color-gray-7: #EFE6D4;
+  --sl-color-black: #F6F0E4;
+  --sl-color-blue-low: #EFE6D4;
+  --sl-color-blue: #8A7F73;
+  --sl-color-blue-high: #4A4239;
+}
+
+/* Headings in the site's serif, like the website pages. */
+.sl-markdown-content :is(h1, h2, h3),
+h1#_top {
+  font-family: var(--hc-serif);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+/* Tables use the full width; on a phone a wide one scrolls inside itself. */
+.sl-markdown-content table { display: table; width: 100%; }
+.sl-markdown-content td code { word-break: break-word; }
+@media (max-width: 50rem) {
+  .sl-markdown-content table { display: block; overflow-x: auto; }
+}

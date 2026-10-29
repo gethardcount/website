@@ -2,7 +2,27 @@
 export const REPO = 'https://github.com/gethardcount/hardcount';
 // Doc links pin the release, so the site describes the code people install.
 export const RELEASE = 'v0.9.1';
-export const doc = (path: string) => `${REPO}/blob/${RELEASE}/docs/${path}`;
+import { sections, movedToSite } from '../scripts/docs-map.mjs';
+
+// Where each repo doc is shown on this site, from scripts/docs-map.mjs.
+const docPages = new Map<string, string>(Object.entries(movedToSite));
+for (const section of sections) {
+  for (const item of section.items) {
+    if (item.src) docPages.set(item.src, `/docs/${item.slug}/`);
+  }
+}
+
+// doc('payments.md') → the site page that shows docs/payments.md. A doc the
+// map does not know fails the build, so no page links back to GitHub.
+export const doc = (path: string) => {
+  const [file, hash] = path.split('#');
+  const url = docPages.get(`docs/${file}`);
+  if (!url) throw new Error(`doc(): docs/${file} is not in scripts/docs-map.mjs`);
+  return hash ? `${url}#${hash}` : url;
+};
+
+// code('internal/config/config.go') → that file on GitHub at the release.
+export const code = (path: string) => `${REPO}/blob/${RELEASE}/${path}`;
 export const DISCUSSIONS = `${REPO}/discussions`;
 export const CONTACT_EMAIL = 'sagar@sagarwaidande.org';
 
@@ -11,9 +31,11 @@ export const STATUS_LINE =
   'Pre-1.0 · one maintainer · Stripe and cards only · no SDKs (client libraries) yet · no production users yet.';
 
 export const NAV: { label: string; href: string }[] = [
-  { label: 'Why', href: '/#why' },
-  { label: 'How it works', href: '/#how' },
-  { label: 'Compare', href: '/compare' },
-  { label: 'Docs', href: doc('README.md') },
+  { label: 'Product', href: '/product/' },
+  { label: 'Engineering', href: '/engineering/' },
+  { label: 'Self-host', href: '/docs/self-host/overview/' },
+  { label: 'Pricing', href: '/pricing/' },
+  { label: 'Compare', href: '/compare/' },
+  { label: 'Docs', href: '/docs/' },
   { label: 'GitHub', href: REPO },
 ];

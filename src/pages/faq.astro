@@ -1,0 +1,30 @@
+---
+import Base from '../layouts/Base.astro';
+import { faqs } from '../data/faqs';
+import { DISCUSSIONS, CONTACT_EMAIL } from '../site';
+---
+<Base title="Hardcount FAQ" description="Answers to the questions people ask before trying Hardcount: cost, safety for real money, lock-in, and who maintains it.">
+  <section class="top">
+    <div class="wrap prose">
+      <p class="preview">Preview: the structure for review. Every answer is checked against the release in step 5.</p>
+      <h1>Questions</h1>
+      <div class="faq">
+        {faqs.map((f) => (
+          <details>
+            <summary>{f.q}</summary>
+            <p>{f.a}{f.link && <> <a href={f.link[1]}>{f.link[0]} →</a></>}</p>
+          </details>
+        ))}
+      </div>
+      <p class="small">Another question? Ask in <a href={DISCUSSIONS}>GitHub Discussions</a> or <a href={`mailto:${CONTACT_EMAIL}`}>email the maintainer</a>.</p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .top { padding-top: 72px; }
+  .preview { font-size: 14px; color: var(--copper-ink); border: 1px dashed var(--copper); border-radius: 8px; padding: 6px 10px; display: inline-block; }
+  .faq details { border-bottom: 1px solid var(--rule); padding: 14px 0; }
+  .faq summary { cursor: pointer; font-weight: 600; }
+  .faq details p { margin: 10px 0 0; color: var(--ink-soft); }
+</style>

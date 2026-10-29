@@ -1,0 +1,60 @@
+---
+import Base from '../layouts/Base.astro';
+import { doc } from '../site';
+
+// Stripe Billing's pay-as-you-go fee, 0.7% of what you bill. Re-checked on
+// publish day (site-strategy-2026-10-29.md §8).
+const volumes = [10_000, 100_000, 1_000_000];
+const usd = (n: number) => '$' + n.toLocaleString('en-US');
+---
+<Base title="Hardcount pricing: free and open source" description="Hardcount is free and MIT-licensed, with no paid edition and no fee on what you bill. Your costs are your server and Stripe's card fee.">
+  <section class="top">
+    <div class="wrap prose">
+      <p class="preview">Preview: the structure for review. The 0.7% is re-checked on publish day.</p>
+      <h1>Free. No paid edition, no fee on what you bill.</h1>
+      <p class="lede">Hardcount is MIT-licensed. Every feature is in the one edition. There is no cloud version, no licence key and no share of your revenue.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap prose">
+      <h2>What you pay for</h2>
+      <ul class="plain">
+        <li><strong>Your server.</strong> One server listed at €6.49 a month before VAT (2 shared CPUs, 4 GB memory) took 12 usage events a second for 20 minutes with no errors, about 1 million a day at that rate. The test used v0.8.0, and disk runs out first. <a href={doc('scale.md')}>How it was measured →</a></li>
+        <li><strong>Stripe’s normal card fee</strong> on each payment, and Stripe Tax’s fee if you turn it on.</li>
+        <li><strong>Your time to run it:</strong> one program plus Postgres and Redis. <a href={doc('self-host.md')}>What running it takes →</a></li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap prose">
+      <h2>What Stripe Billing’s fee would be</h2>
+      <p>Stripe Billing’s pay-as-you-go plan takes 0.7% of what you bill, on top of the card fee. Hardcount uses Stripe only to charge the card.</p>
+      <table>
+        <thead><tr><th>You bill each month</th><th>Stripe Billing’s 0.7%</th><th>Each year</th></tr></thead>
+        <tbody>
+          {volumes.map((v) => <tr><td>{usd(v)}</td><td>{usd(v * 0.007)}</td><td>{usd(v * 0.007 * 12)}</td></tr>)}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap prose">
+      <h2>More questions</h2>
+      <p>Lock-in, what happens if the maintainer stops, and safety for real money: <a href="/faq/">FAQ →</a></p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .top { padding-top: 72px; }
+  .lede { font-size: 20px; color: var(--ink-soft); }
+  .preview { font-size: 14px; color: var(--copper-ink); border: 1px dashed var(--copper); border-radius: 8px; padding: 6px 10px; display: inline-block; }
+  .plain { padding-left: 20px; }
+  .plain li { margin-bottom: 12px; }
+  table { border-collapse: collapse; width: 100%; max-width: 560px; font-size: 17px; }
+  th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--rule); }
+  th { font-weight: 600; }
+</style>

@@ -1,26 +1,9 @@
 ---
 import Base from '../layouts/Base.astro';
+import { failures } from '../data/failures';
 import { doc, DISCUSSIONS, CONTACT_EMAIL } from '../site';
 
-const cards = [
-  {
-    title: 'A customer was charged twice for one invoice.',
-    body: 'Every charge carries one fixed key, so if Hardcount sends it again, Stripe treats it as the same charge. Only one charge runs for an invoice at a time.',
-    partly: 'If Stripe’s answer is lost before it names the payment, Hardcount tries again a day later. If Stripe finishes the first charge after that, the customer pays twice, and Hardcount flags it for you to refund.',
-    link: { label: 'How card payments are handled', href: doc('payments.md') },
-  },
-  {
-    title: 'Stripe took the money, but our system says the payment failed.',
-    body: 'When Stripe’s answer is unclear, Hardcount marks the payment “unknown”, not “failed”, and charges nothing more until it has checked with Stripe.',
-    partly: 'If the answer is lost before it names the payment, the invoice waits a day before the next try, even if the charge never reached Stripe.',
-    link: { label: 'How card payments are handled', href: doc('payments.md') },
-  },
-  {
-    title: 'The billing job ran twice and sent two invoices.',
-    body: 'Each billing period can be closed only once, so a second run finds it closed and stops. The database also refuses a duplicate invoice for the same period.',
-    link: { label: 'How Hardcount is built', href: doc('ENGINEERING.md') },
-  },
-];
+
 
 const gets = [
   ['No Stripe Billing fee.', 'Stripe Billing’s pay-as-you-go plan takes 0.7% of what you bill: $700 a month on $100,000. Hardcount uses Stripe only to charge the card, so you pay Stripe’s normal card fee (and Stripe Tax’s, if you use it).'],
@@ -32,16 +15,7 @@ const gets = [
   ['Light to run.', 'One server program plus Postgres and Redis.'],
 ];
 
-const faqs = [
-  ['Why not just use Stripe Billing?', 'Its pay-as-you-go plan takes 0.7% of what you bill, and its basic usage billing needs a meter for each model and token type. Hardcount does the billing itself. For simple per-seat pricing paid by card, Stripe Billing is the better choice: there is nothing to run.'],
-  ['Why run it myself?', 'Your billing data stays in your own Postgres, there is no fee on what you bill, and it is one server program plus Postgres and Redis. There is no cloud version.'],
-  ['What does it cost?', 'Hardcount is free under MIT. You pay for your own server and Stripe’s normal card fee, plus Stripe Tax if you use it. We haven’t measured what a real install costs each month yet.'],
-  ['Is it safe for real money?', 'No one runs it in production yet. The payment, credit and invoice code is tested against a real Postgres database, and what isn’t handled yet is written down. Try it in test mode before you trust it with real customers.'],
-  ['Who is behind it, and what if he stops?', 'One maintainer, Sagar Waidande. Hardcount is MIT-licensed and your data is in your own Postgres, so you can keep running the release you have, or fork it.'],
-  ['What does it connect to?', 'Usage comes in through the REST API or a LiteLLM proxy. Out go Stripe card payments (with retries, refunds and disputes), Stripe Tax or a flat tax rate you set, signed webhooks, email through any SMTP server, PDF invoices with a hosted invoice page, and CSV exports. Not built yet: other payment processors, accounting sync such as QuickBooks or Xero, and CRM sync.'],
-  ['Can I move from Stripe Billing or Lago?', 'There is no migration guide yet. A tool for moving from Stripe Billing is on the roadmap under “Later”.'],
-  ['How do I get my data out?', 'It is all in your own Postgres. The API also exports invoices, customers, subscriptions, usage events and the audit log as CSV.'],
-];
+
 ---
 <Base
   title="Hardcount: open-source alternative to Stripe Billing and Lago for AI billing"
@@ -94,19 +68,12 @@ const faqs = [
       <h2>Why Hardcount</h2>
       <p class="prose big">A usage bill looks like arithmetic: count what each customer used, multiply by the price, charge the card. The real work is in what can go wrong.</p>
       <div class="cards">
-        {cards.map((c) => (
-          <article class="card">
+        {failures.map((c) => (
+          <a class="card case" href={`/engineering/#${c.id}`}>
             {c.partly && <span class="tag-partly">Partly handled</span>}
             <h3>“{c.title}”</h3>
-            <p>{c.body}</p>
-            {c.partly && (
-              <div class="gap">
-                <p class="gap-label">Not handled yet</p>
-                <p>{c.partly}</p>
-              </div>
-            )}
-            <a href={c.link.href}>{c.link.label} →</a>
-          </article>
+            <span class="more">How Hardcount handles it →</span>
+          </a>
         ))}
       </div>
     </div>
@@ -204,40 +171,14 @@ cd hardcount/deploy/compose
     </div>
   </section>
 
-  <section id="run">
+  <section id="more">
     <div class="wrap">
-      <h2>Running it for real</h2>
-      <ul class="plain prose">
-        <li>Start on one VM with Docker Compose. It is tested on Postgres 16, which the Compose stack ships. <a href={doc('production-one-vm.md')}>Production on one VM →</a></li>
-        <li>One server listed at €6.49 a month before VAT (2 shared CPUs, 4 GB memory) took 12 usage events a second for 20 minutes with no errors, about 1 million a day at that rate. The test used v0.8.0. Disk runs out first. <a href={doc('scale.md')}>How it scales →</a> Sending more? Post your numbers in <a href={DISCUSSIONS}>Discussions</a>, or <a href={`mailto:${CONTACT_EMAIL}`}>email the maintainer</a>.</li>
-        <li>Before 1.0, a minor release can break the API. Upgrades only go forward, so take a backup first. <a href={doc('versioning.md')}>Versioning →</a></li>
-        <li>No telemetry and no licence check.</li>
+      <ul class="more-list">
+        <li><strong>Running it for real:</strong> one VM with Docker Compose, or two or more copies behind a load balancer. <a href={doc('self-host.md')}>Self-host →</a></li>
+        <li><strong>What it costs:</strong> Hardcount is free; you pay for your server and Stripe’s card fee. <a href="/pricing/">Pricing →</a></li>
+        <li><strong>What’s next:</strong> spend alerts and SDKs for Go and TypeScript in v0.10. <a href={doc('roadmap.md')}>Roadmap →</a></li>
+        <li><strong>Questions?</strong> Lock-in, safety for real money, who maintains it. <a href="/faq/">FAQ →</a></li>
       </ul>
-    </div>
-  </section>
-
-  <section id="next">
-    <div class="wrap">
-      <h2>What’s next</h2>
-      <ul class="plain prose">
-        <li><strong>Now:</strong> an API key that can only send usage, for LiteLLM and other gateways.</li>
-        <li><strong>v0.10:</strong> spend alerts, SDKs for Go and TypeScript, and a Usage page that shows whether each event was billed.</li>
-      </ul>
-      <p class="small"><a href={doc('roadmap.md')}>Full roadmap, including what we won’t build →</a></p>
-    </div>
-  </section>
-
-  <section id="questions">
-    <div class="wrap">
-      <h2>Questions</h2>
-      <div class="faq prose">
-        {faqs.map(([q, a]) => (
-          <details>
-            <summary>{q}</summary>
-            <p>{a}</p>
-          </details>
-        ))}
-      </div>
     </div>
   </section>
 
@@ -267,6 +208,9 @@ cd hardcount/deploy/compose
   .card { display: flex; flex-direction: column; }
   .card .tag-partly { align-self: flex-start; margin-bottom: 12px; }
   .card > a { margin-top: auto; }
+  .case { text-decoration: none; color: inherit; }
+  .case:hover { border-color: var(--copper); }
+  .case .more { margin-top: auto; color: var(--copper-ink); font-size: 15px; }
   .gap { background: var(--paper-2); border-left: 3px solid var(--copper); border-radius: 6px; padding: 12px 14px; margin: 4px 0 18px; }
   .gap p { margin: 0; color: var(--ink-soft); font-size: 15px; }
   .gap .gap-label { font-weight: 600; color: var(--copper-ink); font-size: 14px; margin-bottom: 4px; }
@@ -296,6 +240,8 @@ cd hardcount/deploy/compose
   .plain { padding-left: 20px; }
   .plain li { margin-bottom: 12px; }
 
+  .more-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 14px; }
+  .more-list li { font-size: 17px; }
   .faq details { border-bottom: 1px solid var(--rule); padding: 14px 0; }
   .faq summary { cursor: pointer; font-weight: 600; }
   .faq details p { margin: 10px 0 0; color: var(--ink-soft); }

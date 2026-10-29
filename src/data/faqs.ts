@@ -1,0 +1,12 @@
+// The questions that stop people, answered once. Shown on /faq.
+export const faqs: { q: string; a: string; link?: [string, string] }[] = [
+  { q: 'Why not just use Stripe Billing?', a: 'Its pay-as-you-go plan takes 0.7% of what you bill, and its basic usage billing needs a meter for each model and token type. Hardcount does the billing itself. For simple per-seat pricing paid by card, Stripe Billing is the better choice: there is nothing to run.' },
+  { q: 'Why run it myself?', a: 'Your billing data stays in your own Postgres, there is no fee on what you bill, and it is one server program plus Postgres and Redis. There is no cloud version.' },
+  { q: 'What does it cost?', a: 'Hardcount is free. Your costs are your server and Stripe’s card fee.', link: ['Pricing', '/pricing/'] },
+  { q: 'Is it safe for real money?', a: 'No one runs it in production yet. The payment, credit and invoice code is tested against a real Postgres database, and what isn’t handled yet is written down. Try it in test mode before you trust it with real customers.' },
+  { q: 'What if Hardcount goes down?', a: 'Your app keeps running; only billing waits. Usage events sent while it is down fail, so your app sends them again with the same idempotency key, and each is counted once. Invoices due while it was down are made on its next billing run.' },
+  { q: 'Am I locked in?', a: 'No. It is MIT-licensed, your data is in your own Postgres, and the API exports invoices, customers, subscriptions, usage events and the audit log as CSV.' },
+  { q: 'Who is behind it, and what if the maintainer stops?', a: 'One maintainer, Sagar Waidande. Hardcount is MIT-licensed and your data is in your own Postgres, so you can keep running the release you have, or fork it.' },
+  { q: 'What does it connect to?', a: 'Usage comes in through the REST API or a LiteLLM proxy. Out go Stripe card payments (with retries, refunds and disputes), Stripe Tax or a flat tax rate you set, signed webhooks, email through any SMTP server, PDF invoices with a hosted invoice page, and CSV exports. Not built yet: other payment processors, accounting sync such as QuickBooks or Xero, and CRM sync.' },
+  { q: 'Can I move from Stripe Billing or Lago?', a: 'There is no migration guide yet. A tool for moving from Stripe Billing is on the roadmap under “Later”.' },
+];

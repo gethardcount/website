@@ -53,19 +53,42 @@ const canonical = new URL(Astro.url.pathname, Astro.site).toString();
           <span>Hardcount</span>
         </a>
         <p class="muted small">
-          Open source under the <a href={`${REPO}/blob/${RELEASE}/LICENSE`}>MIT licence</a>.
+          Open source under the <a href="/docs/project/license/">MIT licence</a>.
           It was called Velox before v0.9.0.
         </p>
         <p class="muted small">Contact: <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a></p>
       </div>
-      <ul>
-        <li><a href={doc('README.md')}>Docs</a></li>
-        <li><a href={doc('roadmap.md')}>Roadmap</a></li>
-        <li><a href={`${REPO}/blob/${RELEASE}/CHANGELOG.md`}>Changelog</a></li>
-        <li><a href={REPO}>GitHub</a></li>
-        <li><a href={DISCUSSIONS}>Discussions</a></li>
-        <li><a href={`${REPO}/blob/${RELEASE}/SECURITY.md`}>Security</a></li>
-      </ul>
+      <div class="foot-cols">
+        <div>
+          <p class="foot-h">Product</p>
+          <ul>
+            <li><a href="/product/">Product</a></li>
+            <li><a href="/pricing/">Pricing</a></li>
+            <li><a href="/compare/">Compare</a></li>
+            <li><a href="/faq/">FAQ</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="foot-h">Docs</p>
+          <ul>
+            <li><a href="/docs/get-started/quick-start/">Quick start</a></li>
+            <li><a href="/docs/api/endpoints/">API reference</a></li>
+            <li><a href="/docs/self-host/overview/">Self-host</a></li>
+            <li><a href="/docs/self-host/runbook/">Runbook</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="foot-h">Project</p>
+          <ul>
+            <li><a href="/docs/project/roadmap/">Roadmap</a></li>
+            <li><a href="/docs/project/changelog/">Changelog</a></li>
+            <li><a href={REPO}>GitHub</a></li>
+            <li><a href={DISCUSSIONS}>Discussions</a></li>
+            <li><a href="/docs/project/security/">Security</a></li>
+            <li><a href="/docs/project/license/">Licence</a></li>
+          </ul>
+        </div>
+      </div>
     </div>
   </footer>
 </body>
@@ -91,7 +114,9 @@ const canonical = new URL(Astro.url.pathname, Astro.site).toString();
   .foot-about { max-width: 460px; }
   .foot-about p { margin-bottom: 6px; }
   .small-brand { font-size: 18px; margin-bottom: 12px; }
-  .foot ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, auto); gap: 8px 32px; font-size: 16px; }
+  .foot-cols { display: flex; gap: 48px; flex-wrap: wrap; }
+  .foot-h { font-weight: 600; font-size: 15px; margin-bottom: 8px; }
+  .foot ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; font-size: 16px; }
   .foot ul a { color: var(--ink-soft); text-decoration: none; }
   .foot ul a:hover { color: var(--copper-ink); }
 
