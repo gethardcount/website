@@ -9,7 +9,7 @@ const rules = [
   {
     title: 'A billing period is billed once.',
     body: 'Every close locks the subscription and checks its period has not moved. Behind that, a unique index refuses a second invoice for the same period, so a crash or two racing workers cannot bill it twice.',
-    proof: 'A billing process killed at five points left 0 duplicate and 0 lost invoices. With the index dropped, the same test billed 103 invoices for 40 periods, so the test can see a failure.',
+    proof: 'A billing process killed at five points left 0 duplicate and 0 lost invoices. With the index dropped, four billing engines racing on 40 periods billed 103 invoices, so the test can see a failure. That run predates the subscription lock, the guard now in front of the index.',
     link: ['Correctness under failure', '/docs/internals/benchmarks/failure-correctness/'],
   },
   {

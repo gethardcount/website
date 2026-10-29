@@ -86,6 +86,17 @@ const urlOf = new Map();
 const pageUrl = (slug) => (slug === 'index' ? '/docs/' : `/docs/${slug}/`);
 for (const p of pages) if (p.src) urlOf.set(p.src, pageUrl(p.slug));
 for (const [src, url] of Object.entries(movedToSite)) if (!urlOf.has(src)) urlOf.set(src, url);
+// A link to a docs folder the site shows as a group (docs/adr/) goes to that
+// group's index page, not to the folder on GitHub.
+for (const section of sections) {
+  for (const item of section.items) {
+    if (item.glob && item.index) {
+      const url = pageUrl(item.base);
+      urlOf.set(item.glob, url);
+      urlOf.set(item.glob.replace(/\/$/, ''), url);
+    }
+  }
+}
 
 const IMG = /\.(png|jpe?g|gif|svg|webp)$/i;
 const warnings = [];
