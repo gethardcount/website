@@ -72,14 +72,20 @@ function example(schema) {
   return Object.keys(out).length && complete ? out : null;
 }
 
+// Wrapped like the synced pages' tables (scripts/sync-docs.mjs), so a wide
+// table scrolls inside its own box.
 function fieldTable(schema, nested) {
   const required = new Set(schema.required ?? []);
   return [
+    '<div class="hc-table">',
+    '',
     '| Field | Type | Always present | What it means |',
     '|---|---|---|---|',
     ...Object.entries(schema.properties ?? {}).map(
       ([k, p]) => `| \`${k}\` | ${typeOf(p, nested)} | ${required.has(k) ? 'Yes' : 'No'} | ${describe(p)} |`,
     ),
+    '',
+    '</div>',
   ];
 }
 

@@ -55,12 +55,16 @@ h1#_top {
   letter-spacing: -0.01em;
 }
 
-/* Tables use the full width; on a phone a wide one scrolls inside itself. */
-.sl-markdown-content table { display: table; width: 100%; }
-@media (max-width: 50rem) {
-  .sl-markdown-content table { display: block; overflow-x: auto; }
-}
+/* A table scrolls inside its own box at every width, so a wide one never
+   runs under the table of contents; a narrow one still fills the column.
+   scripts/sync-docs.mjs wraps each table in .hc-table. A table it could not
+   wrap (one inside a list item) scrolls by itself. */
+.sl-markdown-content .hc-table { overflow-x: auto; max-width: 100%; }
+.sl-markdown-content .hc-table > table { display: table; width: 100%; margin: 0; }
+.sl-markdown-content :not(.hc-table) > table { display: block; overflow-x: auto; max-width: 100%; }
+.sl-markdown-content .hc-table + * { margin-top: 1rem; }
 
-/* Flowcharts keep a readable size; a wide one scrolls inside itself. */
-.sl-markdown-content .mermaid { overflow-x: auto; }
-.sl-markdown-content .mermaid svg { min-width: 720px; height: auto; }
+/* Flowcharts keep a readable size; a wide one scrolls inside itself, from
+   its left edge (centred only when it fits). */
+.sl-markdown-content .mermaid { overflow-x: auto; justify-content: flex-start; justify-content: safe center; }
+.sl-markdown-content .mermaid svg { min-width: 720px; height: auto; flex-shrink: 0; }
