@@ -1,7 +1,12 @@
 // The docs structure, defined once: every page, its section, its URL and its
 // order. Source files are paths in the gethardcount/hardcount repo. A page
-// with `planned` is not written yet; the sync script renders its outline.
-// `label` is the short sidebar name; the page title stays the doc's heading.
+// with `planned` is not written yet and is not built. A `src` that is missing
+// at the pinned release is left out (with a CI warning) until it ships.
+// `label` is the short sidebar name; the page title stays the doc's heading
+// unless `title` replaces it, and `intro` adds a first paragraph.
+// `next` / `prev` set the page's next and previous links (a slug, or false).
+// A glob may give `labels` (file → short sidebar name), `sortByLabel`,
+// `hidden` (built and linked, but not in the sidebar) and `noindex`.
 // Built from velox-ops marketing/site-structure-2026-10-29.md §5.
 
 const allSections = [
@@ -10,7 +15,9 @@ const allSections = [
     items: [
       { src: 'docs/how-hardcount-works.md', slug: 'get-started/how-hardcount-works', label: 'How it works' },
       { src: 'docs/quick-start.md', slug: 'get-started/quick-start', label: 'Quick start' },
-      { src: 'docs/first-invoice.md', slug: 'get-started/first-invoice', label: 'Your first invoice' },
+      { src: 'docs/first-invoice.md', slug: 'get-started/first-invoice', label: 'Send usage, get an invoice', next: 'guides/ai-pricing' },
+      // In Get started until the concept pages ship; its URL stays put.
+      { src: 'docs/glossary.md', slug: 'concepts/glossary', label: 'Glossary' },
     ],
   },
   {
@@ -70,8 +77,6 @@ const allSections = [
           from: ['docs/ai-pricing.md: prepaid credit'],
         },
       },
-      { src: 'docs/payments.md', slug: 'concepts/payments-and-retries', label: 'Payments and retries' },
-      { src: 'docs/ops/tax-calculation.md', slug: 'concepts/tax', label: 'Tax' },
       {
         slug: 'concepts/test-clocks',
         planned: {
@@ -90,7 +95,6 @@ const allSections = [
           from: ['docs/ai-pricing.md: margin'],
         },
       },
-      { src: 'docs/glossary.md', slug: 'concepts/glossary', label: 'Glossary' },
     ],
   },
   {
@@ -135,15 +139,15 @@ const allSections = [
           from: ['New page'],
         },
       },
-      { src: 'docs/ops/email-setup.md', slug: 'guides/email-setup', label: 'Set up email' },
-      { src: 'docs/api-keys.md', slug: 'guides/api-keys', label: 'Manage API keys' },
+      { src: 'docs/ops/tax-calculation.md', slug: 'guides/tax', label: 'Set up tax', next: 'api/overview' },
     ],
   },
   {
     label: 'API reference',
     items: [
       { src: 'docs/api-surface.md', slug: 'api/overview', label: 'The Hardcount API' },
-      { planned: { title: 'Authentication and keys', intro: 'How to send your API key, and test versus live keys.', sections: ['The Bearer header', 'Key types', 'Test and live mode'], from: ['docs/api-surface.md', 'docs/api-keys.md'] }, slug: 'api/authentication' },
+      // docs/api-keys.md until a dedicated authentication page ships.
+      { src: 'docs/api-keys.md', slug: 'api/authentication', label: 'Authentication and keys', title: 'Authentication and keys' },
       { planned: { title: 'Errors', intro: 'Every error code, what it means, and what to do.', sections: ['The error body', 'Status codes', 'Error codes'], from: ['docs/api-surface.md: Errors'] }, slug: 'api/errors' },
       { planned: { title: 'Idempotency', intro: 'Retry any request safely.', sections: ['Usage events: the idempotency key', 'Other writes', 'How long keys are kept'], from: ['docs/api-surface.md: Sending usage safely'] }, slug: 'api/idempotency' },
       { planned: { title: 'Pagination', intro: 'How list endpoints return pages.', sections: ['Cursors', 'Which endpoints page, and the limits'], from: ['New page (checked in code)'] }, slug: 'api/pagination' },
@@ -152,7 +156,7 @@ const allSections = [
       { planned: { title: 'Timing and limits', intro: 'Every time window and size limit, as a number.', sections: ['Invoice grace period', 'Idempotency windows', 'Stripe\'s 24-hour window', 'Retry schedules', 'Request size'], from: ['New page (checked in code)'] }, slug: 'api/timing-and-limits' },
       { objects: true, label: 'Objects' },
       { openapi: true, label: 'Endpoints' },
-      { src: 'docs/webhooks.md', slug: 'api/webhooks', label: 'Webhooks' },
+      { src: 'docs/webhooks.md', slug: 'api/webhooks', label: 'Webhooks', next: false },
       { planned: { title: 'Webhook events', intro: 'Every event Hardcount sends: when, and what it contains.', sections: ['The catalog: name, when it is sent, example payload'], from: ['docs/webhooks.md: catalog (kept true by internal/domain/webhook_catalog_test.go)'] }, slug: 'api/webhook-events' },
     ],
   },
@@ -166,11 +170,35 @@ const allSections = [
       { src: 'docs/settings.md', slug: 'self-host/settings', label: 'Settings' },
       { src: 'docs/ops/postgres-requirements.md', slug: 'self-host/postgres', label: 'Postgres' },
       { src: 'docs/ops/backup-considerations.md', slug: 'self-host/backups', label: 'Backups' },
-      { planned: { title: 'Upgrades', intro: 'How to move to a new release.', sections: ['Before you upgrade', 'One VM', 'Two or more copies', 'Going back'], from: ['docs/self-host.md', 'docs/production-one-vm.md'] }, slug: 'self-host/upgrades' },
+      { src: 'docs/upgrades.md', slug: 'self-host/upgrades', label: 'Upgrades' },
       { src: 'docs/scale.md', slug: 'self-host/scale', label: 'How much it handles' },
       { src: 'docs/ops/runbook/monitoring.md', slug: 'self-host/monitoring', label: 'Monitoring' },
-      { glob: 'docs/ops/runbook/', exclude: ['docs/ops/runbook/monitoring.md'], index: 'docs/ops/runbook/index.md', base: 'self-host/runbook', label: 'Runbook' },
-      { glob: 'docs/failure-modes/', base: 'self-host/failure-modes', label: 'Failure modes' },
+      { src: 'docs/ops/email-setup.md', slug: 'self-host/email-setup', label: 'Set up email' },
+      // An operator's spec of how card charges fail; the how-it-works page for
+      // developers is a planned concept page.
+      { src: 'docs/payments.md', slug: 'self-host/payment-failure-handling', label: 'Payment failure handling' },
+      {
+        glob: 'docs/ops/runbook/', exclude: ['docs/ops/runbook/monitoring.md'], index: 'docs/ops/runbook/index.md', base: 'self-host/runbook', label: 'Runbook',
+        sortByLabel: true,
+        labels: {
+          'autovacuum-stall.md': 'Autovacuum stalls',
+          'background-job-stuck.md': 'Background job stuck',
+          'below-stripe-minimum.md': 'Below Stripe’s minimum charge',
+          'billing-failing.md': 'Billing failing',
+          'customer-must-confirm-payment.md': 'Customer must confirm a payment',
+          'litellm-spend-gap.md': 'LiteLLM gap after an outage',
+          'migration-failed-midway.md': 'Database upgrade stopped',
+          'rds-wal-pool.md': 'RDS commits stall',
+          'replica-will-not-start.md': 'Replica will not start',
+          'rls-leak-suspected.md': 'Tenant data leak suspected',
+          'sign-in-throttled.md': 'Sign-in throttled',
+          'test-clock-advance-hung.md': 'Test clock advance hung',
+          'unclear-charge.md': 'Unclear charge result',
+          'webhook-endpoint-failing.md': 'Webhook endpoint failing',
+          'write-io-after-backfill.md': 'Write I/O after a backfill',
+        },
+      },
+      { glob: 'docs/failure-modes/', base: 'self-host/failure-modes', label: 'Failure modes', labels: { 'rfm-001-wal-pool-exhaustion.md': 'RFM-001: WAL pool runs dry' } },
     ],
   },
   {
@@ -183,8 +211,36 @@ const allSections = [
       { src: 'docs/testing.md', slug: 'internals/testing', label: 'How we test' },
       { glob: 'docs/benchmarks/', base: 'internals/benchmarks', label: 'Benchmarks' },
       { glob: 'docs/adr/', exclude: ['docs/adr/TEMPLATE.md'], index: 'docs/adr/README.md', base: 'internals/decisions', label: 'Design decisions', collapsed: true },
-      { glob: 'docs/dev/records/', index: 'docs/dev/records/README.md', base: 'internals/records', label: 'Records: reviews, audits and run journals', collapsed: true },
-      { glob: 'docs/dev/design/', index: 'docs/dev/design/README.md', base: 'internals/design-notes', label: 'Design notes', collapsed: true },
+      {
+        glob: 'docs/dev/records/', index: 'docs/dev/records/README.md', base: 'internals/records', label: 'Records: reviews, audits and run journals', collapsed: true,
+        noindex: true,
+        // How the maintainer prompts coding agents: kept in the repo only.
+        exclude: ['docs/dev/records/agent-prompting-standards.md'],
+        // Reachable from the Records overview, not listed in the sidebar.
+        hidden: ['docs/dev/records/audit-2026-07-02-remediation-plan.md', 'docs/dev/records/design-review-2026-07-10.md', 'docs/dev/records/product-stability-plan.md'],
+        labels: {
+          'audit-2026-07-02-full-product.md': 'Full-product audit (2026-07)',
+          'failure-correctness-advisory-lock-2026-08.md': 'The retired advisory lock (2026-08)',
+          'ha-readiness-2026-07-06.md': 'HA readiness (2026-07)',
+          'money-path-census-2026-07.md': 'Money-path census (2026-07)',
+          'restore-drill-first-run-2026-08-11.md': 'Restore drill, first run (2026-08)',
+          'sustained-throughput-runs-2026-08.md': 'Throughput run journal (2026-08)',
+        },
+      },
+      {
+        glob: 'docs/dev/design/', index: 'docs/dev/design/README.md', base: 'internals/design-notes', label: 'Design notes', collapsed: true,
+        labels: {
+          'billing-thresholds.md': 'Billing thresholds',
+          'cc-emails.md': 'CC on billing emails',
+          'commit-cn-relief.md': 'Paid-commit credit-note relief',
+          'cost-tables.md': 'Provider cost tables and margin',
+          'create-preview.md': 'Create-preview endpoint',
+          'customer-usage.md': 'Customer usage endpoint',
+          'multi-dim-meters.md': 'Multi-dimensional meters',
+          'prepaid-commits.md': 'Prepaid commits and drawdown',
+          'recipes.md': 'Pricing recipes',
+        },
+      },
     ],
   },
   {
@@ -194,7 +250,6 @@ const allSections = [
       { src: 'docs/roadmap.md', slug: 'project/roadmap', label: 'Roadmap' },
       { src: 'CHANGELOG.md', slug: 'project/changelog', label: 'Changelog' },
       { src: 'SECURITY.md', slug: 'project/security', label: 'Security policy' },
-      { src: 'CONTRIBUTING.md', slug: 'project/contributing', label: 'Contributing' },
       { src: 'LICENSE', slug: 'project/license', title: 'Licence (MIT)', label: 'Licence' },
     ],
   },
@@ -203,10 +258,14 @@ const allSections = [
     collapsed: true,
     items: [
       { glob: 'docs/dev/', exclude: ['docs/dev/design/', 'docs/dev/records/'], index: 'docs/dev/README.md', base: 'contribute', label: 'Guides for contributors' },
-      { src: 'CLAUDE.md', slug: 'contribute/rules-at-a-glance', label: 'Rules at a glance (people and coding agents)' },
+      { src: 'CONTRIBUTING.md', slug: 'contribute/contributing', label: 'Contributing' },
+      {
+        src: 'CLAUDE.md', slug: 'contribute/rules-at-a-glance', label: 'Project rules at a glance', title: 'Project rules at a glance',
+        intro: 'These are the maintainer’s working rules for this repo, written for the people and coding agents who change its code. To use Hardcount, start with the [quick start](/docs/get-started/quick-start/).',
+      },
       { src: 'web-v2/README.md', slug: 'contribute/dashboard', label: 'The dashboard (web-v2)' },
       { src: 'web-v2/e2e/README.md', slug: 'contribute/dashboard-tests', label: 'Dashboard tests' },
-      { src: 'docs/adr/TEMPLATE.md', slug: 'contribute/design-record-template', label: 'Design record template' },
+      { src: 'docs/adr/TEMPLATE.md', slug: 'contribute/design-record-template', label: 'Design record template', asCode: true },
     ],
   },
 ];
@@ -217,6 +276,45 @@ export const plannedPages = allSections.flatMap((s) => s.items.filter((i) => i.p
 export const sections = allSections
   .map((s) => ({ ...s, items: s.items.filter((i) => !i.planned) }))
   .filter((s) => s.items.length);
+
+// Addresses that used to be pages, and where each one went. A redirect is
+// written only while no page has the old address.
+export const redirects = {
+  '/docs/being-split/api-surface/': '/docs/api/overview/',
+  '/docs/being-split/ai-pricing/': '/docs/guides/ai-pricing/',
+  '/docs/being-split/webhooks/': '/docs/api/webhooks/',
+  '/docs/concepts/payments-and-retries/': '/docs/self-host/payment-failure-handling/',
+  '/docs/concepts/tax/': '/docs/guides/tax/',
+  '/docs/guides/email-setup/': '/docs/self-host/email-setup/',
+  '/docs/guides/api-keys/': '/docs/api/authentication/',
+  '/docs/project/contributing/': '/docs/contribute/contributing/',
+  '/docs/internals/records/agent-prompting-standards/': '/docs/internals/records/',
+};
+
+// Planned pages were briefly live as outlines. Until each is written, its
+// address goes to the page that holds that content today.
+export const plannedNearest = {
+  'concepts/data-model': '/docs/get-started/how-hardcount-works/',
+  'concepts/usage-events': '/docs/api/overview/#sending-usage-safely',
+  'concepts/meters-and-prices': '/docs/guides/ai-pricing/',
+  'concepts/subscriptions': '/docs/api/overview/#customers-and-subscriptions',
+  'concepts/invoices': '/docs/get-started/how-hardcount-works/',
+  'concepts/credits': '/docs/guides/ai-pricing/#sell-prepaid-credit-a-prepaid-commit',
+  'concepts/test-clocks': '/docs/api/overview/#test-clocks',
+  'concepts/margin': '/docs/guides/ai-pricing/#see-your-margin',
+  'guides/bill-for-ai-tokens': '/docs/guides/ai-pricing/',
+  'guides/receive-webhooks': '/docs/api/webhooks/',
+  'guides/connect-stripe': '/docs/self-host/production-one-vm/',
+  'guides/test-a-billing-change': '/docs/get-started/first-invoice/',
+  'api/errors': '/docs/api/overview/#errors',
+  'api/idempotency': '/docs/api/overview/#sending-usage-safely',
+  'api/pagination': '/docs/api/overview/#lists',
+  'api/rate-limits': '/docs/self-host/overview/#settings',
+  'api/timing-and-limits': '/docs/api/overview/',
+  'api/webhook-events': '/docs/api/webhooks/',
+  'self-host/upgrades': '/docs/self-host/overview/#upgrading',
+  'self-host/settings': '/docs/self-host/overview/#settings',
+};
 
 // Repo docs that move to the website pages, so the docs do not render them.
 export const movedToSite = {
