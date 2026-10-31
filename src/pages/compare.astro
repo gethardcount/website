@@ -1,42 +1,99 @@
 ---
 import Base from '../layouts/Base.astro';
-import { doc } from '../site';
+import TryIt from '../components/TryIt.astro';
+import { doc, code } from '../site';
 
-const peers = [
+// Every claim about another project has a source under its card. Checked on
+// CHECKED unless a source is marked with an earlier date (those come from
+// the hardcount repo's docs/comparison.md at the release).
+const CHECKED = '2026-10-31';
+
+// Six questions people ask first. ¹ marks our reading of a project's spec,
+// which its docs do not state.
+const columns = ['Hardcount', 'Stripe Billing', 'Lago', 'OpenMeter', 'Flexprice', 'Kill Bill'];
+const rows: [string, string[]][] = [
+  ['Licence', ['MIT, one edition', 'Closed source, hosted', 'AGPL-3.0; premium features need a licence key', 'Apache-2.0', 'AGPL-3.0 at the root; the core services need an Enterprise licence in production', 'Apache-2.0; the Aviate plugin is commercial']],
+  ['Payment providers', ['Stripe, cards only', 'Stripe, with the payment methods your account allows', 'Stripe, GoCardless, Cashfree, Adyen, Moneyhash', 'Stripe, through Stripe Invoicing', 'Stripe, Razorpay, Nomod, Moyasar, Paddle, Whop, Chargebee', 'Plugins for Adyen, Braintree, Qualpay, Stripe, Hyperswitch']],
+  ['A price per model and token type on one meter', ['Yes', 'Not in basic usage billing; Stripe points you to Metronome', 'Yes, with charge filters', 'One filtered feature per combination¹', 'One filtered feature per combination', 'No labels on usage; one unit type per combination¹']],
+  ['Failed-payment retries', ['Included', 'Included (Smart Retries)', 'A premium add-on, on request', 'None of its own; Stripe Invoicing collects', 'No schedule found; a manual retry per invoice', 'Included, with overdue states']],
+  ['Test clock', ['One for each test customer', 'Yes, in sandboxes, up to three customers a clock', 'None found', 'None; an endpoint simulates an invoice', 'None found', 'One for the whole server, in test mode']],
+  ['Services to run', ['5 in the Compose file', 'None: hosted', '8, one of them a one-off migration', '11, “not a production topology”', '9 by default', '3']],
+];
+
+type Source = [string, string];
+const peers: { name: string; ahead: string; lines: string[]; sources: Source[] }[] = [
   {
     name: 'Stripe Billing',
     ahead: 'hosted, with nothing to run',
     lines: [
       'Stripe Billing is a hosted service, so there is no server to run. Simple per-seat pricing paid by card is a job it already does well.',
-      'Its pay-as-you-go plan takes 0.7% of what you bill. Its basic usage billing can’t price by model and token type on one meter, so each rate needs its own meter. For that, Stripe points you to Metronome.',
-      'Hardcount does the billing itself and asks Stripe only to charge the card. There is no guide for moving from Stripe Billing yet.',
+      'Its pay-as-you-go plan takes 0.7% of what you bill. Its basic usage-based billing has no dimensional pricing (one meter with a different rate for each model and token type); Stripe’s docs point you to Metronome for that. Metronome is now part of Stripe.',
+      'Hardcount does the billing itself, and uses Stripe to charge the card, and to work out tax if you turn on Stripe Tax. There is no guide for moving from Stripe Billing yet.',
+    ],
+    sources: [
+      ['Stripe Billing pricing (0.7%, Smart Retries)', 'https://stripe.com/billing/pricing'],
+      ['Basic usage-based billing compared with Metronome', 'https://docs.stripe.com/billing/subscriptions/usage-based/compare-metronome'],
+      ['Stripe completes the Metronome acquisition', 'https://stripe.com/newsroom/news/stripe-completes-metronome-acquisition'],
+      ['Test clocks: limits', 'https://docs.stripe.com/billing/testing/test-clocks/api-advanced-usage'],
     ],
   },
   {
     name: 'Lago',
     ahead: 'more payment providers and methods',
     lines: [
-      'Lago takes payments through Stripe, GoCardless, Cashfree, Adyen, Flutterwave and Moneyhash. Through Stripe it also takes bank debits such as SEPA, ACH and BACS.',
+      'Lago takes payments through Stripe, GoCardless, Cashfree, Adyen and Moneyhash; its code also supports Flutterwave. Through Stripe it also takes bank debits such as SEPA, ACH and BACS.',
       'It prices by event properties too, with charge filters. It lists 8 SDKs; the Java and C# ones are archived.',
-      'Its licence is AGPL-3.0, and a licence key unlocks premium features, such as automatic retries of failed payments, invoice preview and recurring wallet top-ups. There is no guide for moving from Lago yet.',
+      'Its licence is AGPL-3.0. A licence key unlocks premium features such as invoice preview and recurring wallet top-ups; automatic retries of failed payments are a premium add-on, on request. There is no guide for moving from Lago yet.',
+    ],
+    sources: [
+      ['Payment integrations', 'https://getlago.com/docs/integrations/introduction'],
+      ['Payment providers in the code (customer.rb)', 'https://github.com/getlago/lago-api/blob/8466d0c3ed9c5f160256bde7017b65e1742cccc8/app/models/customer.rb#L137'],
+      ['Stripe payment methods', 'https://getlago.com/docs/integrations/payments/stripe/payments'],
+      ['Charge filters', 'https://getlago.com/docs/guide/plans/charges/charges-with-filters'],
+      ['Licence (AGPL-3.0)', 'https://github.com/getlago/lago/blob/cb09fc11f217145b3595e43e3de4ef0824715bdf/LICENSE'],
+      ['Automatic dunning: premium add-on', 'https://getlago.com/docs/guide/dunning/automatic-dunning'],
+      ['Invoice preview: premium', 'https://getlago.com/docs/guide/invoicing/previews'],
+      ['Recurring top-ups: premium', 'https://getlago.com/docs/guide/wallet-and-prepaid-credits/wallet-top-up-and-void'],
+      ['Compose file (8 services)', 'https://github.com/getlago/lago/blob/cb09fc11f217145b3595e43e3de4ef0824715bdf/docker-compose.yml#L90'],
+      ['SDKs (checked 2026-10-12)', 'https://getlago.com/docs/developers#sdks-and-clients'],
     ],
   },
   {
     name: 'OpenMeter',
     ahead: 'the payment methods your Stripe account allows',
     lines: [
-      'With its Stripe app, OpenMeter collects through Stripe Invoicing, so its invoices offer the payment methods turned on in your Stripe account. Stripe’s Invoicing fee applies.',
+      'OpenMeter is now part of Kong, and stays Apache-2.0.',
+      'With its Stripe app, OpenMeter collects through Stripe Invoicing, so an invoice uses the customer’s default payment method or the methods allowed by your Stripe invoice settings. Stripe’s Invoicing fee applies.',
       'It has SDKs for JavaScript, Python and Go, all pre-release, and an endpoint that simulates an invoice.',
-      'Its licence is Apache-2.0. The open-source version has no operator UI, and its Compose file runs 11 services, described as “not a production topology”.',
+      'The open-source version has no operator UI, and its Compose file runs 11 services, described as “not a production topology”.',
+    ],
+    sources: [
+      ['Kong acquires OpenMeter', 'https://konghq.com/blog/news/kong-acquires-openmeter'],
+      ['Stripe invoices in the code (invoice.go)', 'https://github.com/openmeterio/openmeter/blob/24eece4506f1d7643e1def70e0dc6548b301e82b/openmeter/app/stripe/client/invoice.go#L24-L55'],
+      ['Stripe invoicing', 'https://openmeter.io/docs/integrations/stripe/invoicing'],
+      ['README: licence, and no operator UI', 'https://github.com/openmeterio/openmeter/blob/24eece4506f1d7643e1def70e0dc6548b301e82b/README.md#L41'],
+      ['SDKs (checked 2026-10-12)', 'https://github.com/openmeterio/openmeter/blob/e00163c4b8a0726198c95a9ccb158d38ea8c05b8/README.md#L51'],
+      ['Invoice simulate endpoint (checked 2026-10-12)', 'https://github.com/openmeterio/openmeter/blob/e00163c4b8a0726198c95a9ccb158d38ea8c05b8/api/openapi.yaml#L1606-L1615'],
+      ['Quickstart Compose file (11 services)', 'https://github.com/openmeterio/openmeter/blob/24eece4506f1d7643e1def70e0dc6548b301e82b/quickstart/docker-compose.yaml'],
+      ['Stripe Invoicing pricing (checked 2026-10-23)', 'https://stripe.com/invoicing/pricing'],
     ],
   },
   {
     name: 'Flexprice',
     ahead: 'more payment gateways, and wallets with auto top-up',
     lines: [
-      'Flexprice connects to Stripe, Razorpay, Nomod, Moyasar, Paddle, Whop and Chargebee.',
+      'Flexprice connects to Stripe, Razorpay, Nomod, Moyasar, Paddle, Whop and Chargebee. With Chargebee, it sends invoices there and Chargebee collects the payment.',
       'Its wallets have prepaid and promotional credits, auto top-up, expiry and a real-time balance. It has SDKs for Go, Python and TypeScript, and previews subscription changes.',
       'Its root licence is AGPL-3.0, but the services that ingest events, make invoices and run wallets are under a licence that allows production use only with a Flexprice Enterprise licence.',
+    ],
+    sources: [
+      ['Payment gateways in the code', 'https://github.com/flexprice/flexprice/blob/0f02b623f87bad87d132b391bc83f192ea12c20d/internal/types/payment_gateway.go#L11-L19'],
+      ['Integrations, including Chargebee', 'https://docs.flexprice.io/integrations/introduction'],
+      ['Enterprise licence (internal/ee)', 'https://github.com/flexprice/flexprice/blob/0f02b623f87bad87d132b391bc83f192ea12c20d/internal/ee/LICENSE'],
+      ['Per-model token pricing, one feature each', 'https://docs.flexprice.io/cookbooks/pricing-teardowns/openai-pricing'],
+      ['Compose file', 'https://github.com/flexprice/flexprice/blob/0f02b623f87bad87d132b391bc83f192ea12c20d/docker-compose.yml'],
+      ['Wallets (checked 2026-10-23)', 'https://docs.flexprice.io/docs/wallet/prepaid-and-promotional'],
+      ['SDKs (checked 2026-10-12)', 'https://docs.flexprice.io/developers/sdks/overview'],
     ],
   },
   {
@@ -45,21 +102,54 @@ const peers = [
     lines: [
       'Kill Bill’s Compose file runs 3 services. It has plugins for Adyen, Braintree, Qualpay, Stripe and Hyperswitch, and clients in Java, PHP, Python, Ruby, Node and Go.',
       'It includes failed-payment retries with overdue states, and a dry run that previews subscription changes.',
-      'Its licence is Apache-2.0. The open-source core bills usage you have already added up; a commercial plugin, Aviate, adds raw-event metering, wallets and coupons.',
+      'Its licence is Apache-2.0. The open-source core takes usage summaries per subscription through its API, and its docs ask for one summary per subscription per day; a commercial plugin, Aviate, adds raw-event metering, wallets and coupons.',
+    ],
+    sources: [
+      ['Kill Bill and Aviate', 'https://killbill.io/kill-bill-vs-aviate'],
+      ['Usage: one summary per subscription per day', 'https://apidocs.killbill.io/usage'],
+      ['Compose file (3 services)', 'https://github.com/killbill/killbill-cloud/blob/3372bb144de60eea3e225f8557a25dbb470fe1e7/docker/compose/docker-compose.kb.yml#L5-L39'],
+      ['Retry schedule (PaymentConfig.java)', 'https://github.com/killbill/killbill/blob/52e2f55f103baf0703ddee71e10a7036595fc851/util/src/main/java/org/killbill/billing/util/config/definition/PaymentConfig.java#L31-L34'],
+      ['Test clock (KillbillPlatformModule.java)', 'https://github.com/killbill/killbill-platform/blob/b93e34b901b97b0c28ec8f5ecb72228d5c17bd2d/server/src/main/java/org/killbill/billing/server/modules/KillbillPlatformModule.java#L112-L121'],
+      ['Payment plugins', 'https://github.com/killbill/killbill-docs/blob/f3ea39f87593266e6101d6cdac3bd1654d00aa10/userguide/tutorials/plugin_introduction.adoc#L152'],
+      ['Clients (checked 2026-10-12)', 'https://github.com/killbill/slate/blob/4ad3bbf6c2fd4a02bc8f052bd26ae5b1c2174843/source/includes/_index.md#L10-L12'],
+      ['Dry run (checked 2026-10-12)', 'https://github.com/killbill/killbill-docs/blob/d8dade1b7c8eaba715a94a909fd1232361fbb738/userguide/subscription/includes/invoicing-dry-run.adoc#L3-L9'],
     ],
   },
 ];
+
+const hosted: Source[] = [
+  ['Orb pricing', 'https://www.withorb.com/pricing'],
+  ['Metronome pricing', 'https://metronome.com/pricing'],
+  ['Chargebee pricing', 'https://www.chargebee.com/pricing/'],
+];
 ---
 <Base
-  title="How Hardcount compares with Stripe Billing, Lago, OpenMeter, Flexprice and Kill Bill"
-  description="Where Hardcount differs from Stripe Billing and four open-source billing engines, and where each of them is ahead."
+  title="Hardcount vs Stripe Billing, Lago, OpenMeter, Flexprice, Kill Bill"
+  description="Where Hardcount differs from Stripe Billing and four open-source billing engines, and where each of them is ahead, with sources."
 >
   <section class="top">
-    <div class="wrap prose">
+    <div class="wrap"><div class="prose">
       <h1>How Hardcount compares</h1>
       <p class="lede">An open-source alternative to Stripe Billing and Lago for usage-based and AI billing. It runs on your own servers and uses Stripe to charge the card.</p>
       <p>Hardcount is pre-1.0 and has no production users yet. Stripe Billing and the four projects below are in production use at other companies. Weigh everything here with that in mind.</p>
-      <p class="small muted">Checked in October 2026. Projects change: re-check any point you plan to rely on.</p>
+      <p class="small muted">Checked on {CHECKED}, except where a source gives an earlier date. Projects change: re-check any point you plan to rely on. Each project’s sources are under its card.</p>
+    </div></div>
+  </section>
+
+  <section id="table">
+    <div class="wrap">
+      <h2>Side by side</h2>
+      <div class="table-box" tabindex="0" role="region" aria-label="Side-by-side comparison; scrolls sideways on a small screen">
+        <table>
+          <thead><tr><th scope="col"><span class="sr-only">Question</span></th>{columns.map((c) => <th scope="col">{c}</th>)}</tr></thead>
+          <tbody>
+            {rows.map(([q, cells]) => (
+              <tr><th scope="row">{q}</th>{cells.map((c, i) => <td class:list={{ us: i === 0 }}>{c}</td>)}</tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="small muted note">¹ Our reading of the project’s API spec; its docs do not say it. “None found” means a search of the project’s source and docs found nothing. Hardcount’s column: <a href={doc('ai-pricing.md')}>AI pricing</a>, <a href={doc('payments.md')}>payment failure handling</a>, <a href={code('deploy/compose/docker-compose.yml')}>its Compose file</a> (Postgres, Redis, Hardcount, the dashboard and nginx).</p>
     </div>
   </section>
 
@@ -71,9 +161,14 @@ const peers = [
             <h2>{p.name}</h2>
             <p class="ahead">Ahead on: {p.ahead}</p>
             {p.lines.map((l) => <p>{l}</p>)}
+            <details class="sources">
+              <summary>Sources</summary>
+              <ul>{p.sources.map(([label, href]) => <li><a href={href}>{label}</a></li>)}</ul>
+            </details>
           </article>
         ))}
       </div>
+      <p class="prose not-compared">Not compared here: Orb, Metronome (now part of Stripe) and Chargebee are hosted services that charge a share of what you bill, about 0.6–0.8% on their published plans. Sources: {hosted.map(([label, href], i) => <>{i > 0 && ', '}<a href={href}>{label}</a></>)}.</p>
     </div>
   </section>
 
@@ -96,29 +191,54 @@ const peers = [
           <li>Payment providers: Hardcount supports Stripe cards only.</li>
           <li>SDKs: Hardcount has none yet.</li>
           <li>Invoice preview: Hardcount’s leaves out tax and credits.</li>
-          <li>Fewest services: Kill Bill’s Compose file has three. Hardcount’s has five, including a front proxy that the others’ files don’t have.</li>
+          <li>Fewest services: Kill Bill’s Compose file has three. Hardcount’s has five, including a front proxy (nginx, the web server that takes each request first and passes it on) that the others’ files don’t have.</li>
           <li>Previewing a plan change: Flexprice and Kill Bill both do it, and Lago does with a premium licence.</li>
         </ul>
       </div>
     </div>
   </section>
 
-  <section class="end">
-    <div class="wrap">
-      <h2>Try it on your computer</h2>
-      <p class="prose muted">Start Hardcount in test mode and run its demo.</p>
-      <a class="btn btn-primary" href="/#try">Run it locally</a>
-    </div>
-  </section>
+  <TryIt />
 </Base>
 
 <style>
   .top { padding-top: 72px; }
   .lede { font-size: 20px; color: var(--ink-soft); }
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+  /* The table scrolls inside its box on a small screen, with a shadow at the
+     edge that has more columns past it. */
+  .table-box {
+    overflow-x: auto; border: 1px solid var(--rule); border-radius: 12px; margin-top: 20px;
+    background:
+      linear-gradient(to right, var(--card) 30%, transparent) left / 32px 100% no-repeat local,
+      linear-gradient(to left, var(--card) 30%, transparent) right / 32px 100% no-repeat local,
+      radial-gradient(farthest-side at 0 50%, rgb(0 0 0 / 0.18), transparent) left / 12px 100% no-repeat scroll,
+      radial-gradient(farthest-side at 100% 50%, rgb(0 0 0 / 0.18), transparent) right / 12px 100% no-repeat scroll,
+      var(--card);
+  }
+  .table-box:focus-visible { outline: 2px solid var(--copper); outline-offset: 2px; }
+  table { border-collapse: collapse; width: 100%; min-width: 860px; font-size: 15px; line-height: 1.45; }
+  th, td { text-align: left; vertical-align: top; padding: 12px 14px; border-bottom: 1px solid var(--rule); }
+  tbody tr:last-child > * { border-bottom: none; }
+  thead th { font-weight: 600; background: var(--paper-2); }
+  tbody th { font-weight: 600; width: 15%; }
+  /* The question stays in view while the columns scroll on a phone. */
+  tbody th, thead th:first-child { position: sticky; left: 0; z-index: 1; background: var(--card); box-shadow: 1px 0 0 var(--rule); }
+  thead th:first-child { background: var(--paper-2); }
+  td.us { background: var(--paper-2); font-weight: 500; }
+  .note { margin-top: 12px; }
+
   .peers { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
   .peers h2 { font-size: 26px; margin-bottom: 4px; }
   .peers p { font-size: 16px; }
   .ahead { color: var(--copper-ink); font-weight: 500; }
+  .sources { margin-top: auto; font-size: 15px; border-top: 1px solid var(--rule); padding-top: 10px; }
+  .sources summary { cursor: pointer; color: var(--ink-soft); font-weight: 500; padding: 4px 0; }
+  .sources ul { margin: 8px 0 0; padding-left: 18px; display: grid; gap: 4px; }
+  .sources a { overflow-wrap: anywhere; }
+  .card { display: flex; flex-direction: column; }
+  .not-compared { margin-top: 28px; font-size: 16px; }
   .two { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
   .two h2 { font-size: 26px; }
   .two ul { padding-left: 20px; }

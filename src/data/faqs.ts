@@ -2,7 +2,7 @@
 // Each `id` is the answer's address (/faq/#id); the status line links to
 // safe-for-real-money, so keep the ids stable.
 export const faqs: { id: string; q: string; a: string; link?: [string, string] }[] = [
-  { id: 'why-not-stripe-billing', q: 'Why not just use Stripe Billing?', a: 'Its pay-as-you-go plan takes 0.7% of what you bill, and its basic usage billing needs a meter for each model and token type. Hardcount does the billing itself. For simple per-seat pricing paid by card, Stripe Billing is the better choice: there is nothing to run.' },
+  { id: 'why-not-stripe-billing', q: 'Why not just use Stripe Billing?', a: 'Its pay-as-you-go plan takes 0.7% of what you bill. Its basic usage-based billing has no dimensional pricing, so each model and token type needs its own meter; Stripe’s docs point you to Metronome for that. Hardcount does the billing itself. For simple per-seat pricing paid by card, Stripe Billing is the better choice: there is nothing to run.' },
   { id: 'why-run-it-myself', q: 'Why run it myself?', a: 'Your billing data stays in your own Postgres, there is no fee on what you bill, and it is one server program plus Postgres and Redis. There is no cloud version.' },
   { id: 'cost', q: 'What does it cost?', a: 'Hardcount is free. Your costs are your server and Stripe’s card fee.', link: ['Pricing', '/pricing/'] },
   { id: 'safe-for-real-money', q: 'Is it safe for real money?', a: 'No one runs it in production yet. The payment, credit and invoice code is tested against a real Postgres database, and what isn’t handled yet is written down. Try it in test mode before you trust it with real customers.' },
