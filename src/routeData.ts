@@ -15,6 +15,15 @@ export const onRequest = defineRouteMiddleware((context) => {
   const route = context.locals.starlightRoute;
   const data = route.entry.data;
   const path = context.url.pathname.replace(/\/$/, '');
+
+  // The 404 page has no address of its own: no canonical link, and kept out
+  // of search engines.
+  if (route.entry.id === '404') {
+    route.head = route.head.filter((h) => !(h.tag === 'link' && h.attrs?.rel === 'canonical') && !(h.tag === 'meta' && h.attrs?.property === 'og:url'));
+    route.head.push({ tag: 'meta', attrs: { name: 'robots', content: 'noindex' } });
+    return;
+  }
+
   if (!path.startsWith('/docs/api/endpoints')) return;
 
   let title = data.title;
