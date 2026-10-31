@@ -11,7 +11,7 @@ const blocks = [
     body: 'One meter counts tokens. Each usage event carries labels such as model and token type, and each label combination gets its own price. Ready-made prices for Anthropic-, OpenAI- and Replicate-style pricing are one call away.',
     shot: null,
     shotNote: 'Screenshot to capture: a plan with a price per model and token type.',
-    links: [['Meters and prices', '/docs/concepts/meters-and-prices/'], ['Bill for AI tokens', '/docs/guides/bill-for-ai-tokens/']],
+    links: [['AI pricing reference', doc('ai-pricing.md')], ['Your first invoice', doc('first-invoice.md')]],
   },
   {
     id: 'credit',
@@ -19,7 +19,7 @@ const blocks = [
     body: 'Sell "pay $9k, get $10k of usage". Later invoices use the credit up, free credit first. Your app can read the live balance and stop serving a customer whose credit has run out.',
     shot: null,
     shotNote: 'Screenshot to capture: a customer\'s credit balance and its history.',
-    links: [['Credits', '/docs/concepts/credits/'], ['Stop usage when credit runs out', doc('stop-usage-when-credit-runs-out.md')]],
+    links: [['Prepaid credit', doc('ai-pricing.md') + '#sell-prepaid-credit-a-prepaid-commit'], ['Stop usage when credit runs out', doc('stop-usage-when-credit-runs-out.md')]],
   },
   {
     id: 'margin',
@@ -27,7 +27,7 @@ const blocks = [
     body: 'Enter what each AI provider charges you per token, once. Hardcount shows each customer\'s usage revenue next to what it cost you, per model. Usage only: base fees, credits and taxes are left out.',
     shot: '/shots/margin-light.png',
     alt: 'The Margin card for a demo customer: $5.73 usage billed, $2.76 provider cost, 51.9% margin, with a row per model.',
-    links: [['Margin', '/docs/concepts/margin/']],
+    links: [['See your margin', doc('ai-pricing.md') + '#see-your-margin']],
   },
   {
     id: 'invoices',
@@ -35,7 +35,7 @@ const blocks = [
     body: 'One line per model and token type, a PDF, a hosted invoice page the customer opens from a secure link, credit notes, and tax through Stripe Tax or a flat rate you set.',
     shot: '/shots/invoice-light.png',
     alt: 'Demo invoice HC-000001: one line per model and token type, priced per 1M tokens, $5.73 due.',
-    links: [['Invoices', '/docs/concepts/invoices/'], ['Tax', doc('ops/tax-calculation.md')]],
+    links: [['How invoices are made', doc('how-hardcount-works.md')], ['Tax', doc('ops/tax-calculation.md')]],
   },
   {
     id: 'payments',
@@ -51,7 +51,7 @@ const blocks = [
     body: 'Move a test customer\'s clock forward and a month of billing happens in seconds: the invoice, the charge, the retries. Preview the next invoice. Everything runs in test mode until you switch to live.',
     shot: null,
     shotNote: 'Screenshot to capture: a test clock and the invoice it produced.',
-    links: [['Test clocks', '/docs/concepts/test-clocks/'], ['Test a billing change', '/docs/guides/test-a-billing-change/']],
+    links: [['Test clocks', doc('api-surface.md') + '#test-clocks'], ['Your first invoice', doc('first-invoice.md')]],
   },
   {
     id: 'developers',

@@ -4,7 +4,7 @@
 // `label` is the short sidebar name; the page title stays the doc's heading.
 // Built from velox-ops marketing/site-structure-2026-10-29.md §5.
 
-export const sections = [
+const allSections = [
   {
     label: 'Get started',
     items: [
@@ -96,6 +96,7 @@ export const sections = [
   {
     label: 'Guides',
     items: [
+      { src: 'docs/ai-pricing.md', slug: 'guides/ai-pricing', label: 'AI pricing reference' },
       {
         slug: 'guides/bill-for-ai-tokens',
         planned: {
@@ -141,6 +142,7 @@ export const sections = [
   {
     label: 'API reference',
     items: [
+      { src: 'docs/api-surface.md', slug: 'api/overview', label: 'The Hardcount API' },
       { planned: { title: 'Authentication and keys', intro: 'How to send your API key, and test versus live keys.', sections: ['The Bearer header', 'Key types', 'Test and live mode'], from: ['docs/api-surface.md', 'docs/api-keys.md'] }, slug: 'api/authentication' },
       { planned: { title: 'Errors', intro: 'Every error code, what it means, and what to do.', sections: ['The error body', 'Status codes', 'Error codes'], from: ['docs/api-surface.md: Errors'] }, slug: 'api/errors' },
       { planned: { title: 'Idempotency', intro: 'Retry any request safely.', sections: ['Usage events: the idempotency key', 'Other writes', 'How long keys are kept'], from: ['docs/api-surface.md: Sending usage safely'] }, slug: 'api/idempotency' },
@@ -150,6 +152,7 @@ export const sections = [
       { planned: { title: 'Timing and limits', intro: 'Every time window and size limit, as a number.', sections: ['Invoice grace period', 'Idempotency windows', 'Stripe\'s 24-hour window', 'Retry schedules', 'Request size'], from: ['New page (checked in code)'] }, slug: 'api/timing-and-limits' },
       { objects: true, label: 'Objects' },
       { openapi: true, label: 'Endpoints' },
+      { src: 'docs/webhooks.md', slug: 'api/webhooks', label: 'Webhooks' },
       { planned: { title: 'Webhook events', intro: 'Every event Hardcount sends: when, and what it contains.', sections: ['The catalog: name, when it is sent, example payload'], from: ['docs/webhooks.md: catalog (kept true by internal/domain/webhook_catalog_test.go)'] }, slug: 'api/webhook-events' },
     ],
   },
@@ -206,18 +209,14 @@ export const sections = [
       { src: 'docs/adr/TEMPLATE.md', slug: 'contribute/design-record-template', label: 'Design record template' },
     ],
   },
-  {
-    // Preview only: today's big pages, which are split into the planned pages
-    // above before launch.
-    label: 'Today’s pages, being split up',
-    collapsed: true,
-    items: [
-      { src: 'docs/api-surface.md', slug: 'being-split/api-surface', label: 'The Hardcount API' },
-      { src: 'docs/ai-pricing.md', slug: 'being-split/ai-pricing', label: 'AI pricing reference' },
-      { src: 'docs/webhooks.md', slug: 'being-split/webhooks', label: 'Webhooks' },
-    ],
-  },
 ];
+
+// Planned pages stay here as the plan for splitting the long pages above,
+// but a live site shows no stubs: they are built and listed only once written.
+export const plannedPages = allSections.flatMap((s) => s.items.filter((i) => i.planned));
+export const sections = allSections
+  .map((s) => ({ ...s, items: s.items.filter((i) => !i.planned) }))
+  .filter((s) => s.items.length);
 
 // Repo docs that move to the website pages, so the docs do not render them.
 export const movedToSite = {
