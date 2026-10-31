@@ -1,72 +1,68 @@
 ---
 import Base from '../layouts/Base.astro';
+import Shot from '../components/Shot.astro';
+import UsageCurl from '../components/UsageCurl.astro';
 import { doc } from '../site';
+import { shots, showShot } from '../data/media';
 
-// Each block: what it does for you, a real screenshot (or the one still to
-// capture), and the docs page that explains how it works.
+// Each block: what it does for you, a picture of it, and the docs page that
+// explains how it works. The pictures not yet `live` in src/data/media.ts are
+// captured at the next release, when the dashboard the quick start installs
+// matches them; until then those blocks show text only.
 const blocks = [
   {
     id: 'pricing',
     title: 'Price AI usage per model and token type',
     body: 'One meter counts tokens. Each usage event carries labels such as model and token type, and each label combination gets its own price. Ready-made prices for Anthropic-, OpenAI- and Replicate-style pricing are one call away.',
-    shot: null,
-    shotNote: 'Screenshot to capture: a plan with a price per model and token type.',
+    shot: shots.pricing,
     links: [['AI pricing reference', doc('ai-pricing.md')], ['Your first invoice', doc('first-invoice.md')]],
   },
   {
     id: 'credit',
     title: 'Sell prepaid credit',
     body: 'Sell "pay $9k, get $10k of usage". Later invoices use the credit up, free credit first. Your app can read the live balance and stop serving a customer whose credit has run out.',
-    shot: null,
-    shotNote: 'Screenshot to capture: a customer\'s credit balance and its history.',
+    shot: shots.credit,
     links: [['Prepaid credit', doc('ai-pricing.md') + '#sell-prepaid-credit-a-prepaid-commit'], ['Stop usage when credit runs out', doc('stop-usage-when-credit-runs-out.md')]],
   },
   {
     id: 'margin',
     title: 'See your margin per customer and model',
     body: 'Enter what each AI provider charges you per token, once. Hardcount shows each customer\'s usage revenue next to what it cost you, per model. Usage only: base fees, credits and taxes are left out.',
-    shot: '/shots/margin-light.png',
-    alt: 'The Margin card for a demo customer: $5.73 usage billed, $2.76 provider cost, 51.9% margin, with a row per model.',
+    shot: shots.margin,
     links: [['See your margin', doc('ai-pricing.md') + '#see-your-margin']],
   },
   {
     id: 'invoices',
     title: 'Invoices your customers can read',
     body: 'One line per model and token type, a PDF, a hosted invoice page the customer opens from a secure link, credit notes, and tax through Stripe Tax or a flat rate you set.',
-    shot: '/shots/invoice-light.png',
-    alt: 'Demo invoice HC-000001: one line per model and token type, priced per 1M tokens, $5.73 due.',
+    shot: shots.invoice,
     links: [['How invoices are made', doc('how-hardcount-works.md')], ['Tax', doc('ops/tax-calculation.md')]],
   },
   {
     id: 'payments',
     title: 'Get paid, and retry when a card fails',
     body: 'Stripe charges the saved card. When a charge fails, Hardcount retries on your schedule and emails the customer. When Stripe\'s answer is unclear, it checks Stripe for the payment before charging again.',
-    shot: null,
-    shotNote: 'Screenshot to capture: the Dunning page with an invoice being retried.',
+    shot: shots.payments,
     links: [['Payments and retries', doc('payments.md')]],
   },
   {
     id: 'testing',
     title: 'Test a change before customers see it',
     body: 'Move a test customer\'s clock forward and a month of billing happens in seconds: the invoice, the charge, the retries. Preview the next invoice. Everything runs in test mode until you switch to live.',
-    shot: null,
-    shotNote: 'Screenshot to capture: a test clock and the invoice it produced.',
+    shot: shots.testclock,
     links: [['Test clocks', doc('api-surface.md') + '#test-clocks'], ['Your first invoice', doc('first-invoice.md')]],
   },
   {
     id: 'developers',
     title: 'Built for developers',
     body: 'A REST API, usage events that count once even when resent, signed webhooks kept in the database and retried, LiteLLM support with no SDK, CSV exports, and an audit log that Hardcount’s own database user cannot change or delete.',
-    shot: null,
-    shotNote: 'Code, not a screenshot: one usage event with curl.',
+    code: true,
     links: [['API reference', '/docs/api/endpoints/'], ['LiteLLM', doc('integrations/litellm.md')]],
   },
   {
     id: 'self-host',
     title: 'Run it yourself',
     body: 'One Go program and Postgres, plus Redis for rate limits; the ready-made Docker Compose setup runs five small containers. Your billing data stays in your own database. MIT, with no paid edition and no telemetry.',
-    shot: null,
-    shotNote: null,
     links: [['Self-host', doc('self-host.md')], ['Pricing', '/pricing/']],
   },
 ];
@@ -76,29 +72,26 @@ const blocks = [
   description="What Hardcount does: price AI usage per model, sell prepaid credit, see margin, invoice, get paid, and test with test clocks."
 >
   <section class="top">
-    <div class="wrap prose">
-      <p class="preview">Preview: the structure for review. Final words and the missing screenshots come in step 5.</p>
+    <div class="wrap"><div class="prose">
       <h1>What Hardcount does</h1>
       <p class="lede">Usage billing for AI products, from the usage event to the paid invoice, on your own servers.</p>
       <nav class="jump" aria-label="On this page">
         {blocks.map((b) => <a href={`#${b.id}`}>{b.title}</a>)}
       </nav>
-    </div>
+    </div></div>
   </section>
 
   {blocks.map((b) => (
     <section id={b.id}>
-      <div class="wrap two">
-        <div>
+      <div class="wrap">
+        <div class="prose">
           <h2>{b.title}</h2>
           <p>{b.body}</p>
           <p class="small">{b.links.map(([label, href], i) => <>{i > 0 && ' · '}<a href={href}>{label} →</a></>)}</p>
         </div>
-        <div>
-          {b.shot
-            ? <img src={b.shot} alt={b.alt} loading="lazy" />
-            : b.shotNote && <div class="todo">{b.shotNote}</div>}
-        </div>
+        {b.code
+          ? <div class="media"><p class="small muted">One usage event, sent with curl:</p><UsageCurl /></div>
+          : b.shot && showShot(b.shot) && <div class="media"><Shot shot={b.shot} /></div>}
       </div>
     </section>
   ))}
@@ -114,14 +107,11 @@ const blocks = [
 <style>
   .top { padding-top: 72px; }
   .lede { font-size: 20px; color: var(--ink-soft); }
-  .preview { font-size: 14px; color: var(--copper-ink); border: 1px dashed var(--copper); border-radius: 8px; padding: 6px 10px; display: inline-block; }
   .jump { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
   .jump a { font-size: 15px; padding: 6px 12px; border: 1px solid var(--rule); border-radius: 999px; text-decoration: none; color: var(--ink-soft); background: var(--card); }
   .jump a:hover { border-color: var(--copper); color: var(--copper-ink); }
   section[id] { scroll-margin-top: 16px; }
-  .two { display: grid; grid-template-columns: 1fr 1.1fr; gap: 40px; align-items: center; }
-  .two h2 { font-size: 28px; }
-  img { width: 100%; border: 1px solid var(--rule); border-radius: 12px; }
-  .todo { border: 2px dashed var(--rule); border-radius: 12px; padding: 48px 24px; text-align: center; color: var(--ink-faint); font-size: 15px; }
-  @media (max-width: 900px) { .two { grid-template-columns: 1fr; gap: 16px; } }
+  h2 { font-size: 28px; }
+  /* Pictures take the full width, so the words in them can be read. */
+  .media { margin-top: 20px; max-width: 920px; }
 </style>

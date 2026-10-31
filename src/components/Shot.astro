@@ -1,0 +1,31 @@
+---
+// One dashboard screenshot, light or dark to match the page. Both images are
+// in the HTML; CSS shows one, keyed on the same rules as the colour tokens
+// (the system setting, or a choice made with the docs' theme switch), so the
+// picture and the page always agree. A hidden lazy image is not downloaded.
+// "Open full size" opens the image in the theme being shown.
+import type { Shot } from '../data/media';
+interface Props { shot: Shot; eager?: boolean }
+const { shot, eager = false } = Astro.props;
+const src = (t: string) => `/shots/${shot.name}-${t}.png`;
+---
+<span class="shot">
+  {['light', 'dark'].map((t) => (
+    <a href={src(t)} class={`shot-link shot-${t}`} title="Open full size">
+      <img src={src(t)} width={shot.w} height={shot.h} loading={eager ? 'eager' : 'lazy'} decoding="async" alt={shot.alt} />
+    </a>
+  ))}
+</span>
+
+<style is:global>
+  .shot { display: block; }
+  .shot-link { display: block; }
+  .shot img { display: block; width: 100%; height: auto; border: 1px solid var(--rule); border-radius: 12px; box-shadow: 0 2px 14px rgb(34 29 24 / 0.08); }
+  .shot-dark { display: none; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .shot-light { display: none; }
+    :root:not([data-theme="light"]) .shot-dark { display: block; }
+  }
+  :root[data-theme="dark"] .shot-light { display: none; }
+  :root[data-theme="dark"] .shot-dark { display: block; }
+</style>

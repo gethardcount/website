@@ -2,6 +2,11 @@
 export const REPO = 'https://github.com/gethardcount/hardcount';
 // Doc links pin the release, so the site describes the code people install.
 export const RELEASE = 'v0.9.1';
+// Screenshots and videos of the dashboard, listed in src/data/media.ts. The
+// ones marked `live` match the release now. The rest, and the videos, show
+// only once this is true: flip it with the release bump whose UI they show,
+// after copying the files in and setting each width and height to the file's.
+export const MEDIA_READY = false;
 import { sections, movedToSite } from '../scripts/docs-map.mjs';
 
 // Where each repo doc is shown on this site, from scripts/docs-map.mjs.

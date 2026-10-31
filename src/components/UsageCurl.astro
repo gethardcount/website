@@ -1,0 +1,14 @@
+---
+// One usage event, sent with curl: the same request on Home and Product.
+// Customer acme-1 and the tokens meter are the ones "Your first invoice" makes.
+import Code from './Code.astro';
+const text = `curl -X POST http://localhost:8080/v1/usage-events \\
+  -H "Authorization: Bearer $HARDCOUNT_KEY" \\
+  -H "Content-Type: application/json" \\
+  -d '{"event_name": "tokens",
+       "external_customer_id": "acme-1",
+       "quantity": 1200,
+       "dimensions": {"model": "claude-sonnet-4.5", "token_type": "input"},
+       "idempotency_key": "req-42:input"}'`;
+---
+<Code text={text} label="One usage event sent with curl" />

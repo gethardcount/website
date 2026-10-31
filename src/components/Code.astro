@@ -1,0 +1,30 @@
+---
+// A code block for the website pages: scrolls sideways inside itself, with a
+// shadow at the edge that has more to see, and a Copy button. Pass the code as
+// `text` (shown as written) or `html` (already escaped, may hold spans). The
+// <pre> is written here, around the code, so its line breaks are kept.
+interface Props { text?: string; html?: string; copy?: boolean; class?: string; label?: string }
+const { text, html, copy = true, class: cls = '', label = 'Code' } = Astro.props;
+---
+<div class="code">
+  {html !== undefined
+    ? <pre class={cls} tabindex="0" aria-label={label}><code set:html={html} /></pre>
+    : <pre class={cls} tabindex="0" aria-label={label}><code set:text={text} /></pre>}
+  {copy && <button type="button" class="copy">Copy</button>}
+</div>
+
+<script>
+  for (const btn of document.querySelectorAll<HTMLButtonElement>('.code .copy')) {
+    btn.addEventListener('click', async () => {
+      const pre = btn.parentElement?.querySelector('pre');
+      if (!pre) return;
+      try {
+        await navigator.clipboard.writeText(pre.innerText.trimEnd() + '\n');
+        btn.textContent = 'Copied';
+      } catch {
+        btn.textContent = 'Select and copy';
+      }
+      setTimeout(() => { btn.textContent = 'Copy'; }, 2000);
+    });
+  }
+</script>

@@ -121,3 +121,26 @@ section + section { border-top: 1px solid var(--rule); }
   body { font-size: 17px; }
   section { padding: 44px 0; }
 }
+
+/* Code blocks on the website pages (src/components/Code.astro). A shadow
+   shows at an edge with more code past it; the Copy button sits top right. */
+.code { position: relative; margin: 0 0 1em; }
+.code pre {
+  margin: 0;
+  padding-right: 76px;
+  background:
+    linear-gradient(to right, var(--code-bg) 30%, transparent) left / 32px 100% no-repeat local,
+    linear-gradient(to left, var(--code-bg) 30%, transparent) right / 32px 100% no-repeat local,
+    radial-gradient(farthest-side at 0 50%, rgb(0 0 0 / 0.22), transparent) left / 12px 100% no-repeat scroll,
+    radial-gradient(farthest-side at 100% 50%, rgb(0 0 0 / 0.22), transparent) right / 12px 100% no-repeat scroll,
+    var(--code-bg);
+}
+.code pre:focus-visible { outline: 2px solid var(--copper); outline-offset: 2px; }
+.code .copy {
+  position: absolute; top: 8px; right: 8px;
+  font: 500 14px/1 var(--sans); color: var(--ink-soft);
+  background: var(--card); border: 1px solid var(--rule); border-radius: 6px;
+  padding: 8px 10px; min-height: 32px; cursor: pointer;
+}
+.code .copy:hover { color: var(--copper-ink); border-color: var(--copper); }
+.code .copy:focus-visible { outline: 2px solid var(--copper); outline-offset: 2px; }
