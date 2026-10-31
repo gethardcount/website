@@ -4,6 +4,7 @@ import starlight from '@astrojs/starlight';
 import starlightOpenAPI, { openAPISidebarGroups } from 'starlight-openapi';
 import starlightLlmsTxt from 'starlight-llms-txt';
 import mermaid from 'astro-mermaid';
+import { cfBeaconAttrs } from './src/analytics.mjs';
 
 // Written by scripts/sync-docs.mjs and scripts/gen-objects.mjs (npm run sync).
 const sidebar = JSON.parse(fs.readFileSync('./src/generated/sidebar.json', 'utf8'));
@@ -33,6 +34,7 @@ export default defineConfig({
         // Starlight links /favicon.svg itself; these are the fallbacks.
         { tag: 'link', attrs: { rel: 'icon', href: '/favicon.ico', sizes: '32x32' } },
         { tag: 'link', attrs: { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' } },
+        { tag: 'script', attrs: cfBeaconAttrs },
       ],
       components: {
         Header: './src/components/DocsHeader.astro',
