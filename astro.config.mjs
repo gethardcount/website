@@ -50,7 +50,7 @@ const llmsTrim = {
 };
 
 // Every endpoint page carries the same curl and fetch samples, so words such
-// as "url" matched all 180 of them. Before Starlight builds the search index
+// as "url" matched every one of them. Before Starlight builds the search index
 // (this integration is listed first, so its hook runs first), the samples are
 // marked to be skipped by search. The pages look the same.
 const searchPrep = {
