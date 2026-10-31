@@ -1,0 +1,71 @@
+---
+// The docs page body, with additions the repo's pages cannot make:
+// - /docs/ opens with three links for a first visit;
+// - the endpoint reference opens with what every call needs, and the API
+//   overview with where on the page each of those is;
+// - in search, explanations count for more than endpoint pages, so a search
+//   for "idempotency" or "pagination" finds the page that explains it before
+//   an endpoint that mentions it.
+import Default from '@astrojs/starlight/components/MarkdownContent.astro';
+import { QUICK_START, doc } from '../site';
+
+const path = Astro.url.pathname.replace(/\/?$/, '/');
+const landing = path === '/docs/';
+const endpointsIndex = path === '/docs/api/endpoints/';
+const endpointPage = path.startsWith('/docs/api/endpoints/') && !endpointsIndex;
+const api = doc('api-surface.md');
+const apiOverview = path === api;
+// The changelog names every feature in passing; it should not outrank the
+// page about one.
+const weight = endpointPage ? '0.2' : path === '/docs/project/changelog/' ? '0.4' : '2';
+---
+{landing && (
+  <nav class="hc-start not-content" aria-label="Start here">
+    <a href={QUICK_START}><strong>1. Quick start</strong><span>Run Hardcount and its demo on your computer, in test mode.</span></a>
+    <a href={doc('first-invoice.md')}><strong>2. Send usage, get an invoice</strong><span>Every request with curl: a customer, token usage, the invoice.</span></a>
+    <a href="/docs/api/endpoints/"><strong>3. API reference</strong><span>Every endpoint, with its request and response.</span></a>
+  </nav>
+)}
+<div data-pagefind-weight={weight}>
+{/* A <div>, not a <nav>: search skips <nav>, and these words should find this page. */}
+{apiOverview && (
+  <div class="hc-before not-content" role="navigation" aria-label="On this page">
+    <p class="hc-before-h">On this page</p>
+    <ul class="hc-inline">
+      <li><a href="#make-your-first-call">Base URL and authentication</a></li>
+      <li><a href="#lists">Pagination (lists)</a></li>
+      <li><a href="#sending-usage-safely">Idempotency</a></li>
+      <li><a href="#errors">Errors, error codes and 429 rate limits</a></li>
+    </ul>
+  </div>
+)}
+{endpointsIndex && (
+  <aside class="hc-before not-content" aria-label="Before you call">
+    <p class="hc-before-h">Before you call</p>
+    <ul>
+      <li><strong>Base URL:</strong> your Hardcount server’s address, such as <code>http://localhost:8080</code> after the <a href={QUICK_START}>quick start</a>. Every route starts with <code>/v1/</code>.</li>
+      <li><strong>Authentication:</strong> send <code>Authorization: Bearer hc_secret_test_…</code> with a secret key. <a href={doc('api-keys.md')}>Authentication and keys</a></li>
+      <li><strong>Pagination, errors and idempotency:</strong> lists take <code>limit</code> and <code>offset</code> (<a href={`${api}#lists`}>Lists</a>); every error has one shape and a code (<a href={`${api}#errors`}>Errors and error codes</a>); usage events carry an idempotency key, and other writes take an <code>Idempotency-Key</code> header (<a href={`${api}#sending-usage-safely`}>Sending usage safely</a>).</li>
+      <li><strong>Rate limits:</strong> by default 100 requests a minute for each API key, and 1,000 usage events a second. A <code>429</code> answer says how many seconds to wait in <code>Retry-After</code>. <a href={doc('self-host.md') + '#settings'}>Settings</a></li>
+      <li><strong>Generate a client:</strong> download the OpenAPI spec, <a href="/openapi.yaml" download><code>/openapi.yaml</code></a>, and use any OpenAPI generator. There are no official SDKs yet.</li>
+    </ul>
+  </aside>
+)}
+<Default><slot /></Default>
+</div>
+
+<style>
+  .hc-start { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; margin: 0 0 2rem; }
+  .hc-start a { display: flex; flex-direction: column; gap: 0.25rem; padding: 0.9rem 1rem; border: 1px solid var(--sl-color-gray-5); border-radius: 10px; text-decoration: none; color: var(--sl-color-gray-2); background: var(--sl-color-gray-7, var(--sl-color-gray-6)); }
+  .hc-start a:hover { border-color: var(--sl-color-accent); }
+  .hc-start strong { color: var(--sl-color-white); font-weight: 600; }
+  .hc-start span { font-size: var(--sl-text-sm); }
+  @media (max-width: 50rem) { .hc-start { grid-template-columns: 1fr; } }
+
+  .hc-before { border: 1px solid var(--sl-color-gray-5); border-left: 3px solid var(--sl-color-accent); border-radius: 8px; padding: 0.9rem 1.1rem; margin: 0 0 2rem; background: var(--sl-color-gray-7, var(--sl-color-gray-6)); }
+  .hc-before-h { font-weight: 600; color: var(--sl-color-white); margin: 0 0 0.5rem; }
+  .hc-before ul { margin: 0; padding-left: 1.1rem; display: grid; gap: 0.4rem; font-size: var(--sl-text-sm); color: var(--sl-color-gray-2); }
+  .hc-before a { color: var(--sl-color-text-accent); }
+  .hc-before code { font-size: 0.85em; }
+  .hc-inline { list-style: none; padding: 0 !important; display: flex !important; flex-wrap: wrap; gap: 0.25rem 1.25rem !important; }
+</style>

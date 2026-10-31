@@ -1,0 +1,21 @@
+---
+// Starlight's page title. On an endpoint page it counts for less in search,
+// like the page body (src/components/DocsContent.astro).
+// Starlight's PAGE_TITLE_ID; its constants module is not exported.
+const PAGE_TITLE_ID = '_top';
+const path = Astro.url.pathname.replace(/\/?$/, '/');
+const endpointPage = path.startsWith('/docs/api/endpoints/') && path !== '/docs/api/endpoints/';
+---
+<h1 id={PAGE_TITLE_ID} data-pagefind-weight={endpointPage ? '1' : undefined}>{Astro.locals.starlightRoute.entry.data.title}</h1>
+
+<style>
+  @layer starlight.core {
+    h1 {
+      margin-top: 1rem;
+      font-size: var(--sl-text-h1);
+      line-height: var(--sl-line-height-headings);
+      font-weight: 600;
+      color: var(--sl-color-white);
+    }
+  }
+</style>
