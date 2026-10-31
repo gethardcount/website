@@ -10,6 +10,11 @@
   --copper-ink: #8F4A1C;
   --rule: #E2D6C0;
   --code-bg: #EFE6D4;
+  /* A primary button on hover; white on this copper is 6.6:1. */
+  --btn-hover-bg: #8F4A1C;
+  --btn-hover-ink: #FFFFFF;
+  /* The demo's check marks: 4.9:1 on the code background. */
+  --ok: #2F6E3B;
 
   --serif: "Source Serif 4", Georgia, serif;
   --sans: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -33,6 +38,9 @@
     --copper-ink: #E8A272;
     --rule: #3A332B;
     --code-bg: #2A251F;
+    --btn-hover-bg: #E8A272;
+    --btn-hover-ink: #1B1814;
+    --ok: #6FBF7E;
     color-scheme: dark;
   }
 }
@@ -47,6 +55,9 @@
   --copper-ink: #E8A272;
   --rule: #3A332B;
   --code-bg: #2A251F;
+  --btn-hover-bg: #E8A272;
+  --btn-hover-ink: #1B1814;
+  --ok: #6FBF7E;
   color-scheme: dark;
 }
 
@@ -101,7 +112,8 @@ pre code { background: none; padding: 0; }
   border: 1.5px solid var(--ink);
 }
 .btn-primary { background: var(--ink); color: var(--paper); }
-.btn-primary:hover { background: var(--copper); border-color: var(--copper); color: #fff; }
+.btn-primary:hover { background: var(--btn-hover-bg); border-color: var(--btn-hover-bg); color: var(--btn-hover-ink); }
+.btn:focus-visible, a:focus-visible { outline: 2px solid var(--copper); outline-offset: 2px; }
 .btn-quiet { color: var(--ink); }
 .btn-quiet:hover { border-color: var(--copper); color: var(--copper-ink); }
 

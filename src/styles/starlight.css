@@ -21,6 +21,9 @@
   --sl-color-blue-low: #2A251F;
   --sl-color-blue: #8E8476;
   --sl-color-blue-high: #E3DACB;
+  /* A primary button on hover (src/styles/global.css has the same pair). */
+  --hc-btn-hover-bg: #E8A272;
+  --hc-btn-hover-ink: #1B1814;
 }
 
 :root[data-theme='light'] {
@@ -40,6 +43,8 @@
   --sl-color-blue-low: #EFE6D4;
   --sl-color-blue: #8A7F73;
   --sl-color-blue-high: #4A4239;
+  --hc-btn-hover-bg: #8F4A1C;
+  --hc-btn-hover-ink: #FFFFFF;
 }
 
 /* Headings in the site's serif, like the website pages. */

@@ -1,12 +1,22 @@
 ---
 import '../styles/global.css';
 import Logo from '../components/Logo.astro';
-import { NAV, STATUS_LINE, REPO, RELEASE, doc, DISCUSSIONS, CONTACT_EMAIL } from '../site';
+import StatusLine from '../components/StatusLine.astro';
+import { NAV, REPO, CONTACT_EMAIL, START_HERE, NEW_ISSUE, QUICK_START } from '../site';
 import { cfBeaconAttrs } from '../analytics.mjs';
 
-const { title, description } = Astro.props;
+interface Props {
+  title: string;
+  description: string;
+  // A page that should not be in search results (the 404 page).
+  noindex?: boolean;
+  // Structured data for search engines, as a plain object.
+  jsonLd?: Record<string, unknown>;
+}
+const { title, description, noindex = false, jsonLd } = Astro.props;
 const ogImage = new URL('/og.png', Astro.site).toString();
 const canonical = new URL(Astro.url.pathname, Astro.site).toString();
+const path = Astro.url.pathname;
 ---
 <!doctype html>
 <html lang="en">
@@ -19,21 +29,30 @@ const canonical = new URL(Astro.url.pathname, Astro.site).toString();
   </script>
   <title>{title}</title>
   <meta name="description" content={description} />
-  <link rel="canonical" href={canonical} />
+  {noindex ? <meta name="robots" content="noindex" /> : <link rel="canonical" href={canonical} />}
+  <meta name="theme-color" content="#F6F0E4" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#1B1814" media="(prefers-color-scheme: dark)" />
   <link rel="icon" href="/favicon.ico" sizes="32x32" />
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Hardcount" />
   <meta property="og:title" content={title} />
   <meta property="og:description" content={description} />
   <meta property="og:image" content={ogImage} />
-  <meta property="og:url" content={canonical} />
+  <meta property="og:image:width" content="1280" />
+  <meta property="og:image:height" content="640" />
+  <meta property="og:image:alt" content="Hardcount: open-source usage billing for AI products, on your own servers." />
+  {!noindex && <meta property="og:url" content={canonical} />}
   <meta name="twitter:card" content="summary_large_image" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&display=swap" rel="stylesheet" />
+  {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
   <script is:inline {...cfBeaconAttrs}></script>
 </head>
 <body>
+  <a class="skip" href="#main">Skip to content</a>
   <header class="site-header">
     <div class="wrap bar">
       <a href="/" class="brand" aria-label="Hardcount home">
@@ -41,16 +60,16 @@ const canonical = new URL(Astro.url.pathname, Astro.site).toString();
         <span>Hardcount</span>
       </a>
       <nav aria-label="Main">
-        {NAV.map((n) => <a href={n.href}>{n.label}</a>)}
-        <a class="btn btn-primary nav-cta" href="/docs/get-started/quick-start/">Run it locally</a>
+        {NAV.map((n) => <a href={n.href} aria-current={path === n.href ? 'page' : undefined}>{n.label}</a>)}
+        <a class="btn btn-primary nav-cta" href={QUICK_START}>Run it locally</a>
       </nav>
     </div>
   </header>
   <div class="status">
-    <div class="wrap"><p>{STATUS_LINE}</p></div>
+    <div class="wrap"><p><StatusLine /></p></div>
   </div>
 
-  <main data-pagefind-body>
+  <main id="main" data-pagefind-body>
     <slot />
   </main>
 
@@ -66,23 +85,23 @@ const canonical = new URL(Astro.url.pathname, Astro.site).toString();
           It was called Velox before v0.9.0.
         </p>
         <p class="muted small">Contact: <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a></p>
-        <p class="muted small">Visits are counted without cookies or personal data, with Cloudflare Web Analytics.</p>
+        <p class="muted small">Visits are counted with Cloudflare Web Analytics, which sets no cookies and does not track you across sites. <a href="/privacy/">Privacy →</a></p>
       </div>
       <div class="foot-cols">
         <div>
           <p class="foot-h">Hardcount</p>
           <ul>
             <li><a href="/product/">Product</a></li>
-            <li><a href="/reliability/">Reliability</a></li>
             <li><a href="/pricing/">Pricing</a></li>
             <li><a href="/compare/">Compare</a></li>
+            <li><a href="/reliability/">Reliability</a></li>
             <li><a href="/faq/">FAQ</a></li>
           </ul>
         </div>
         <div>
           <p class="foot-h">Docs</p>
           <ul>
-            <li><a href="/docs/get-started/quick-start/">Quick start</a></li>
+            <li><a href={QUICK_START}>Quick start</a></li>
             <li><a href="/docs/api/endpoints/">API reference</a></li>
             <li><a href="/docs/self-host/overview/">Self-host</a></li>
             <li><a href="/docs/self-host/runbook/">Runbook</a></li>
@@ -94,9 +113,16 @@ const canonical = new URL(Astro.url.pathname, Astro.site).toString();
             <li><a href="/docs/project/roadmap/">Roadmap</a></li>
             <li><a href="/docs/project/changelog/">Changelog</a></li>
             <li><a href={REPO}>GitHub</a></li>
-            <li><a href={DISCUSSIONS}>Discussions</a></li>
-            <li><a href="/docs/project/security/">Security</a></li>
             <li><a href="/docs/project/license/">Licence</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="foot-h">Help</p>
+          <ul>
+            <li><a href={START_HERE}>Start here (Discussions)</a></li>
+            <li><a href={NEW_ISSUE}>Report a bug</a></li>
+            <li><a href="/docs/project/security/">Security</a></li>
+            <li><a href={`mailto:${CONTACT_EMAIL}`}>Email</a></li>
           </ul>
         </div>
       </div>
@@ -106,6 +132,8 @@ const canonical = new URL(Astro.url.pathname, Astro.site).toString();
 </html>
 
 <style>
+  .skip { position: absolute; left: 12px; top: -48px; z-index: 10; background: var(--ink); color: var(--paper); padding: 10px 14px; border-radius: 8px; text-decoration: none; }
+  .skip:focus { top: 12px; }
   .site-header { border-bottom: 1px solid var(--rule); }
   .bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 64px; flex-wrap: wrap; }
   .brand {
@@ -113,30 +141,35 @@ const canonical = new URL(Astro.url.pathname, Astro.site).toString();
     color: var(--ink); text-decoration: none;
     font: 700 22px/1 var(--serif); letter-spacing: -0.01em;
   }
-  nav { display: flex; gap: 22px; flex-wrap: wrap; }
+  nav { display: flex; gap: 22px; flex-wrap: wrap; align-items: center; }
   nav a { color: var(--ink-soft); text-decoration: none; font-size: 16px; }
-  nav a:hover { color: var(--copper-ink); }
-  nav { align-items: center; }
+  nav a:hover, nav a[aria-current='page'] { color: var(--copper-ink); }
   nav a.nav-cta { color: var(--paper); padding: 8px 14px; font-size: 15px; }
-  nav a.nav-cta:hover { color: var(--paper); }
+  nav a.nav-cta:hover { color: var(--btn-hover-ink); }
 
   .status { background: var(--paper-2); border-bottom: 1px solid var(--rule); }
   .status p { margin: 0; padding: 8px 0; font-size: 14px; color: var(--ink-soft); }
+  .status a { color: inherit; }
+  .status a:hover { color: var(--copper-ink); }
 
   .site-footer { border-top: 1px solid var(--rule); margin-top: 32px; padding: 40px 0 56px; }
   .foot { display: flex; justify-content: space-between; gap: 32px; flex-wrap: wrap; }
-  .foot-about { max-width: 460px; }
+  .foot-about { max-width: 420px; }
   .foot-about p { margin-bottom: 6px; }
   .small-brand { font-size: 18px; margin-bottom: 12px; }
-  .foot-cols { display: flex; gap: 48px; flex-wrap: wrap; }
+  .foot-cols { display: flex; gap: 40px; flex-wrap: wrap; }
   .foot-h { font-weight: 600; font-size: 15px; margin-bottom: 8px; }
   .foot ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; font-size: 16px; }
   .foot ul a { color: var(--ink-soft); text-decoration: none; }
   .foot ul a:hover { color: var(--copper-ink); }
 
   @media (max-width: 640px) {
-    .bar { padding-top: 10px; padding-bottom: 10px; row-gap: 8px; }
-    nav { gap: 16px; }
-    nav a { font-size: 15px; }
+    .bar { padding-top: 6px; padding-bottom: 6px; row-gap: 0; }
+    /* Each link is a 44px-tall tap target. */
+    nav { gap: 0 14px; }
+    nav a { font-size: 15px; display: inline-flex; align-items: center; min-height: 44px; }
+    nav a.nav-cta { min-height: 44px; margin: 4px 0 8px; }
+    .foot ul { gap: 2px; }
+    .foot ul a { display: inline-flex; align-items: center; min-height: 36px; }
   }
 </style>

@@ -4,7 +4,7 @@
 import Search from '@astrojs/starlight/components/Search.astro';
 import ThemeSelect from '@astrojs/starlight/components/ThemeSelect.astro';
 import Logo from './Logo.astro';
-import { NAV } from '../site';
+import { NAV, QUICK_START } from '../site';
 ---
 <div class="hc-header">
   <a href="/" class="hc-brand" aria-label="Hardcount home">
@@ -15,7 +15,7 @@ import { NAV } from '../site';
     {NAV.map((n) => <a href={n.href}>{n.label}</a>)}
   </nav>
   <div class="hc-right">
-    <a class="hc-cta" href="/docs/get-started/quick-start/">Run it locally</a>
+    <a class="hc-cta" href={QUICK_START}>Run it locally</a>
     <Search />
     <ThemeSelect />
   </div>
@@ -31,7 +31,9 @@ import { NAV } from '../site';
   .hc-nav { display: flex; gap: 1.1rem; flex-wrap: nowrap; }
   .hc-nav a { color: var(--sl-color-gray-2); text-decoration: none; font-size: 0.95rem; white-space: nowrap; }
   .hc-nav a:hover { color: var(--sl-color-accent); }
-  .hc-cta { background: var(--sl-color-accent); color: var(--sl-color-black); padding: 0.4rem 0.8rem; border-radius: 8px; text-decoration: none; font-weight: 500; font-size: 0.9rem; white-space: nowrap; }
+  /* The same button as the website pages' "Run it locally". */
+  .hc-cta { background: var(--sl-color-white); color: var(--sl-color-black); border: 1.5px solid var(--sl-color-white); padding: 0.4rem 0.8rem; border-radius: 8px; text-decoration: none; font-weight: 500; font-size: 0.9rem; white-space: nowrap; }
+  .hc-cta:hover { background: var(--hc-btn-hover-bg); border-color: var(--hc-btn-hover-bg); color: var(--hc-btn-hover-ink); }
   @media (max-width: 50rem) { .hc-cta { display: none; } }
   .hc-right { margin-left: auto; display: flex; align-items: center; gap: 1rem; }
   @media (max-width: 1100px) { .hc-nav { display: none; } }

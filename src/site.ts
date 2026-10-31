@@ -2,6 +2,11 @@
 export const REPO = 'https://github.com/gethardcount/hardcount';
 // Doc links pin the release, so the site describes the code people install.
 export const RELEASE = 'v0.9.1';
+// The release's date, as the changelog heading gives it, and for reading.
+export const RELEASE_ISO = '2026-10-29';
+export const RELEASE_DATE = '29 Oct 2026';
+// The release's entry in the changelog page ("## [0.9.1] - 2026-10-29").
+export const WHATS_NEW = `/docs/project/changelog/#${RELEASE.slice(1).replaceAll('.', '')}---${RELEASE_ISO}`;
 // Screenshots and videos of the dashboard, listed in src/data/media.ts. The
 // ones marked `live` match the release now. The rest, and the videos, show
 // only once this is true: flip it with the release bump whose UI they show,
@@ -29,18 +34,24 @@ export const doc = (path: string) => {
 // code('internal/config/config.go') → that file on GitHub at the release.
 export const code = (path: string) => `${REPO}/blob/${RELEASE}/${path}`;
 export const DISCUSSIONS = `${REPO}/discussions`;
+// The pinned "Start here: try Hardcount, then tell us where you got stuck".
+export const START_HERE = `${REPO}/discussions/1057`;
+export const NEW_ISSUE = `${REPO}/issues/new`;
 export const CONTACT_EMAIL = 'sagar@sagarwaidande.org';
+// Every "Run it locally" button goes here.
+export const QUICK_START = '/docs/get-started/quick-start/';
 
-// Row 7 of the approved copy: the same words on every page.
-export const STATUS_LINE =
-  'Pre-1.0 · one maintainer · Stripe and cards only · no SDKs (client libraries) yet · no production users yet.';
+// Row 7 of the approved copy: the same words on every page. The last part
+// links to the FAQ answer about real money (src/components/StatusLine.astro).
+export const STATUS_PARTS = ['Pre-1.0', 'one maintainer', 'Stripe and cards only', 'no SDKs (client libraries) yet'];
+export const STATUS_HONEST = { text: 'no production users yet', href: '/faq/#safe-for-real-money' };
 
 export const NAV: { label: string; href: string }[] = [
   { label: 'Product', href: '/product/' },
-  { label: 'Reliability', href: '/reliability/' },
+  { label: 'Docs', href: '/docs/' },
   { label: 'Pricing', href: '/pricing/' },
   { label: 'Compare', href: '/compare/' },
+  { label: 'Reliability', href: '/reliability/' },
   { label: 'FAQ', href: '/faq/' },
-  { label: 'Docs', href: '/docs/' },
   { label: 'GitHub', href: REPO },
 ];

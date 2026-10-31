@@ -1,0 +1,6 @@
+---
+// The status line on every page, website and docs: what Hardcount is not yet,
+// and which release the docs describe.
+import { STATUS_PARTS, STATUS_HONEST, RELEASE, RELEASE_DATE, WHATS_NEW } from '../site';
+---
+{STATUS_PARTS.join(' · ')} · <a href={STATUS_HONEST.href}>{STATUS_HONEST.text}</a>. <span class="hc-ver">Docs describe {RELEASE} ({RELEASE_DATE}) · <a href={WHATS_NEW}>What’s new →</a></span>
