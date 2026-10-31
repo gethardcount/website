@@ -132,8 +132,9 @@ const path = Astro.url.pathname;
 </html>
 
 <style>
-  .skip { position: absolute; left: 12px; top: -48px; z-index: 10; background: var(--ink); color: var(--paper); padding: 10px 14px; border-radius: 8px; text-decoration: none; }
-  .skip:focus { top: 12px; }
+  /* Off screen until a keyboard user tabs to it. */
+  .skip { position: absolute; left: 12px; top: 12px; z-index: 10; transform: translateY(-200%); background: var(--ink); color: var(--paper); padding: 10px 14px; border-radius: 8px; text-decoration: none; }
+  .skip:focus { transform: none; }
   .site-header { border-bottom: 1px solid var(--rule); }
   .bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 64px; flex-wrap: wrap; }
   .brand {
@@ -168,7 +169,7 @@ const path = Astro.url.pathname;
     /* Each link is a 44px-tall tap target. */
     nav { gap: 0 14px; }
     nav a { font-size: 15px; display: inline-flex; align-items: center; min-height: 44px; }
-    nav a.nav-cta { min-height: 44px; margin: 4px 0 8px; }
+    nav a.nav-cta { display: inline-flex; align-items: center; min-height: 44px; margin: 4px 0 8px; }
     .foot ul { gap: 2px; }
     .foot ul a { display: inline-flex; align-items: center; min-height: 36px; }
   }
