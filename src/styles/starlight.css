@@ -64,6 +64,14 @@ h1#_top {
 .sl-markdown-content :not(.hc-table) > table { display: block; overflow-x: auto; max-width: 100%; }
 .sl-markdown-content .hc-table + * { margin-top: 1rem; }
 
+/* Object field tables (scripts/gen-objects.mjs): fixed columns, so a long
+   field name wraps instead of squeezing "What it means" off the side. */
+.sl-markdown-content .hc-fields > table { table-layout: fixed; min-width: 36rem; }
+.sl-markdown-content .hc-fields th:nth-child(1) { width: 28%; }
+.sl-markdown-content .hc-fields th:nth-child(2) { width: 20%; }
+.sl-markdown-content .hc-fields th:nth-child(3) { width: 12%; }
+.sl-markdown-content .hc-fields td code { overflow-wrap: anywhere; white-space: normal; }
+
 /* Flowcharts keep a readable size; a wide one scrolls inside itself, from
    its left edge (centred only when it fits). */
 .sl-markdown-content .mermaid { overflow-x: auto; justify-content: flex-start; justify-content: safe center; }

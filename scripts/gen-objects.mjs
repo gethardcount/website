@@ -77,7 +77,7 @@ function example(schema) {
 function fieldTable(schema, nested) {
   const required = new Set(schema.required ?? []);
   return [
-    '<div class="hc-table">',
+    '<div class="hc-table hc-fields">',
     '',
     '| Field | Type | Always present | What it means |',
     '|---|---|---|---|',
