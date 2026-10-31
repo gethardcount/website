@@ -27,7 +27,7 @@ const rules = [
   {
     title: 'One Postgres.',
     body: 'All billing data lives in Postgres; Redis is for rate limits only. No queue broker, warehouse or workflow engine until a measurement says Postgres is not enough.',
-    proof: 'One large database took 12,000 usage events a second in 4 of 5 ten-minute runs, with the method and hardware stated.',
+    proof: 'One large database took 12,000 usage events a second in 4 of 5 ten-minute runs, and in all 5 after one Postgres setting change. The hardware and method are stated.',
     link: ['How much it handles', doc('scale.md')],
   },
 ];

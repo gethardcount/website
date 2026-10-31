@@ -1,9 +1,11 @@
 ---
 import Base from '../layouts/Base.astro';
-import { doc } from '../site';
+import TryIt from '../components/TryIt.astro';
+import { doc, START_HERE, CONTACT_EMAIL } from '../site';
 
-// Stripe Billing's pay-as-you-go fee, 0.7% of what you bill. Re-checked on
-// publish day (site-strategy-2026-10-29.md §8).
+// Stripe's figures, checked on 2026-10-31: Billing's pay-as-you-go fee is
+// 0.7% of billing volume (stripe.com/billing/pricing), and the card fee for a
+// domestic US card is 2.9% + 30¢ (stripe.com/pricing).
 const volumes = [10_000, 100_000, 1_000_000];
 const usd = (n: number) => '$' + n.toLocaleString('en-US');
 ---
@@ -19,8 +21,8 @@ const usd = (n: number) => '$' + n.toLocaleString('en-US');
     <div class="wrap prose">
       <h2>What you pay for</h2>
       <ul class="plain">
-        <li><strong>Your server.</strong> One server listed at €6.49 a month before VAT (2 shared CPUs, 4 GB memory) handled a steady 12 usage events a second for 20 minutes, about 1 million a day, with no errors and its CPU 12% busy. That was the load sent, not a limit. The test used v0.8.0; at that rate the disk fills first. <a href={doc('scale.md')}>How it was measured →</a></li>
-        <li><strong>Stripe’s normal card fee</strong> on each payment, and Stripe Tax’s fee if you turn it on.</li>
+        <li><strong>Your server.</strong> One server listed at €6.49 a month before VAT in October 2026 (2 shared CPUs, 4 GB memory) handled 12 usage events a second, with bursts to 60, for 20 minutes. It had no errors, and its CPU was 12% busy on average. At 12 a second that is about 1 million events a day. That was the load sent, not a limit. The test used v0.8.0; at that rate the disk fills first. <a href={doc('scale.md')}>How it was measured →</a></li>
+        <li><strong>Stripe’s card fee</strong> on each payment (for example 2.9% + 30¢ for a US card; see <a href="https://stripe.com/pricing">stripe.com/pricing</a>), and Stripe Tax’s fee if you turn it on.</li>
         <li><strong>Your time to run it:</strong> one program plus Postgres and Redis. <a href={doc('self-host.md')}>What running it takes →</a></li>
       </ul>
     </div>
@@ -29,7 +31,7 @@ const usd = (n: number) => '$' + n.toLocaleString('en-US');
   <section>
     <div class="wrap prose">
       <h2>What Stripe Billing’s fee would be</h2>
-      <p>Stripe Billing’s pay-as-you-go plan takes 0.7% of what you bill, on top of the card fee. Hardcount uses Stripe only to charge the card.</p>
+      <p>Stripe Billing’s pay-as-you-go plan takes 0.7% of what you bill, on top of the card fee (<a href="https://stripe.com/billing/pricing">Stripe Billing pricing</a>). Hardcount uses Stripe to charge the card, and to work out tax if you turn on Stripe Tax.</p>
       <table>
         <thead><tr><th>You bill each month</th><th>Stripe Billing’s 0.7%</th><th>Each year</th></tr></thead>
         <tbody>
@@ -41,10 +43,13 @@ const usd = (n: number) => '$' + n.toLocaleString('en-US');
 
   <section>
     <div class="wrap prose">
-      <h2>More questions</h2>
+      <h2>Help</h2>
+      <p>There is no paid support or hosted version. Help is best-effort from the maintainer, in <a href={START_HERE}>GitHub Discussions</a> or by <a href={`mailto:${CONTACT_EMAIL}`}>email</a>.</p>
       <p>Lock-in, what happens if the maintainer stops, and safety for real money: <a href="/faq/">FAQ →</a></p>
     </div>
   </section>
+
+  <TryIt narrow />
 </Base>
 
 <style>
