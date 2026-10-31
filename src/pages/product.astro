@@ -2,6 +2,7 @@
 import Base from '../layouts/Base.astro';
 import Shot from '../components/Shot.astro';
 import UsageCurl from '../components/UsageCurl.astro';
+import TryIt from '../components/TryIt.astro';
 import { doc } from '../site';
 import { shots, showShot } from '../data/media';
 
@@ -41,9 +42,26 @@ const blocks = [
   {
     id: 'payments',
     title: 'Get paid, and retry when a card fails',
-    body: 'Stripe charges the saved card. When a charge fails, Hardcount retries on your schedule and emails the customer. When Stripe\'s answer is unclear, it checks Stripe for the payment before charging again.',
+    body: 'Stripe charges the saved card. When a charge fails, Hardcount retries on your schedule and, once email is set up, emails the customer. When Stripe\'s answer is unclear, it checks Stripe for the payment before charging again.',
     shot: shots.payments,
     links: [['Payments and retries', doc('payments.md')]],
+  },
+  {
+    id: 'subscriptions',
+    title: 'Subscriptions and plans',
+    body: 'A subscription puts a customer on a plan. Around it:',
+    items: [
+      'Free trials, which you can extend.',
+      'Pausing collection: new invoices stay drafts until you resume.',
+      'Cancelling now, at the end of the period, or at a date you set.',
+      'Plan changes with proration: the customer pays only for the part of the period each price was active.',
+      'A different price for one customer (a price override), or credit. There are no coupons.',
+      'Billing thresholds: an invoice made early once the period\'s usage reaches a level you set.',
+      'A usage and cost figure your app can show each customer.',
+      'A team: invite people by email. Every member has full access; there are no roles yet.',
+      'Test and live API keys, with test and live data kept apart.',
+    ],
+    links: [['Subscriptions in the API', doc('api-surface.md') + '#customers-and-subscriptions'], ['API keys', doc('api-keys.md')], ['The usage figure', doc('stop-usage-when-credit-runs-out.md') + '#the-same-figure-on-the-public-cost-page']],
   },
   {
     id: 'testing',
@@ -87,6 +105,7 @@ const blocks = [
         <div class="prose">
           <h2>{b.title}</h2>
           <p>{b.body}</p>
+          {b.items && <ul class="items">{b.items.map((i) => <li>{i}</li>)}</ul>}
           <p class="small">{b.links.map(([label, href], i) => <>{i > 0 && ' · '}<a href={href}>{label} →</a></>)}</p>
         </div>
         {b.code
@@ -96,12 +115,15 @@ const blocks = [
     </section>
   ))}
 
-  <section class="end">
-    <div class="wrap">
-      <h2>Try it on your computer</h2>
-      <a class="btn btn-primary" href="/#try">Run it locally</a>
+  <section id="more">
+    <div class="wrap prose">
+      <h2>Every feature</h2>
+      <p>Every route the API has, with what each one does: <a href={doc('api-surface.md') + '#core-routes'}>The Hardcount API →</a></p>
+      <p>Everything shipped, by date: <a href="/docs/project/changelog/">Changelog →</a> · What Hardcount does not do: <a href="/#fit">Is it right for you? →</a></p>
     </div>
   </section>
+
+  <TryIt />
 </Base>
 
 <style>
@@ -114,4 +136,6 @@ const blocks = [
   h2 { font-size: 28px; }
   /* Pictures take the full width, so the words in them can be read. */
   .media { margin-top: 20px; max-width: 920px; }
+  .items { padding-left: 20px; margin: 0 0 1em; }
+  .items li { margin-bottom: 6px; }
 </style>
