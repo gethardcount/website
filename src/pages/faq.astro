@@ -1,28 +1,41 @@
 ---
 import Base from '../layouts/Base.astro';
 import { faqs } from '../data/faqs';
-import { DISCUSSIONS, CONTACT_EMAIL } from '../site';
+import TryIt from '../components/TryIt.astro';
+import { START_HERE, CONTACT_EMAIL } from '../site';
 ---
 <Base title="Hardcount FAQ" description="Answers to the questions people ask before trying Hardcount: cost, safety for real money, lock-in, and who maintains it.">
   <section class="top">
     <div class="wrap prose">
-      <h1>Questions</h1>
+      <h1>Questions people ask</h1>
       <div class="faq">
-        {faqs.map((f) => (
-          <details>
+        {faqs.map((f, i) => (
+          <details id={f.id} open={i < 2}>
             <summary>{f.q}</summary>
             <p>{f.a}{f.link && <> <a href={f.link[1]}>{f.link[0]} →</a></>}</p>
           </details>
         ))}
       </div>
-      <p class="small">Another question? Ask in <a href={DISCUSSIONS}>GitHub Discussions</a> or <a href={`mailto:${CONTACT_EMAIL}`}>email the maintainer</a>.</p>
+      <p class="small">Another question? Ask in <a href={START_HERE}>GitHub Discussions</a> or <a href={`mailto:${CONTACT_EMAIL}`}>email the maintainer</a>.</p>
     </div>
   </section>
+
+  <TryIt narrow />
 </Base>
 
 <style>
   .top { padding-top: 72px; }
-  .faq details { border-bottom: 1px solid var(--rule); padding: 14px 0; }
-  .faq summary { cursor: pointer; font-weight: 600; }
+  .faq details { border-bottom: 1px solid var(--rule); padding: 14px 0; scroll-margin-top: 16px; }
+  .faq summary { cursor: pointer; font-weight: 600; padding: 4px 0; }
   .faq details p { margin: 10px 0 0; color: var(--ink-soft); }
 </style>
+
+<script>
+  // A link to one answer (/faq/#lock-in) opens it.
+  const open = () => {
+    const el = location.hash && document.getElementById(decodeURIComponent(location.hash.slice(1)));
+    if (el instanceof HTMLDetailsElement) el.open = true;
+  };
+  open();
+  addEventListener('hashchange', open);
+</script>
