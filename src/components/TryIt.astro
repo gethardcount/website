@@ -1,0 +1,20 @@
+---
+// The closing section of each website page: one way to try it, one way to ask.
+import { QUICK_START, START_HERE, NEW_ISSUE, DISCUSSIONS } from '../site';
+// `narrow` lines it up with a page whose sections are one centred column.
+const { narrow = false } = Astro.props;
+---
+<section class="end">
+  <div class:list={['wrap', { prose: narrow }]}>
+    <h2>Try it on your computer</h2>
+    <p class="prose muted">Start Hardcount in test mode and run its demo. Found something rough? <a href={NEW_ISSUE}>Open an issue</a> or a <a href={DISCUSSIONS}>Discussion</a>.</p>
+    <div class="actions">
+      <a class="btn btn-primary" href={QUICK_START}>Run it locally</a>
+      <a class="btn btn-quiet" href={START_HERE}>Talk to the maintainer</a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 24px; }
+</style>

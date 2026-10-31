@@ -15,8 +15,8 @@ export type Video = { name: string; w: number; h: number; label: string };
 
 export const shots = {
   invoice: {
-    name: 'invoice', w: 1400, h: 1500, live: true,
-    alt: 'Demo invoice HC-000001 in the Hardcount dashboard: input, output and cache_read tokens for claude-sonnet-4.5, input and output tokens for claude-haiku-4.5, each priced per 1M tokens, with $5.73 due.',
+    name: 'invoice', w: 1400, h: 760, live: true,
+    alt: 'The lines of the demo invoice in the Hardcount dashboard, for the period Oct 29 to Nov 28, 2026: input, output and cache_read tokens for claude-sonnet-4.5, input and output tokens for claude-haiku-4.5, each priced per 1M tokens, with $5.73 due.',
   },
   margin: {
     name: 'margin', w: 1400, h: 507, live: true,
