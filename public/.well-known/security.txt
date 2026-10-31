@@ -1,0 +1,8 @@
+# Security contact for Hardcount (RFC 9116). The policy explains what is in
+# scope and how disclosure works.
+Contact: https://github.com/gethardcount/hardcount/security/advisories/new
+Contact: mailto:sagar@sagarwaidande.org
+Expires: 2027-10-31T00:00:00.000Z
+Preferred-Languages: en
+Canonical: https://gethardcount.com/.well-known/security.txt
+Policy: https://gethardcount.com/docs/project/security/
