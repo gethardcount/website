@@ -17,7 +17,7 @@ const allSections = [
     items: [
       { src: 'docs/how-hardcount-works.md', slug: 'get-started/how-hardcount-works', label: 'How it works' },
       { src: 'docs/quick-start.md', slug: 'get-started/quick-start', label: 'Quick start' },
-      { src: 'docs/first-invoice.md', slug: 'get-started/first-invoice', label: 'Send usage, get an invoice', next: 'guides/ai-pricing' },
+      { src: 'docs/first-invoice.md', slug: 'get-started/first-invoice', label: 'Send usage, get an invoice', next: 'guides/bill-for-ai-tokens' },
     ],
   },
   {
@@ -38,33 +38,37 @@ const allSections = [
   {
     label: 'Guides',
     items: [
-      { src: 'docs/ai-pricing.md', slug: 'guides/ai-pricing', label: 'AI pricing reference' },
       { src: 'docs/guides/bill-for-ai-tokens.md', slug: 'guides/bill-for-ai-tokens', label: 'Bill for AI tokens by model' },
       { src: 'docs/stop-usage-when-credit-runs-out.md', slug: 'guides/stop-usage-when-credit-runs-out', label: 'Stop usage when credit runs out' },
-      { src: 'docs/integrations/litellm.md', slug: 'guides/litellm', label: 'Send usage from LiteLLM' },
-      { src: 'docs/guides/receive-webhooks.md', slug: 'guides/receive-webhooks', label: 'Receive webhooks' },
+      {
+        src: 'docs/integrations/litellm.md', slug: 'guides/litellm', label: 'Send usage from LiteLLM', title: 'Send usage from LiteLLM',
+        keywords: ['LiteLLM integration', 'LiteLLM proxy'],
+      },
+      { src: 'docs/guides/receive-webhooks.md', slug: 'guides/receive-webhooks', label: 'Receive webhooks', keywords: ['verify webhook', 'verify signature', 'Hardcount-Signature'] },
       { src: 'docs/guides/connect-stripe.md', slug: 'guides/connect-stripe', label: 'Connect Stripe' },
-      { src: 'docs/guides/test-a-billing-change.md', slug: 'guides/test-a-billing-change', label: 'Test a billing change' },
-      { src: 'docs/api-keys.md', slug: 'guides/api-keys', label: 'Manage API keys' },
-      { src: 'docs/ops/tax-calculation.md', slug: 'guides/tax', label: 'Set up tax', next: 'api/overview' },
+      { src: 'docs/guides/test-a-billing-change.md', slug: 'guides/test-a-billing-change', label: 'Simulate months with a test clock' },
+      { src: 'docs/api-keys.md', slug: 'guides/api-keys', label: 'Manage API keys', keywords: ['test mode', 'live mode', 'Bearer'] },
+      { src: 'docs/ops/tax-calculation.md', slug: 'guides/tax', label: 'Set up tax', title: 'Set up tax', keywords: ['tax calculation', 'Stripe Tax', 'VAT'] },
+      // The reference for every AI pricing option, after the task guides.
+      { src: 'docs/ai-pricing.md', slug: 'guides/ai-pricing', label: 'AI pricing reference' },
     ],
   },
   {
     label: 'API reference',
     items: [
-      { src: 'docs/api-surface.md', slug: 'api/overview', label: 'The Hardcount API' },
-      { src: 'docs/api/authentication.md', slug: 'api/authentication', label: 'Authentication and keys' },
+      { src: 'docs/api-surface.md', slug: 'api/overview', label: 'API overview', keywords: ['API reference', 'base URL'] },
+      { src: 'docs/api/authentication.md', slug: 'api/authentication', label: 'Authentication and keys', keywords: ['test mode', 'live mode', 'Bearer'] },
       { src: 'docs/api/errors.md', slug: 'api/errors', label: 'Errors', keywords: ['error codes', 'status codes'] },
-      { src: 'docs/api/idempotency.md', slug: 'api/idempotency', label: 'Idempotency' },
+      { src: 'docs/api/idempotency.md', slug: 'api/idempotency', label: 'Idempotency (safe retries)', keywords: ['Idempotency-Key', 'retry'] },
       { src: 'docs/api/pagination.md', slug: 'api/pagination', label: 'Pagination' },
       { src: 'docs/versioning.md', slug: 'api/versioning', label: 'Versioning' },
-      { src: 'docs/api/rate-limits.md', slug: 'api/rate-limits', label: 'Rate limits' },
-      { src: 'docs/api/timing-and-limits.md', slug: 'api/timing-and-limits', label: 'Timing and limits' },
-      { src: 'docs/api/two-calls.md', slug: 'api/two-calls', label: 'Two calls in four languages' },
+      { src: 'docs/api/rate-limits.md', slug: 'api/rate-limits', label: 'Rate limits', keywords: ['X-RateLimit', 'X-RateLimit-Remaining', 'Retry-After', '429'] },
+      { src: 'docs/api/timing-and-limits.md', slug: 'api/timing-and-limits', label: 'Timing and limits', keywords: ['timeout', 'request timeout'] },
+      { src: 'docs/api/two-calls.md', slug: 'api/two-calls', label: 'Code samples: Node, Python, Go' },
+      { src: 'docs/webhooks.md', slug: 'api/webhooks', label: 'Webhooks', keywords: ['verify webhook', 'verify signature', 'Hardcount-Signature'] },
+      { src: 'docs/api/webhook-events.md', slug: 'api/webhook-events', label: 'Webhook events' },
       { objects: true, label: 'Objects' },
       { openapi: true, label: 'Endpoints' },
-      { src: 'docs/webhooks.md', slug: 'api/webhooks', label: 'Webhooks' },
-      { src: 'docs/api/webhook-events.md', slug: 'api/webhook-events', label: 'Webhook events', next: false },
     ],
   },
   {
@@ -230,7 +234,9 @@ export const nearestUntilBuilt = {
 // Repo docs that move to the website pages, so the docs do not render them.
 export const movedToSite = {
   'docs/features.md': '/product/',
-  'docs/why-hardcount.md': '/compare/',
+  // What Hardcount gives you that the usual options do not: Home's "What
+  // you get" list. (Compare already has the docs index's other link.)
+  'docs/why-hardcount.md': '/#gets',
   'docs/comparison.md': '/compare/',
   'docs/ENGINEERING.md': '/reliability/',
   'README.md': '/',
@@ -246,9 +252,14 @@ export const objects = [
   ['Meter', 'meter'],
   ['UsageEvent', 'usage-event'],
   ['Invoice', 'invoice'],
+  ['InvoiceLineItem', 'invoice-line-item'],
   ['CreditNote', 'credit-note'],
   ['CreditLedgerEntry', 'credit-ledger-entry'],
+  ['CreditBalance', 'credit-balance'],
+  ['PaymentMethod', 'payment-method'],
   ['DunningPolicy', 'dunning-policy'],
+  ['DunningRun', 'dunning-run'],
   ['TestClock', 'test-clock'],
   ['WebhookEndpoint', 'webhook-endpoint'],
+  ['WebhookEvent', 'webhook-event'],
 ];

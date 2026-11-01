@@ -49,11 +49,19 @@ const PAGE_MARK = '\n\n<!-- hc-page -->\n\n';
 
 // llms-full.txt has no exclude option, so after the build it drops the pages
 // sync-docs.mjs lists (records, the changelog, contributor pages, the 404).
+// llms.txt's notes then say what the files hold; the plugin's own note says
+// the complete file has all the docs, which it does not.
+const LLMS_NOTE_FROM = '- The complete documentation includes all content from the official documentation';
+const LLMS_NOTE_TO = '- llms-full.txt has every guide, concept and API page. Each endpoint is in the OpenAPI spec, /openapi.yaml. Design records, the changelog and contributor pages are left out.';
 const llmsTrim = {
   name: 'hc-llms-trim',
   hooks: {
     'astro:build:done': ({ dir }) => {
       const out = fileURLToPath(dir);
+      const index = path.join(out, 'llms.txt');
+      const text = fs.readFileSync(index, 'utf8');
+      if (!text.includes(LLMS_NOTE_FROM)) throw new Error('llms.txt: the note hc-llms-trim replaces is gone; update astro.config.mjs');
+      fs.writeFileSync(index, text.replace(LLMS_NOTE_FROM, LLMS_NOTE_TO));
       for (const file of ['llms-full.txt', 'llms-small.txt']) {
         const p = path.join(out, file);
         if (!fs.existsSync(p)) continue;
@@ -68,19 +76,37 @@ const llmsTrim = {
 // Every endpoint page carries the same curl and fetch samples, so words such
 // as "url" matched every one of them. Before Starlight builds the search index
 // (this integration is listed first, so its hook runs first), the samples are
-// marked to be skipped by search. The pages look the same.
+// marked to be skipped by search. The same pass lets routes break at slashes.
 const searchPrep = {
   name: 'hc-search-prep',
   hooks: {
     'astro:build:done': ({ dir }) => {
       const walk = (d) => fs.readdirSync(d, { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? walk(path.join(d, e.name)) : [path.join(d, e.name)]));
+      // Inline code longer than a word (a metric name, an env setting, a
+      // list of URLs) breaks after "_", ".", "/" or ",", so it no longer
+      // sets a table column wider than the page, and it does not break
+      // mid-word on a phone. Code blocks hold markup and are left alone.
+      const docs = path.join(fileURLToPath(dir), 'docs');
+      for (const file of walk(docs).filter((f) => f.endsWith('.html'))) {
+        const html = fs.readFileSync(file, 'utf8');
+        const out = html
+          .replace(/(<code(?: dir="auto")?>)([^<]{8,})(<\/code>)/g, (m, a, code, b) => a + code.replace(/([_./,])(?=[^\s_./,])/g, '$1<wbr>') + b)
+          // The same for a code-name heading's entry in the table of contents.
+          .replace(/(<a href="#[^"]*"[^>]*><span[^>]*>)([\w.-]{16,})(<\/span><\/a>)/g, (m, a, name, b) => a + name.replace(/([_.])(?=[\w-])/g, '$1<wbr>') + b);
+        if (out !== html) fs.writeFileSync(file, out);
+      }
       const root = path.join(fileURLToPath(dir), 'docs/api/endpoints');
       if (!fs.existsSync(root)) return;
       for (const file of walk(root).filter((f) => f.endsWith('.html'))) {
         const html = fs.readFileSync(file, 'utf8');
+        // A route ("/v1/subscriptions/{id}/activate") in the index's links and
+        // a page's header breaks after a slash on a phone, not mid-word.
+        const breakable = (route) => route.replace(/\//g, '/<wbr>').replace(/^\/<wbr>/, '/');
         const out = html
           .replace(/<div class="sl-openapi-snippets /g, '<div data-pagefind-ignore class="sl-openapi-snippets ')
-          .replace(/<sl-openapi-snippet-picker /g, '<sl-openapi-snippet-picker data-pagefind-ignore ');
+          .replace(/<sl-openapi-snippet-picker /g, '<sl-openapi-snippet-picker data-pagefind-ignore ')
+          .replace(/(<span class="sl-openapi-overview-navigation-link-content[^"]*"><a [^>]*>)(\/[^<]+)(<\/a>)/g, (m, a, route, b) => a + breakable(route) + b)
+          .replace(/(<div class="sl-openapi-operation-method-path[^"]*">)(\/[^<]+)(<\/div>)/g, (m, a, route, b) => a + breakable(route) + b);
         if (out !== html) fs.writeFileSync(file, out);
       }
     },
@@ -106,7 +132,7 @@ export default defineConfig({
     }),
     starlight({
       title: 'Hardcount',
-      customCss: ['./src/styles/starlight.css'],
+      customCss: ['./src/styles/fonts.css', './src/styles/starlight.css'],
       head: [
         { tag: 'link', attrs: { rel: 'preconnect', href: 'https://fonts.googleapis.com' } },
         { tag: 'link', attrs: { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: true } },

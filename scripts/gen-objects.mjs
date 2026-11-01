@@ -154,10 +154,10 @@ fs.writeFileSync(
   [
     '---',
     'title: "Objects"',
-    'description: "Every object the Hardcount API returns, with each field explained."',
+    'description: "The core objects the Hardcount API returns, with each field explained."',
     '---',
     '',
-    'Every object the API returns, with each field explained. Each page is generated from the API spec, [`/openapi.yaml`](/openapi.yaml). Field names are checked against the server code by tests.',
+    'The core objects the API returns, with each field explained. Each page is generated from the API spec, [`/openapi.yaml`](/openapi.yaml), which also describes every other shape the API sends. Field names are checked against the server code by tests.',
     '',
     '| Object | Fields | Objects inside it |',
     '|---|---|---|',

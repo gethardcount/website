@@ -1,12 +1,3 @@
-/* Until the web fonts arrive, text is set in a local font resized to take
-   the same space (Arial for Inter, Georgia Bold for the headings), so lines
-   do not rewrap when the fonts swap in. Each face's sizes come from both
-   fonts' files (average character width and vertical metrics). Where the
-   local font is missing, the stack goes on to the system font. */
-@font-face { font-family: "Inter fallback"; src: local("Arial"), local("ArialMT"); font-weight: 100 549; size-adjust: 107.35%; ascent-override: 90.24%; descent-override: 22.47%; line-gap-override: 0%; }
-@font-face { font-family: "Inter fallback"; src: local("Arial Bold"), local("Arial-BoldMT"); font-weight: 550 900; size-adjust: 101.12%; ascent-override: 95.8%; descent-override: 23.85%; line-gap-override: 0%; }
-@font-face { font-family: "Source Serif fallback"; src: local("Georgia Bold"), local("Georgia-Bold"); font-weight: 500 900; size-adjust: 94.33%; ascent-override: 109.83%; descent-override: 35.51%; line-gap-override: 0%; }
-
 /* Docs theme: the site's paper, ink and copper, mapped onto Starlight's
    colour scale. Starlight's default theme is dark; light is the attribute. */
 :root {
@@ -35,6 +26,8 @@
   /* A primary button on hover (src/styles/global.css has the same pair). */
   --hc-btn-hover-bg: #E8A272;
   --hc-btn-hover-ink: #1B1814;
+  /* The edge shadow of a box that scrolls sideways (tables, diagrams). */
+  --hc-scroll-shadow: rgb(239 231 218 / 0.2);
 }
 
 :root[data-theme='light'] {
@@ -60,6 +53,7 @@
   --sl-color-blue-high: #4A4239;
   --hc-btn-hover-bg: #8F4A1C;
   --hc-btn-hover-ink: #FFFFFF;
+  --hc-scroll-shadow: rgb(34 29 24 / 0.22);
 }
 
 /* Headings in the site's serif, like the website pages. */
@@ -78,14 +72,26 @@ h1#_top {
 .sl-markdown-content .hc-table > table { display: table; width: 100%; margin: 0; }
 .sl-markdown-content :not(.hc-table) > table { display: block; overflow-x: auto; max-width: 100%; }
 .sl-markdown-content .hc-table + * { margin-top: 1rem; }
-/* On a phone, a table of three or more columns would squeeze each column to
-   a word or two a line and still run off the side; it keeps room to read and
-   scrolls instead. Wider screens never reach this width. */
-.sl-markdown-content .hc-table:not(.hc-fields) > table:has(th:nth-child(3)) { min-width: 32rem; }
+/* Long code in a cell (a metric name, a list of URLs) breaks after "_", ".",
+   "/" or "," (the build adds <wbr>), so a column is only as wide as the
+   longest part and the table fits the column at desktop width. */
 
-/* A box that scrolls sideways shows its scrollbar, so a reader can see there
-   is more; macOS hides scrollbars until you scroll. (Chrome and Safari; in
-   Firefox, setting a colour would not stop the hiding.) */
+/* A box that scrolls sideways shows a shadow at each edge that has more past
+   it, at any height (touch browsers hide scrollbars), and its scrollbar where
+   the browser lets a page style it (Chrome and Safari on a desktop). The
+   covers move with the content (local), the shadows stay at the edges. */
+.sl-markdown-content .hc-table,
+:root .sl-markdown-content pre.mermaid {
+  background-image:
+    linear-gradient(to right, var(--sl-color-bg) 30%, transparent),
+    linear-gradient(to left, var(--sl-color-bg) 30%, transparent),
+    radial-gradient(farthest-side at 0 50%, var(--hc-scroll-shadow), transparent),
+    radial-gradient(farthest-side at 100% 50%, var(--hc-scroll-shadow), transparent);
+  background-position: left, right, left, right;
+  background-size: 32px 100%, 32px 100%, 12px 100%, 12px 100%;
+  background-repeat: no-repeat;
+  background-attachment: local, local, scroll, scroll;
+}
 .sl-markdown-content :is(.hc-table, .mermaid, :not(.hc-table) > table)::-webkit-scrollbar { height: 8px; }
 .sl-markdown-content :is(.hc-table, .mermaid, :not(.hc-table) > table)::-webkit-scrollbar-track { background: var(--sl-color-gray-6); border-radius: 4px; }
 .sl-markdown-content :is(.hc-table, .mermaid, :not(.hc-table) > table)::-webkit-scrollbar-thumb { background: var(--sl-color-gray-4); border-radius: 4px; }
@@ -113,11 +119,24 @@ h1#_top {
 }
 
 /* Endpoint pages: on a phone a request or response field's name sits above
-   its description, so a long name is not broken mid-word in a narrow column. */
+   its description, so a long name is not broken mid-word in a narrow column,
+   and the route in the header takes its own line instead of being cut off.
+   (:root outranks the plugin's own rules, which load later.) */
 @media (max-width: 40rem) {
   :root .sl-openapi-keys { grid-template-columns: minmax(0, 1fr); }
   :root .sl-openapi-key-description { grid-column: 1; margin-top: 0.25rem; }
+  :root .sl-openapi-operation-method { flex-wrap: wrap; }
+  :root .sl-openapi-operation-method-path { flex-basis: 100%; overflow-x: visible; overflow-wrap: break-word; }
 }
+/* Request and response examples keep each line whole and scroll sideways;
+   the plugin wrapped them anywhere, splitting values ("HC-00004" / "2"). */
+:root .sl-openapi-example div.expressive-code pre > code { text-wrap: nowrap; word-break: normal; }
+/* The endpoint index's routes break at a slash (the build adds <wbr>), not
+   mid-word. */
+:root .sl-openapi-overview-navigation-link a { overflow-wrap: break-word; }
+/* Links in a field's description, in the docs' link colour. */
+.sl-openapi-markdown a { color: var(--sl-color-text-accent); }
+.sl-openapi-markdown a:hover { color: var(--sl-color-white); }
 
 /* Endpoint pages in light mode: "required" in a red that reads on the
    panels (Starlight's light red is 2.5:1 on gray-6), and examples on the

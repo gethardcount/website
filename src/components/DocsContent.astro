@@ -5,9 +5,10 @@
 //   page that explains each part;
 // - in search, explanations count for more than endpoint pages, so a search
 //   for "idempotency" or "pagination" finds the page that explains it before
-//   an endpoint that mentions it.
+//   an endpoint that mentions it;
+// - every page ends with where to ask, or report a bug (kept out of search).
 import Default from '@astrojs/starlight/components/MarkdownContent.astro';
-import { QUICK_START, doc } from '../site';
+import { QUICK_START, ASK, NEW_ISSUE, doc } from '../site';
 
 const path = Astro.url.pathname.replace(/\/?$/, '/');
 const landing = path === '/docs/';
@@ -42,6 +43,7 @@ const keywords = Astro.locals.starlightRoute.entry.data.keywords;
 )}
 <Default><slot /></Default>
 </div>
+<p class="hc-help not-content" data-pagefind-ignore>Stuck, or found a bug? <a href={ASK}>Ask in Discussions</a> · <a href={NEW_ISSUE}>Open an issue</a></p>
 
 <script>
   // A diagram, once drawn (after load, and again when the theme changes),
@@ -67,6 +69,22 @@ const keywords = Astro.locals.starlightRoute.entry.data.keywords;
   for (const box of boxes) watch.observe(box);
   const drawn = new MutationObserver(() => { sizeDiagrams(); mark(); });
   for (const box of document.querySelectorAll('.sl-markdown-content .mermaid')) drawn.observe(box, { childList: true });
+
+  // Expressive Code makes a code block that scrolls sideways a region, with no
+  // name, so two on one page are landmarks a screen reader cannot tell apart.
+  // Each gets a name from the heading above it, made unique on the page.
+  const headings = [...document.querySelectorAll('main :is(h1, h2, h3, h4)')];
+  const names = new Map();
+  const nameRegions = () => {
+    for (const pre of document.querySelectorAll('.expressive-code pre[role="region"]:not([aria-label])')) {
+      const above = headings.filter((h) => h.compareDocumentPosition(pre) & Node.DOCUMENT_POSITION_FOLLOWING).pop();
+      const base = `Code: ${above?.textContent?.trim() || document.title}`;
+      const n = (names.get(base) ?? 0) + 1;
+      names.set(base, n);
+      pre.setAttribute('aria-label', n > 1 ? `${base} (${n})` : base);
+    }
+  };
+  new MutationObserver(nameRegions).observe(document.body, { subtree: true, attributes: true, attributeFilter: ['role'] });
 </script>
 
 <style>
@@ -82,4 +100,7 @@ const keywords = Astro.locals.starlightRoute.entry.data.keywords;
   .hc-before ul { margin: 0; padding-left: 1.1rem; display: grid; gap: 0.4rem; font-size: var(--sl-text-sm); color: var(--sl-color-gray-2); }
   .hc-before a { color: var(--sl-color-text-accent); }
   .hc-before code { font-size: 0.85em; }
+
+  .hc-help { margin: 2.5rem 0 0; padding-top: 1rem; border-top: 1px solid var(--sl-color-gray-5); font-size: var(--sl-text-sm); color: var(--sl-color-gray-2); }
+  .hc-help a { color: var(--sl-color-text-accent); }
 </style>
