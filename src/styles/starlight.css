@@ -1,9 +1,18 @@
+/* Until the web fonts arrive, text is set in a local font resized to take
+   the same space (Arial for Inter, Georgia Bold for the headings), so lines
+   do not rewrap when the fonts swap in. Each face's sizes come from both
+   fonts' files (average character width and vertical metrics). Where the
+   local font is missing, the stack goes on to the system font. */
+@font-face { font-family: "Inter fallback"; src: local("Arial"), local("ArialMT"); font-weight: 100 549; size-adjust: 107.35%; ascent-override: 90.24%; descent-override: 22.47%; line-gap-override: 0%; }
+@font-face { font-family: "Inter fallback"; src: local("Arial Bold"), local("Arial-BoldMT"); font-weight: 550 900; size-adjust: 101.12%; ascent-override: 95.8%; descent-override: 23.85%; line-gap-override: 0%; }
+@font-face { font-family: "Source Serif fallback"; src: local("Georgia Bold"), local("Georgia-Bold"); font-weight: 500 900; size-adjust: 94.33%; ascent-override: 109.83%; descent-override: 35.51%; line-gap-override: 0%; }
+
 /* Docs theme: the site's paper, ink and copper, mapped onto Starlight's
    colour scale. Starlight's default theme is dark; light is the attribute. */
 :root {
-  --sl-font: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --sl-font: Inter, "Inter fallback", system-ui, -apple-system, "Segoe UI", sans-serif;
   --sl-font-mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
-  --hc-serif: "Source Serif 4", Georgia, serif;
+  --hc-serif: "Source Serif 4", "Source Serif fallback", Georgia, serif;
   --copper: #D9894F;
 
   --sl-color-accent-low: #3A2414;
@@ -12,7 +21,9 @@
   --sl-color-white: #EFE7DA;
   --sl-color-gray-1: #E3DACB;
   --sl-color-gray-2: #BDB2A3;
-  --sl-color-gray-3: #8E8476;
+  /* The website pages' faint ink (global.css --ink-faint): 4.8:1 on gray-6,
+     the status line's background. */
+  --sl-color-gray-3: #948A7C;
   --sl-color-gray-4: #5E554B;
   --sl-color-gray-5: #3A332B;
   --sl-color-gray-6: #24201B;
@@ -31,6 +42,10 @@
   --sl-color-accent-low: #F1DCCB;
   --sl-color-accent: #B4612A;
   --sl-color-accent-high: #6E3713;
+  /* Link and highlight text: the accent fails 4.5:1 on paper (3.95:1), so
+     text uses the deeper copper the website pages use for links (5.9:1 on
+     paper, 4.6:1 on gray-6). */
+  --sl-color-text-accent: #8F4A1C;
   --sl-color-white: #221D18;
   --sl-color-gray-1: #2E2822;
   --sl-color-gray-2: #4A4239;
@@ -104,7 +119,19 @@ h1#_top {
   :root .sl-openapi-key-description { grid-column: 1; margin-top: 0.25rem; }
 }
 
+/* Endpoint pages in light mode: "required" in a red that reads on the
+   panels (Starlight's light red is 2.5:1 on gray-6), and examples on the
+   code blocks' own background, not gray-5, which their colours were not
+   made for. */
+:root[data-theme='light'] :is(.sl-openapi-key-required, .sl-openapi-request-body-required) { color: var(--sl-color-red-high); }
+:root[data-theme='light'] .sl-openapi-example div.expressive-code .frame pre { background-color: var(--ec-codeBg); }
+
 /* Flowcharts keep a readable size; a wide one scrolls inside itself, from
    its left edge (centred only when it fits). */
 .sl-markdown-content .mermaid { overflow-x: auto; justify-content: flex-start; justify-content: safe center; }
 .sl-markdown-content .mermaid svg { min-width: 720px; height: auto; flex-shrink: 0; }
+/* Mermaid's dark theme puts edge labels at 4.4:1; a darker label background
+   makes them 5.5:1. Mermaid's own styles use an id, hence !important. */
+:root[data-theme='dark'] .sl-markdown-content .mermaid :is(.edgeLabel, .edgeLabel p, .labelBkg) { background-color: #4A4A4A !important; }
+/* A wide table or diagram that takes focus to scroll (DocsContent.astro). */
+.sl-markdown-content :is(.hc-table, .mermaid, table):focus-visible { outline: 2px solid var(--sl-color-accent); outline-offset: 2px; }

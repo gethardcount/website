@@ -40,6 +40,20 @@ const weight = endpointPage ? '0.2' : path === '/docs/project/changelog/' ? '0.4
 <Default><slot /></Default>
 </div>
 
+<script>
+  // A table or diagram wider than the page scrolls inside its box. While it
+  // does, the box takes keyboard focus, so it can be scrolled with the arrow
+  // keys. Diagrams are drawn after load, so each box is watched for size.
+  const boxes = document.querySelectorAll('.sl-markdown-content :is(.hc-table, .mermaid, :not(.hc-table) > table)');
+  const mark = () => {
+    for (const box of boxes) {
+      if (box.scrollWidth > box.clientWidth + 1) box.setAttribute('tabindex', '0');
+      else box.removeAttribute('tabindex');
+    }
+  };
+  const watch = new ResizeObserver(mark);
+  for (const box of boxes) watch.observe(box);
+</script>
 
 <style>
   .hc-start { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; margin: 0 0 2rem; }
