@@ -2,7 +2,7 @@
 //
 // A screenshot is two files in public/shots: <name>-light.png and
 // <name>-dark.png, shown to match the reader's light or dark setting. A video
-// is public/media/<name>.webm with its first frame as <name>-poster.png.
+// is public/media/<name>.webm with a still from it as <name>-poster.png.
 //
 // `live: true` files are published and match the release in src/site.ts. The
 // others render only when MEDIA_READY (src/site.ts) is true. Before flipping
@@ -15,28 +15,28 @@ export type Video = { name: string; w: number; h: number; label: string };
 
 export const shots = {
   invoice: {
-    name: 'invoice', w: 1400, h: 760, live: true,
-    alt: 'The lines of the demo invoice in the Hardcount dashboard, for the period Oct 29 to Nov 28, 2026: input, output and cache_read tokens for claude-sonnet-4.5, input and output tokens for claude-haiku-4.5, each priced per 1M tokens, with $5.73 due.',
+    name: 'invoice', w: 2128, h: 1094, live: true,
+    alt: 'The lines of the demo invoice in the Hardcount dashboard, issued Dec 1, 2026 for the period Nov 1 to Nov 30, 2026: input, output and cache_read tokens for claude-sonnet-4.5, input and output tokens for claude-haiku-4.5, each priced per 1M tokens, with $5.73 due.',
   },
   margin: {
-    name: 'margin', w: 1400, h: 507, live: true,
-    alt: 'The Margin card for the demo customer: $5.73 usage billed, $2.76 provider cost and 51.9% margin, with claude-sonnet-4.5 at 67.1% and claude-haiku-4.5 at 20.0%.',
+    name: 'margin', w: 1510, h: 812, live: true,
+    alt: 'The Margin card for the demo customer’s last invoiced period, Nov 1 to Nov 30, 2026: $5.73 usage billed, $2.76 provider cost and 51.9% margin, with claude-sonnet-4.5 at 67.1% and claude-haiku-4.5 at 20.0%.',
   },
   pricing: {
-    name: 'pricing', w: 1400, h: 900, live: false,
-    alt: 'A plan in the Hardcount dashboard with its own price for each model and token type.',
+    name: 'pricing', w: 2256, h: 920, live: false,
+    alt: 'The usage prices of the AI API plan in the Hardcount dashboard: one row per Claude model and one column per token type (input, output, cache_read, cache_write_5m, cache_write_1h), each a price per 1M tokens, such as $3.00 input and $15.00 output for claude-sonnet-4.5.',
   },
   credit: {
-    name: 'credit', w: 1400, h: 900, live: false,
-    alt: 'A customer’s credit balance in the Hardcount dashboard, with the grants and usage behind it.',
+    name: 'credit', w: 2256, h: 842, live: false,
+    alt: 'A demo customer’s credit in the Hardcount dashboard: a $54.27 balance from a $50.00 prepaid top-up and a $10.00 promotional welcome credit, less $5.73 applied to invoice HC-000001.',
   },
   payments: {
-    name: 'payments', w: 1400, h: 900, live: false,
-    alt: 'An invoice in the Hardcount dashboard whose card payment failed, with the next retry scheduled.',
+    name: 'payments', w: 2256, h: 1312, live: false,
+    alt: 'An invoice in the Hardcount dashboard whose card Stripe declined: the $5.73 payment and its first retry both failed with “Card declined by the bank”, payment recovery is running, and the next retry is on Dec 8, 2026.',
   },
   testclock: {
-    name: 'testclock', w: 1400, h: 900, live: false,
-    alt: 'A test clock in the Hardcount dashboard, moved forward a month, and the invoice it made.',
+    name: 'testclock', w: 2256, h: 1462, live: false,
+    alt: 'A test clock in the Hardcount dashboard, moved forward a month from Nov 1 to Dec 3, 2026, with one invoice generated, and the demo customer and its subscription on the clock.',
   },
 } satisfies Record<string, Shot>;
 
