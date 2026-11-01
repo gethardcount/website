@@ -63,14 +63,46 @@ h1#_top {
 .sl-markdown-content .hc-table > table { display: table; width: 100%; margin: 0; }
 .sl-markdown-content :not(.hc-table) > table { display: block; overflow-x: auto; max-width: 100%; }
 .sl-markdown-content .hc-table + * { margin-top: 1rem; }
+/* On a phone, a table of three or more columns would squeeze each column to
+   a word or two a line and still run off the side; it keeps room to read and
+   scrolls instead. Wider screens never reach this width. */
+.sl-markdown-content .hc-table:not(.hc-fields) > table:has(th:nth-child(3)) { min-width: 32rem; }
+
+/* A box that scrolls sideways shows its scrollbar, so a reader can see there
+   is more; macOS hides scrollbars until you scroll. (Chrome and Safari; in
+   Firefox, setting a colour would not stop the hiding.) */
+.sl-markdown-content :is(.hc-table, .mermaid, :not(.hc-table) > table)::-webkit-scrollbar { height: 8px; }
+.sl-markdown-content :is(.hc-table, .mermaid, :not(.hc-table) > table)::-webkit-scrollbar-track { background: var(--sl-color-gray-6); border-radius: 4px; }
+.sl-markdown-content :is(.hc-table, .mermaid, :not(.hc-table) > table)::-webkit-scrollbar-thumb { background: var(--sl-color-gray-4); border-radius: 4px; }
 
 /* Object field tables (scripts/gen-objects.mjs): fixed columns, so a long
-   field name wraps instead of squeezing "What it means" off the side. */
+   field name wraps instead of squeezing "What it means" off the side, and
+   most of the width goes to what each field means. */
 .sl-markdown-content .hc-fields > table { table-layout: fixed; min-width: 36rem; }
-.sl-markdown-content .hc-fields th:nth-child(1) { width: 28%; }
-.sl-markdown-content .hc-fields th:nth-child(2) { width: 20%; }
-.sl-markdown-content .hc-fields th:nth-child(3) { width: 12%; }
+.sl-markdown-content .hc-fields th:nth-child(1) { width: 26%; }
+.sl-markdown-content .hc-fields th:nth-child(2) { width: 15%; }
+.sl-markdown-content .hc-fields th:nth-child(3) { width: 11%; }
 .sl-markdown-content .hc-fields td code { overflow-wrap: anywhere; white-space: normal; }
+/* On a phone each field is a block: its name and type, whether it is always
+   present, then what it means at full width. No sideways scrolling. */
+@media (max-width: 40rem) {
+  .sl-markdown-content .hc-fields > table,
+  .sl-markdown-content .hc-fields tbody { display: block; min-width: 0; }
+  .sl-markdown-content .hc-fields thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .sl-markdown-content .hc-fields tr { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 1rem; padding: 0.75rem 0; border-bottom: 1px solid var(--sl-color-gray-5); }
+  .sl-markdown-content .hc-fields td { display: block; padding: 0; border: 0; margin: 0; }
+  .sl-markdown-content .hc-fields td:nth-child(2) { text-align: end; color: var(--sl-color-gray-2); }
+  .sl-markdown-content .hc-fields td:nth-child(3) { grid-column: 1 / -1; font-size: var(--sl-text-sm); color: var(--sl-color-gray-2); }
+  .sl-markdown-content .hc-fields td:nth-child(3)::before { content: 'Always present: '; }
+  .sl-markdown-content .hc-fields td:nth-child(4) { grid-column: 1 / -1; margin-top: 0.4rem; }
+}
+
+/* Endpoint pages: on a phone a request or response field's name sits above
+   its description, so a long name is not broken mid-word in a narrow column. */
+@media (max-width: 40rem) {
+  :root .sl-openapi-keys { grid-template-columns: minmax(0, 1fr); }
+  :root .sl-openapi-key-description { grid-column: 1; margin-top: 0.25rem; }
+}
 
 /* Flowcharts keep a readable size; a wide one scrolls inside itself, from
    its left edge (centred only when it fits). */
