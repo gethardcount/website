@@ -112,7 +112,8 @@ export default defineConfig({
       sidebar: toStarlight(sidebar),
       plugins: [
         starlightOpenAPI([
-          { base: 'docs/api/endpoints', schema: './src/generated/openapi.yaml', sidebar: { label: 'Endpoints', collapsed: true } },
+          // The spec without its x-internal routes (scripts/sync-docs.mjs).
+          { base: 'docs/api/endpoints', schema: './src/generated/openapi-integration.yaml', sidebar: { label: 'Endpoints', collapsed: true } },
         ]),
         starlightLlmsTxt({
           description: 'Hardcount is an open-source (MIT), self-hosted usage-billing engine for AI products: it prices tokens per model, sells prepaid credit, shows margin per customer, makes invoices, and charges cards through Stripe.',

@@ -16,129 +16,34 @@ const allSections = [
       { src: 'docs/how-hardcount-works.md', slug: 'get-started/how-hardcount-works', label: 'How it works' },
       { src: 'docs/quick-start.md', slug: 'get-started/quick-start', label: 'Quick start' },
       { src: 'docs/first-invoice.md', slug: 'get-started/first-invoice', label: 'Send usage, get an invoice', next: 'guides/ai-pricing' },
-      // In Get started until the concept pages ship; its URL stays put.
-      { src: 'docs/glossary.md', slug: 'concepts/glossary', label: 'Glossary' },
     ],
   },
   {
     label: 'Concepts',
     items: [
-      {
-        slug: 'concepts/data-model',
-        planned: {
-          title: 'The data model',
-          intro: 'How customers, subscriptions, plans, prices, meters, usage events, invoices, credits and payments connect, in one diagram.',
-          sections: ['One diagram of the objects and the field each one points through', 'One line per object: what it is and who creates it', 'Which objects you create, and which Hardcount creates for you'],
-          from: ['New page'],
-        },
-      },
-      {
-        slug: 'concepts/usage-events',
-        planned: {
-          title: 'Usage events',
-          intro: 'What a usage event is, how Hardcount counts it once, and what happens to usage that arrives late.',
-          sections: ['The event: customer, meter, quantity, labels (dimensions), time', 'Safe retries: the idempotency key and how long it is remembered', 'Late usage: the grace period, and usage after an invoice is made', 'Worked example: three events in, one quantity out'],
-          from: ['docs/api-surface.md: "Sending usage safely", "Late usage"', 'docs/ops/runbook/invoice-timing-late-usage.md'],
-        },
-      },
-      {
-        slug: 'concepts/meters-and-prices',
-        planned: {
-          title: 'Meters and prices',
-          intro: 'How a meter counts usage and how a plan\'s prices turn the count into money.',
-          sections: ['Meters and their one aggregation', 'Price shapes: per unit, tiers, packages', 'One meter, a price per model and token type (labels)', 'Base fee; billing in advance or after the period', 'Worked example: tokens in, line items and total out'],
-          from: ['docs/ai-pricing.md', 'docs/api-surface.md'],
-        },
-      },
-      {
-        slug: 'concepts/subscriptions',
-        planned: {
-          title: 'Subscriptions',
-          intro: 'How a subscription puts a customer on a plan, and what happens when it changes.',
-          sections: ['Status table: each status, what it means, what you do', 'Transitions table: from, API call or job, webhook, to', 'Billing periods and the anchor day (Jan 31 → Feb 28 → Mar 31)', 'Plan changes, with a worked proration', 'Cancel and pause'],
-          from: ['New page (facts from the code and design records)'],
-        },
-      },
-      {
-        slug: 'concepts/invoices',
-        planned: {
-          title: 'Invoices',
-          intro: 'When Hardcount makes an invoice, how it calculates the total, and how the invoice moves from draft to paid.',
-          sections: ['Status and transitions tables: draft → finalized → paid / void / uncollectible', 'When invoices are made: period end, the grace period, the hourly run', 'The calculation order, with worked sums: usage → price → credits → tax → total', 'PDF, hosted invoice page, credit notes', 'Webhooks sent at each step'],
-          from: ['New page', 'docs/how-hardcount-works.md steps 4-5'],
-        },
-      },
-      {
-        slug: 'concepts/credits',
-        planned: {
-          title: 'Credits',
-          intro: 'How prepaid credit is granted, used and expired, and the order in which credits pay an invoice.',
-          sections: ['The credit ledger: grants, usage, expiry, adjustments', 'Prepaid commits', 'The order credits are used (numbered)', 'The live balance your app can check', 'Worked example: $10,000 of credit, one month of usage'],
-          from: ['docs/ai-pricing.md: prepaid credit'],
-        },
-      },
-      {
-        slug: 'concepts/test-clocks',
-        planned: {
-          title: 'Test clocks',
-          intro: 'Move a test customer through time and see invoices, payments and retries happen in seconds.',
-          sections: ['What a test clock is and what it moves', 'A dated walkthrough: subscribe Jan 1, advance to Feb 1, the invoice', 'Limits'],
-          from: ['docs/api-surface.md', 'New page'],
-        },
-      },
-      {
-        slug: 'concepts/margin',
-        planned: {
-          title: 'Margin',
-          intro: 'What each customer\'s usage cost you, next to what you billed for it.',
-          sections: ['Provider costs: your own price table or LiteLLM\'s reported cost', 'Margin per customer and per model', 'Worked example from the demo: 51.9%', 'What margin leaves out (base fees, credits, tax)'],
-          from: ['docs/ai-pricing.md: margin'],
-        },
-      },
+      { src: 'docs/concepts/data-model.md', slug: 'concepts/data-model', label: 'The data model' },
+      { src: 'docs/concepts/usage-events.md', slug: 'concepts/usage-events', label: 'Usage events' },
+      { src: 'docs/concepts/meters-and-prices.md', slug: 'concepts/meters-and-prices', label: 'Meters and prices' },
+      { src: 'docs/concepts/subscriptions.md', slug: 'concepts/subscriptions', label: 'Subscriptions' },
+      { src: 'docs/concepts/invoices.md', slug: 'concepts/invoices', label: 'Invoices' },
+      { src: 'docs/concepts/credits.md', slug: 'concepts/credits', label: 'Credits' },
+      { src: 'docs/concepts/payments.md', slug: 'concepts/payments', label: 'Payments' },
+      { src: 'docs/concepts/test-clocks.md', slug: 'concepts/test-clocks', label: 'Test clocks' },
+      { src: 'docs/concepts/margin.md', slug: 'concepts/margin', label: 'Margin' },
+      { src: 'docs/glossary.md', slug: 'concepts/glossary', label: 'Glossary' },
     ],
   },
   {
     label: 'Guides',
     items: [
       { src: 'docs/ai-pricing.md', slug: 'guides/ai-pricing', label: 'AI pricing reference' },
-      {
-        slug: 'guides/bill-for-ai-tokens',
-        planned: {
-          title: 'Bill for AI tokens by model',
-          intro: 'Price input, output and cached tokens per model, from a ready-made price list or your own.',
-          sections: ['The ready-made prices: Anthropic, OpenAI, Replicate (one call)', 'Your own model', 'Mapping provider token counts (cached tokens) to events', 'The invoice it makes'],
-          from: ['docs/ai-pricing.md', 'internal/recipe/recipes/'],
-        },
-      },
+      { src: 'docs/guides/bill-for-ai-tokens.md', slug: 'guides/bill-for-ai-tokens', label: 'Bill for AI tokens by model' },
       { src: 'docs/stop-usage-when-credit-runs-out.md', slug: 'guides/stop-usage-when-credit-runs-out', label: 'Stop usage when credit runs out' },
       { src: 'docs/integrations/litellm.md', slug: 'guides/litellm', label: 'Send usage from LiteLLM' },
-      {
-        slug: 'guides/receive-webhooks',
-        planned: {
-          title: 'Receive webhooks',
-          intro: 'Add an endpoint, check each webhook\'s signature, and handle a resend safely.',
-          sections: ['Add an endpoint', 'Verify the signature (with code)', 'Retries, and skipping an ID you already handled', 'Test it locally'],
-          from: ['docs/webhooks.md'],
-        },
-      },
-      {
-        slug: 'guides/connect-stripe',
-        planned: {
-          title: 'Connect Stripe and take card payments',
-          intro: 'Connect your Stripe account so Hardcount can charge saved cards.',
-          sections: ['Keys and the webhook', 'Save a customer\'s card', 'The first charge, and what you see'],
-          from: ['docs/production-one-vm.md: Stripe'],
-        },
-      },
-      {
-        slug: 'guides/test-a-billing-change',
-        planned: {
-          title: 'Test a billing change with a test clock',
-          intro: 'Try a new price or plan on a test customer and see next month\'s invoice before any real customer does.',
-          sections: ['Create a test customer on a clock', 'Change the price', 'Advance the clock, read the invoice'],
-          from: ['New page'],
-        },
-      },
+      { src: 'docs/guides/receive-webhooks.md', slug: 'guides/receive-webhooks', label: 'Receive webhooks' },
+      { src: 'docs/guides/connect-stripe.md', slug: 'guides/connect-stripe', label: 'Connect Stripe' },
+      { src: 'docs/guides/test-a-billing-change.md', slug: 'guides/test-a-billing-change', label: 'Test a billing change' },
+      { src: 'docs/api-keys.md', slug: 'guides/api-keys', label: 'Manage API keys' },
       { src: 'docs/ops/tax-calculation.md', slug: 'guides/tax', label: 'Set up tax', next: 'api/overview' },
     ],
   },
@@ -146,18 +51,18 @@ const allSections = [
     label: 'API reference',
     items: [
       { src: 'docs/api-surface.md', slug: 'api/overview', label: 'The Hardcount API' },
-      // docs/api-keys.md until a dedicated authentication page ships.
-      { src: 'docs/api-keys.md', slug: 'api/authentication', label: 'Authentication and keys', title: 'Authentication and keys' },
-      { planned: { title: 'Errors', intro: 'Every error code, what it means, and what to do.', sections: ['The error body', 'Status codes', 'Error codes'], from: ['docs/api-surface.md: Errors'] }, slug: 'api/errors' },
-      { planned: { title: 'Idempotency', intro: 'Retry any request safely.', sections: ['Usage events: the idempotency key', 'Other writes', 'How long keys are kept'], from: ['docs/api-surface.md: Sending usage safely'] }, slug: 'api/idempotency' },
-      { planned: { title: 'Pagination', intro: 'How list endpoints return pages.', sections: ['Cursors', 'Which endpoints page, and the limits'], from: ['New page (checked in code)'] }, slug: 'api/pagination' },
+      { src: 'docs/api/authentication.md', slug: 'api/authentication', label: 'Authentication and keys' },
+      { src: 'docs/api/errors.md', slug: 'api/errors', label: 'Errors' },
+      { src: 'docs/api/idempotency.md', slug: 'api/idempotency', label: 'Idempotency' },
+      { src: 'docs/api/pagination.md', slug: 'api/pagination', label: 'Pagination' },
       { src: 'docs/versioning.md', slug: 'api/versioning', label: 'Versioning' },
-      { planned: { title: 'Rate limits', intro: 'How many requests you can send.', sections: ['General and ingest limits', 'What a 429 looks like', 'Changing the limits'], from: ['docs/settings.md'] }, slug: 'api/rate-limits' },
-      { planned: { title: 'Timing and limits', intro: 'Every time window and size limit, as a number.', sections: ['Invoice grace period', 'Idempotency windows', 'Stripe\'s 24-hour window', 'Retry schedules', 'Request size'], from: ['New page (checked in code)'] }, slug: 'api/timing-and-limits' },
+      { src: 'docs/api/rate-limits.md', slug: 'api/rate-limits', label: 'Rate limits' },
+      { src: 'docs/api/timing-and-limits.md', slug: 'api/timing-and-limits', label: 'Timing and limits' },
+      { src: 'docs/api/two-calls.md', slug: 'api/two-calls', label: 'Two calls in four languages' },
       { objects: true, label: 'Objects' },
       { openapi: true, label: 'Endpoints' },
-      { src: 'docs/webhooks.md', slug: 'api/webhooks', label: 'Webhooks', next: false },
-      { planned: { title: 'Webhook events', intro: 'Every event Hardcount sends: when, and what it contains.', sections: ['The catalog: name, when it is sent, example payload'], from: ['docs/webhooks.md: catalog (kept true by internal/domain/webhook_catalog_test.go)'] }, slug: 'api/webhook-events' },
+      { src: 'docs/webhooks.md', slug: 'api/webhooks', label: 'Webhooks' },
+      { src: 'docs/api/webhook-events.md', slug: 'api/webhook-events', label: 'Webhook events', next: false },
     ],
   },
   {
@@ -175,7 +80,7 @@ const allSections = [
       { src: 'docs/ops/runbook/monitoring.md', slug: 'self-host/monitoring', label: 'Monitoring' },
       { src: 'docs/ops/email-setup.md', slug: 'self-host/email-setup', label: 'Set up email' },
       // An operator's spec of how card charges fail; the how-it-works page for
-      // developers is a planned concept page.
+      // developers is concepts/payments.
       { src: 'docs/payments.md', slug: 'self-host/payment-failure-handling', label: 'Payment failure handling' },
       {
         glob: 'docs/ops/runbook/', exclude: ['docs/ops/runbook/monitoring.md'], index: 'docs/ops/runbook/index.md', base: 'self-host/runbook', label: 'Runbook',
@@ -189,6 +94,7 @@ const allSections = [
           'litellm-spend-gap.md': 'LiteLLM gap after an outage',
           'migration-failed-midway.md': 'Database upgrade stopped',
           'rds-wal-pool.md': 'RDS commits stall',
+          'refund-made-in-stripe.md': 'Refund made in Stripe',
           'replica-will-not-start.md': 'Replica will not start',
           'rls-leak-suspected.md': 'Tenant data leak suspected',
           'sign-in-throttled.md': 'Sign-in throttled',
@@ -283,17 +189,18 @@ export const redirects = {
   '/docs/being-split/api-surface/': '/docs/api/overview/',
   '/docs/being-split/ai-pricing/': '/docs/guides/ai-pricing/',
   '/docs/being-split/webhooks/': '/docs/api/webhooks/',
-  '/docs/concepts/payments-and-retries/': '/docs/self-host/payment-failure-handling/',
+  '/docs/concepts/payments-and-retries/': '/docs/concepts/payments/',
   '/docs/concepts/tax/': '/docs/guides/tax/',
   '/docs/guides/email-setup/': '/docs/self-host/email-setup/',
-  '/docs/guides/api-keys/': '/docs/api/authentication/',
   '/docs/project/contributing/': '/docs/contribute/contributing/',
   '/docs/internals/records/agent-prompting-standards/': '/docs/internals/records/',
 };
 
-// Planned pages were briefly live as outlines. Until each is written, its
-// address goes to the page that holds that content today.
-export const plannedNearest = {
+// Pages the site links to that are not built at the pinned release: planned
+// pages (some were briefly live as outlines), and pages whose `src` is not in
+// that release yet. Until a page is built, its address goes to the page that
+// holds that content at the release. Once it is built, its entry does nothing.
+export const nearestUntilBuilt = {
   'concepts/data-model': '/docs/get-started/how-hardcount-works/',
   'concepts/usage-events': '/docs/api/overview/#sending-usage-safely',
   'concepts/meters-and-prices': '/docs/guides/ai-pricing/',
@@ -312,6 +219,8 @@ export const plannedNearest = {
   'api/rate-limits': '/docs/self-host/overview/#settings',
   'api/timing-and-limits': '/docs/api/overview/',
   'api/webhook-events': '/docs/api/webhooks/',
+  'api/authentication': '/docs/guides/api-keys/',
+  'concepts/payments': '/docs/self-host/payment-failure-handling/',
   'self-host/upgrades': '/docs/self-host/overview/#upgrading',
   'self-host/settings': '/docs/self-host/overview/#settings',
 };

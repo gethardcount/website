@@ -9,7 +9,8 @@
 // a site pinned to one release; each is named below.
 import fs from 'node:fs';
 import path from 'node:path';
-import { sections, plannedPages, movedToSite, redirects, plannedNearest } from './docs-map.mjs';
+import YAML from 'yaml';
+import { sections, plannedPages, movedToSite, redirects, nearestUntilBuilt } from './docs-map.mjs';
 
 const SRC = process.env.HC_SRC;
 const REF = process.env.HC_REF;
@@ -273,10 +274,6 @@ function firstParagraph(md) {
 // Page fixes for a site pinned to one release. Each returns the new body; a
 // fix whose text is no longer in the source warns, so it is not kept by habit.
 const fixes = {
-  // The landing page sends newcomers to the README, which on this site is the
-  // home page they came from.
-  'docs/README.md': (body) =>
-    replaceOnce(body, /\*\*New here\? Read the \[README\]\([^)]*\), then run the\s+\[quick start\]\(([^)]*)\)\.\*\*/, (m, qs) => `**New here? Run the [quick start](${qs}), then read [How it works](/docs/get-started/how-hardcount-works/).**`, 'docs/README.md'),
   // "Read this page at the version you run" links the page to itself here:
   // every page on this site is the release's.
   'docs/first-invoice.md': (body) =>
@@ -289,9 +286,10 @@ const fixes = {
       .filter((b) => !/^How to write an entry/.test(b.trim()) && !/^Long entries from/.test(b.trim()))
       .join('\n\n');
     const releases = parts.slice(1).filter((r) => !/^## \[Unreleased\]\s*$/.test(r.trim()));
-    // Releases of the current and the previous minor version.
+    // Releases of the current and the previous minor version, after an
+    // Unreleased section that has entries (a release's own is empty).
     const minors = [...new Set(releases.map((r) => r.match(/^## \[(\d+\.\d+)\./)?.[1]).filter(Boolean))].slice(0, 2);
-    const kept = releases.filter((r) => minors.includes(r.match(/^## \[(\d+\.\d+)\./)?.[1]));
+    const kept = releases.filter((r) => /^## \[Unreleased\]/.test(r) || minors.includes(r.match(/^## \[(\d+\.\d+)\./)?.[1]));
     const full = `${REPO}/blob/${REF}/CHANGELOG.md`;
     return `${head.trim()}\n\nThis page shows the ${minors.map((m) => `${m}.x`).join(' and ')} releases. Every earlier release is in the [full changelog on GitHub](${full}).\n\n${kept.join('').trim()}\n\nEarlier releases: [the full changelog on GitHub](${full}).\n`;
   },
@@ -370,11 +368,11 @@ fs.writeFileSync(
 const built = new Set(pages.map((p) => pageUrl(p.slug)));
 const redirectMap = {};
 for (const [from, to] of Object.entries(redirects)) if (!built.has(from)) redirectMap[from] = to;
-for (const [slug, to] of Object.entries(plannedNearest)) {
+for (const [slug, to] of Object.entries(nearestUntilBuilt)) {
   const from = pageUrl(slug);
   if (!built.has(from)) redirectMap[from] = to;
 }
-for (const p of plannedPages) if (!plannedNearest[p.slug]) warn(`planned page ${p.slug} has no entry in plannedNearest`);
+for (const p of plannedPages) if (!nearestUntilBuilt[p.slug]) warn(`planned page ${p.slug} has no entry in nearestUntilBuilt`);
 fs.writeFileSync(path.join(GEN, 'redirects.json'), JSON.stringify(redirectMap, null, 2));
 
 // 6. Pages left out of llms-full.txt (astro.config.mjs filters it by page
@@ -393,11 +391,73 @@ for (const p of pages) {
 skipTitles.add('Page not found');
 fs.writeFileSync(path.join(GEN, 'llms-full-skip.json'), JSON.stringify([...skipTitles].sort(), null, 2));
 
-// 7. The API spec, for the reference and as a download.
+// 7. The API spec, from the same checkout as the docs. The download
+// (/openapi.yaml) and the Objects pages (gen-objects.mjs) use it as it is.
 const spec = read(SPEC);
 fs.mkdirSync('public', { recursive: true });
 fs.writeFileSync('public/openapi.yaml', spec);
 fs.writeFileSync(path.join(GEN, 'openapi.yaml'), spec);
+
+// The endpoint reference shows the API an integration calls. Routes marked
+// `x-internal: true` (the dashboard's own routes, the receivers Stripe and
+// Postmark call, first-run setup) are left out of the copy it reads, and so
+// is a tag or a security scheme that no route left uses. Everything else is
+// the spec's own text.
+const METHODS = ['get', 'put', 'post', 'delete', 'options', 'head', 'patch', 'trace'];
+function integrationSpec(text) {
+  const docu = YAML.parseDocument(text);
+  if (docu.errors.length) throw new Error(`${SPEC}: ${docu.errors[0].message}`);
+  const paths = docu.get('paths');
+  const usedTags = new Set();
+  const usedSchemes = new Set();
+  for (const req of docu.get('security')?.items ?? []) for (const pair of req.items) usedSchemes.add(String(pair.key.value ?? pair.key));
+  const left = [];
+  let kept = 0;
+  for (const route of paths.items.map((pair) => pair.key.value)) {
+    const item = paths.get(route);
+    const routeInternal = item.get('x-internal') === true;
+    for (const method of METHODS) {
+      const op = item.get(method);
+      if (!op) continue;
+      if (routeInternal || op.get('x-internal') === true) {
+        item.delete(method);
+        left.push(`${method.toUpperCase()} ${route}`);
+        continue;
+      }
+      kept++;
+      for (const tag of op.get('tags')?.items ?? []) usedTags.add(String(tag.value ?? tag));
+      for (const req of op.get('security')?.items ?? []) for (const pair of req.items) usedSchemes.add(String(pair.key.value ?? pair.key));
+    }
+    if (!METHODS.some((m) => item.has(m))) paths.delete(route);
+  }
+  const tags = docu.get('tags');
+  const emptyTags = [];
+  if (tags) {
+    for (let i = tags.items.length - 1; i >= 0; i--) {
+      const name = tags.items[i].get('name');
+      if (!usedTags.has(name)) {
+        emptyTags.unshift(name);
+        tags.delete(i);
+      }
+    }
+  }
+  const schemes = docu.getIn(['components', 'securitySchemes']);
+  const unusedSchemes = [];
+  for (const name of schemes?.items.map((pair) => String(pair.key.value ?? pair.key)) ?? []) {
+    if (!usedSchemes.has(name)) {
+      unusedSchemes.push(name);
+      schemes.delete(name);
+    }
+  }
+  return { text: docu.toString({ lineWidth: 0 }), kept, left, emptyTags, unusedSchemes };
+}
+const shown = integrationSpec(spec);
+fs.writeFileSync(path.join(GEN, 'openapi-integration.yaml'), shown.text);
+console.log(
+  `endpoint reference: ${shown.kept} operations; ${shown.left.length} marked x-internal left out` +
+    (shown.emptyTags.length ? `, with the tags (${shown.emptyTags.join(', ')})` : '') +
+    (shown.unusedSchemes.length ? ` and security schemes (${shown.unusedSchemes.join(', ')}) only they used` : ''),
+);
 
 console.log(`synced ${pages.length} pages from ${SRC} at ${REF}`);
 if (warnings.length) {

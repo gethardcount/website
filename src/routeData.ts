@@ -85,7 +85,7 @@ export const onRequest = defineRouteMiddleware(async (context, next) => {
   };
   route.pagination.prev = fix(route.pagination.prev);
   route.pagination.next = fix(route.pagination.next);
-  // The API section ends at Webhooks; its last endpoint does not lead into
-  // Self-host.
+  // The API section ends at Webhook events; its last page does not lead
+  // into Self-host.
   if (route.pagination.next?.href.startsWith('/docs/self-host/') && path.startsWith('/docs/api')) route.pagination.next = undefined;
 });
