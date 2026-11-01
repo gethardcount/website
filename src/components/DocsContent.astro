@@ -16,6 +16,8 @@ const endpointPage = path.startsWith('/docs/api/endpoints/') && !endpointsIndex;
 // The changelog names every feature in passing; it should not outrank the
 // page about one.
 const weight = endpointPage ? '0.2' : path === '/docs/project/changelog/' ? '0.4' : '2';
+// Search also matches a page's keywords (scripts/docs-map.mjs), as metadata.
+const keywords = Astro.locals.starlightRoute.entry.data.keywords;
 ---
 {landing && (
   <nav class="hc-start not-content" aria-label="Start here">
@@ -25,6 +27,7 @@ const weight = endpointPage ? '0.2' : path === '/docs/project/changelog/' ? '0.4
   </nav>
 )}
 <div data-pagefind-weight={weight}>
+{keywords?.length ? <div hidden data-pagefind-meta={`keywords:${keywords.join(', ')}`}></div> : null}
 {endpointsIndex && (
   <aside class="hc-before not-content" aria-label="Before you call">
     <p class="hc-before-h">Before you call</p>
@@ -41,6 +44,15 @@ const weight = endpointPage ? '0.2' : path === '/docs/project/changelog/' ? '0.4
 </div>
 
 <script>
+  // A diagram, once drawn (after load, and again when the theme changes),
+  // shrinks to fit the column but no further than 80% of its drawn size, so
+  // its text stays readable; past that its box scrolls (starlight.css).
+  const sizeDiagrams = () => {
+    for (const svg of document.querySelectorAll('.sl-markdown-content .mermaid svg')) {
+      const drawn = svg.viewBox.baseVal?.width;
+      if (drawn) svg.style.minWidth = `${Math.round(drawn * 0.8)}px`;
+    }
+  };
   // A table or diagram wider than the page scrolls inside its box. While it
   // does, the box takes keyboard focus, so it can be scrolled with the arrow
   // keys. Diagrams are drawn after load, so each box is watched for size.
@@ -53,6 +65,8 @@ const weight = endpointPage ? '0.2' : path === '/docs/project/changelog/' ? '0.4
   };
   const watch = new ResizeObserver(mark);
   for (const box of boxes) watch.observe(box);
+  const drawn = new MutationObserver(() => { sizeDiagrams(); mark(); });
+  for (const box of document.querySelectorAll('.sl-markdown-content .mermaid')) drawn.observe(box, { childList: true });
 </script>
 
 <style>

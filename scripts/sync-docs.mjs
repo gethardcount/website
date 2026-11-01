@@ -317,6 +317,7 @@ function writePage(p, title, body) {
     // "View source" opens the file this page shows, at the release.
     p.src && `editUrl: ${JSON.stringify(`${REPO}/blob/${REF}/${p.src}`)}`,
     unsearched(p.slug) && 'pagefind: false',
+    p.keywords && `keywords: ${JSON.stringify(p.keywords)}`,
     p.next !== undefined && `next: ${link(p.next)}`,
     p.prev !== undefined && `prev: ${link(p.prev)}`,
     p.noindex && `head:\n${yamlList([{ tag: 'meta', attrs: { name: 'robots', content: 'noindex' } }])}`,

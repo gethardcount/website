@@ -126,12 +126,11 @@ h1#_top {
 :root[data-theme='light'] :is(.sl-openapi-key-required, .sl-openapi-request-body-required) { color: var(--sl-color-red-high); }
 :root[data-theme='light'] .sl-openapi-example div.expressive-code .frame pre { background-color: var(--ec-codeBg); }
 
-/* Flowcharts keep a readable size; a wide one scrolls inside itself, from
-   its left edge (centred only when it fits). */
+/* A diagram shrinks to fit the column, down to 80% of its drawn size (text
+   about 11px); a wider one scrolls inside itself, from its left edge
+   (centred only when it fits). DocsContent.astro sets each one's minimum
+   width once it is drawn. Colours: mermaidThemeCSS in astro.config.mjs. */
 .sl-markdown-content .mermaid { overflow-x: auto; justify-content: flex-start; justify-content: safe center; }
-.sl-markdown-content .mermaid svg { min-width: 720px; height: auto; flex-shrink: 0; }
-/* Mermaid's dark theme puts edge labels at 4.4:1; a darker label background
-   makes them 5.5:1. Mermaid's own styles use an id, hence !important. */
-:root[data-theme='dark'] .sl-markdown-content .mermaid :is(.edgeLabel, .edgeLabel p, .labelBkg) { background-color: #4A4A4A !important; }
+.sl-markdown-content .mermaid svg { height: auto; flex-shrink: 0; }
 /* A wide table or diagram that takes focus to scroll (DocsContent.astro). */
 .sl-markdown-content :is(.hc-table, .mermaid, table):focus-visible { outline: 2px solid var(--sl-color-accent); outline-offset: 2px; }

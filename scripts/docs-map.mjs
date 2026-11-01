@@ -5,6 +5,8 @@
 // `label` is the short sidebar name; the page title stays the doc's heading
 // unless `title` replaces it, and `intro` adds a first paragraph.
 // `next` / `prev` set the page's next and previous links (a slug, or false).
+// `keywords` are words search should find the page by, for a topic the page
+// names in other words (the Errors page says "every code", not "error codes").
 // A glob may give `labels` (file → short sidebar name), `sortByLabel`,
 // `hidden` (built and linked, but not in the sidebar) and `noindex`.
 // Built from velox-ops marketing/site-structure-2026-10-29.md §5.
@@ -27,7 +29,7 @@ const allSections = [
       { src: 'docs/concepts/subscriptions.md', slug: 'concepts/subscriptions', label: 'Subscriptions' },
       { src: 'docs/concepts/invoices.md', slug: 'concepts/invoices', label: 'Invoices' },
       { src: 'docs/concepts/credits.md', slug: 'concepts/credits', label: 'Credits' },
-      { src: 'docs/concepts/payments.md', slug: 'concepts/payments', label: 'Payments' },
+      { src: 'docs/concepts/payments.md', slug: 'concepts/payments', label: 'Payments', keywords: ['dunning', 'payment retries', 'failed payments'] },
       { src: 'docs/concepts/test-clocks.md', slug: 'concepts/test-clocks', label: 'Test clocks' },
       { src: 'docs/concepts/margin.md', slug: 'concepts/margin', label: 'Margin' },
       { src: 'docs/glossary.md', slug: 'concepts/glossary', label: 'Glossary' },
@@ -52,7 +54,7 @@ const allSections = [
     items: [
       { src: 'docs/api-surface.md', slug: 'api/overview', label: 'The Hardcount API' },
       { src: 'docs/api/authentication.md', slug: 'api/authentication', label: 'Authentication and keys' },
-      { src: 'docs/api/errors.md', slug: 'api/errors', label: 'Errors' },
+      { src: 'docs/api/errors.md', slug: 'api/errors', label: 'Errors', keywords: ['error codes', 'status codes'] },
       { src: 'docs/api/idempotency.md', slug: 'api/idempotency', label: 'Idempotency' },
       { src: 'docs/api/pagination.md', slug: 'api/pagination', label: 'Pagination' },
       { src: 'docs/versioning.md', slug: 'api/versioning', label: 'Versioning' },

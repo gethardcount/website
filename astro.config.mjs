@@ -27,6 +27,22 @@ function toStarlight(items) {
   });
 }
 
+// Diagrams in the site's colours. astro-mermaid draws them with Mermaid's
+// default theme in light mode and its dark theme in dark mode; this CSS,
+// which Mermaid adds to each diagram, replaces their colours with the docs'
+// own (src/styles/starlight.css), so a diagram follows the page's theme.
+// Boxes are copper-tinted with ink text, lines and labels are grey.
+const mermaidThemeCSS = [
+  '.node rect, .node circle, .node ellipse, .node polygon, .node path { fill: var(--sl-color-accent-low); stroke: var(--sl-color-accent); stroke-width: 1px; }',
+  '.nodeLabel, .node .label, .node .label span, .node .label p { color: var(--sl-color-white); fill: var(--sl-color-white); }',
+  '.flowchart-link, .edgePath .path { stroke: var(--sl-color-gray-3); stroke-width: 1.5px; }',
+  '.marker, marker path { fill: var(--sl-color-gray-3); stroke: var(--sl-color-gray-3); }',
+  '.edgeLabel, .edgeLabel p, .edgeLabel span, .labelBkg { background-color: var(--sl-color-bg); color: var(--sl-color-gray-2); }',
+  '.edgeLabel rect { fill: var(--sl-color-bg); opacity: 1; }',
+  '.cluster rect { fill: var(--sl-color-gray-6); stroke: var(--sl-color-gray-5); }',
+  '.cluster-label span, .cluster span, .cluster text { color: var(--sl-color-gray-2); fill: var(--sl-color-gray-2); }',
+].join('\n');
+
 // Pages are separated by this marker in llms-full.txt and llms-small.txt, so
 // the step below can drop whole pages; it is turned back into a blank line.
 const PAGE_MARK = '\n\n<!-- hc-page -->\n\n';
@@ -77,7 +93,17 @@ export default defineConfig({
   redirects,
   integrations: [
     searchPrep,
-    mermaid({ theme: 'neutral', autoTheme: true, enableLog: false }),
+    mermaid({
+      theme: 'default',
+      autoTheme: true,
+      enableLog: false,
+      mermaidConfig: {
+        fontFamily: 'Inter, "Inter fallback", system-ui, sans-serif',
+        themeVariables: { fontSize: '14px' },
+        flowchart: { nodeSpacing: 20 },
+        themeCSS: mermaidThemeCSS,
+      },
+    }),
     starlight({
       title: 'Hardcount',
       customCss: ['./src/styles/starlight.css'],
@@ -107,7 +133,8 @@ export default defineConfig({
       routeMiddleware: './src/routeData.ts',
       // A page title counts as much as its body text, not five times as much,
       // so endpoint titles that share a word ("rate") do not bury the page
-      // that explains the topic ("rate limit").
+      // that explains the topic ("rate limit"). Page keywords (DocsContent.astro)
+      // keep Pagefind's default weight.
       pagefind: { ranking: { metaWeights: { title: 1 } } },
       sidebar: toStarlight(sidebar),
       plugins: [
