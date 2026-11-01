@@ -34,9 +34,12 @@ export const doc = (path: string) => {
 // code('internal/config/config.go') → that file on GitHub at the release.
 export const code = (path: string) => `${REPO}/blob/${RELEASE}/${path}`;
 export const DISCUSSIONS = `${REPO}/discussions`;
+// Questions about using Hardcount: the Q&A category of Discussions.
+export const ASK = `${REPO}/discussions/categories/q-a`;
 // The pinned "Start here: try Hardcount, then tell us where you got stuck".
 export const START_HERE = `${REPO}/discussions/1057`;
-export const NEW_ISSUE = `${REPO}/issues/new`;
+// The issue form picker (bug report or feature request).
+export const NEW_ISSUE = `${REPO}/issues/new/choose`;
 export const CONTACT_EMAIL = 'sagar@sagarwaidande.org';
 // Every "Run it locally" button goes here.
 export const QUICK_START = '/docs/get-started/quick-start/';

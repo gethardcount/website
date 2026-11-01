@@ -149,6 +149,7 @@ const hosted: Source[] = [
           </tbody>
         </table>
       </div>
+      <p class="prose not-compared">Not compared here: Orb, Metronome (now part of Stripe) and Chargebee are hosted services that charge a share of what you bill, about 0.6–0.8% on their published plans. Sources: {hosted.map(([label, href], i) => <>{i > 0 && ', '}<a href={href}>{label}</a></>)}.</p>
       <p class="small muted note">¹ Our reading of the project’s API spec; its docs do not say it. “None found” means a search of the project’s source and docs found nothing. Hardcount’s column: <a href={doc('ai-pricing.md')}>AI pricing</a>, <a href={doc('payments.md')}>payment failure handling</a>, <a href={code('deploy/compose/docker-compose.yml')}>its Compose file</a> (Postgres, Redis, Hardcount, the dashboard and nginx).</p>
     </div>
   </section>
@@ -168,7 +169,6 @@ const hosted: Source[] = [
           </article>
         ))}
       </div>
-      <p class="prose not-compared">Not compared here: Orb, Metronome (now part of Stripe) and Chargebee are hosted services that charge a share of what you bill, about 0.6–0.8% on their published plans. Sources: {hosted.map(([label, href], i) => <>{i > 0 && ', '}<a href={href}>{label}</a></>)}.</p>
     </div>
   </section>
 
@@ -238,7 +238,7 @@ const hosted: Source[] = [
   .sources ul { margin: 8px 0 0; padding-left: 18px; display: grid; gap: 4px; }
   .sources a { overflow-wrap: anywhere; }
   .card { display: flex; flex-direction: column; }
-  .not-compared { margin-top: 28px; font-size: 16px; }
+  .not-compared { margin-top: 16px; font-size: 16px; }
   .two { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
   .two h2 { font-size: 26px; }
   .two ul { padding-left: 20px; }
