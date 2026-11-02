@@ -14,7 +14,7 @@ const columns = ['Hardcount', 'Stripe Billing', 'Lago', 'OpenMeter', 'Flexprice'
 const rows: [string, string[]][] = [
   ['Licence', ['MIT, one edition', 'Closed source, hosted', 'AGPL-3.0; premium features need a licence key', 'Apache-2.0', 'AGPL-3.0 at the root; the core services need an Enterprise licence in production', 'Apache-2.0; the Aviate plugin is commercial']],
   ['Payment providers', ['Stripe, cards only', 'Stripe, with the payment methods your account allows', 'Stripe, GoCardless, Cashfree, Adyen, Moneyhash', 'Stripe, through Stripe Invoicing', 'Stripe, Razorpay, Nomod, Moyasar, Paddle, Whop, Chargebee', 'Plugins for Adyen, Braintree, Qualpay, Stripe, Hyperswitch']],
-  ['A price per model and token type on one meter', ['Yes', 'Not in basic usage billing; Stripe points you to Metronome', 'Yes, with charge filters', 'One filtered feature per combination¹', 'One filtered feature per combination', 'No labels on usage; one unit type per combination¹']],
+  ['A price per model and token type on one meter', ['Yes', 'Not in basic usage billing; Stripe points you to Metronome', 'Yes, with charge filters', 'A separate feature (a filtered meter) for each combination¹', 'A separate feature (a filtered meter) for each combination', 'No labels on usage; one unit type per combination¹']],
   ['Failed-payment retries', ['Included', 'Included (Smart Retries)', 'A premium add-on, on request', 'None of its own; Stripe Invoicing collects', 'No schedule found; a manual retry per invoice', 'Included, with overdue states']],
   ['Test clock', ['One for each test customer', 'Yes, in sandboxes, up to three customers a clock', 'None found', 'None; an endpoint simulates an invoice', 'None found', 'One for the whole server, in test mode']],
   ['Services to run', ['5 in the Compose file', 'None: hosted', '8, one of them a one-off migration', '11, “not a production topology”', '9 by default', '3']],
@@ -139,6 +139,7 @@ const hosted: Source[] = [
   <section id="table">
     <div class="wrap">
       <h2>Side by side</h2>
+      <p class="swipe-hint">Swipe the table sideways for Lago, OpenMeter, Flexprice and Kill Bill.</p>
       <div class="table-box" tabindex="0" role="region" aria-label="Side-by-side comparison; scrolls sideways on a small screen">
         <table>
           <thead><tr><th scope="col"><span class="sr-only">Question</span></th>{columns.map((c) => <th scope="col">{c}</th>)}</tr></thead>
@@ -179,10 +180,10 @@ const hosted: Source[] = [
         <ul>
           <li>One MIT licence, and every feature is in it.</li>
           <li>A test clock for each test customer, on your normal install.</li>
-          <li>On most API requests, Postgres row-level security keeps accounts apart, on top of the application code.</li>
+          <li>On most API requests, the database itself keeps each account’s data apart (Postgres row-level security), not only the application code.</li>
           <li>Failed-payment retries are included. Kill Bill includes them too.</li>
-          <li>Webhooks are signed, with a timestamp, without running another service.</li>
-          <li>The throughput figure comes with its hardware and method: <a href={doc('scale.md')}>How it scales</a>.</li>
+          <li>Hardcount signs and timestamps its webhooks itself, with no separate webhook service to run.</li>
+          <li>Its performance numbers come with the hardware and method used to measure them: <a href={doc('scale.md')}>How it scales</a>.</li>
         </ul>
       </div>
       <div>
@@ -208,6 +209,9 @@ const hosted: Source[] = [
 
   /* The table scrolls inside its box on a small screen, with a shadow at the
      edge that has more columns past it. */
+  /* Only shown when the table is wider than the screen. */
+  .swipe-hint { display: none; margin: 12px 0 0; font-size: 14px; color: var(--ink-soft); }
+  @media (max-width: 1080px) { .swipe-hint { display: block; } }
   .table-box {
     overflow-x: auto; border: 1px solid var(--rule); border-radius: 12px; margin-top: 20px;
     background:

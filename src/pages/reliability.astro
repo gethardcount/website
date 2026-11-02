@@ -8,13 +8,13 @@ import { failures } from '../data/failures';
 const rules = [
   {
     title: 'A billing period is billed once.',
-    body: 'Every close locks the subscription and checks its period has not moved. Behind that, a unique index refuses a second invoice for the same period, so a crash or two racing workers cannot bill it twice.',
-    proof: 'A billing process killed at five points left 0 duplicate and 0 lost invoices. With the index dropped, four billing engines racing on 40 periods billed 103 invoices, so the test can see a failure. That run predates the subscription lock, the guard now in front of the index.',
+    body: 'Before closing a billing period, Hardcount locks the subscription and checks that the period has not been closed already. Behind that, the database refuses a second invoice for the same period (a unique index). So a crash, or two copies of Hardcount working at once, cannot bill it twice.',
+    proof: 'A billing process was killed at five different points, and left 0 duplicate and 0 lost invoices. To show the test can catch a failure, it was run again with the unique index removed: four billing processes working on the same 40 periods made 103 invoices. That run was made before the subscription lock was added; the lock is now a second guard in front of the index.',
     link: ['Correctness under failure', '/docs/internals/benchmarks/failure-correctness/'],
   },
   {
     title: 'Fail loudly.',
-    body: 'If a read that a bill needs fails, the bill stops with an error. It never bills a default. A subscription that keeps failing is parked for you to look at.',
+    body: 'If Hardcount cannot read something a bill needs, that bill stops with an error. It never fills in a default and bills that. After eight failed attempts, the subscription is parked: nothing retries it until you look at it and retry.',
     proof: 'How it works, and why, is in its design record.',
     link: ['Design record 119', '/docs/internals/decisions/119-billing-failure-record-keyed-to-the-due-instant/'],
   },
@@ -27,17 +27,17 @@ const rules = [
   {
     title: 'One Postgres.',
     body: 'All billing data lives in Postgres; Redis is for rate limits only. No queue broker, warehouse or workflow engine until a measurement says Postgres is not enough.',
-    proof: 'One large database took 12,000 usage events a second with stock settings: 4 of 5 ten-minute runs in one series, 5 of 5 in another. One Postgres setting cut the worst 10-second p99 from 177 ms to 52 ms. The hardware and method are stated.',
+    proof: 'On a large database server (64 GB memory) with default Postgres settings, Hardcount took 12,000 usage events a second: it passed 4 of 5 ten-minute runs in one series and 5 of 5 in another. Changing one Postgres setting removed the slow spikes: the worst p99 over 10 seconds (the time 99 of 100 requests finish within) fell from 177 ms to 52 ms. The page gives the hardware and method.',
     link: ['How much it handles', doc('scale.md')],
   },
 ];
 
 const checks = [
-  ['Accounts kept apart', 'Tests check the Postgres row-level security policies, and code that skips them fails a test until it is listed.', code('internal/arch/txbypass_allowlist_test.go')],
+  ['Accounts kept apart', 'Tests check the Postgres row-level security policies. Code that skips them fails a test until someone adds it to a list of allowed exceptions.', code('internal/arch/txbypass_allowlist_test.go')],
   ['One charge per invoice', 'When two workers race to charge an invoice, exactly one wins.', code('internal/invoice/auto_charge_claim_integration_test.go')],
-  ['A clean 13-month run', 'A read-only checker finds no bad rows after each close of a 13-month billing run.', code('internal/api/clock_soak_e2e_test.go')],
-  ['Generated cases for the money math', 'Property tests for billing dates, pricing, proration, tax and the credit waterfall.', code('internal/domain/pricing_property_test.go')],
-  ['Every doc command runs', 'CI runs every command in “Your first invoice” against a real build.', doc('first-invoice.md')],
+  ['A clean 13-month run', 'A test bills 13 months in a row, and after each month a read-only checker finds no inconsistent data.', code('internal/api/clock_soak_e2e_test.go')],
+  ['Generated cases for the money math', 'Property tests, which check a rule against many generated inputs, cover billing dates, pricing, proration, tax and the order credits are used in.', code('internal/domain/pricing_property_test.go')],
+  ['Every doc command runs', 'CI runs every command in “Send usage, get an invoice” against a real build.', doc('first-invoice.md')],
 ];
 ---
 <Base
@@ -99,7 +99,7 @@ const checks = [
   <section id="built">
     <div class="wrap prose">
       <h2>How it is built</h2>
-      <p>One Go program with its background jobs inside, each job held by one copy at a time. Postgres row-level security keeps accounts apart on most requests. Every decision, including the reversed ones, is written down.</p>
+      <p>One Go program runs the API and the background jobs. When you run several copies, each background job runs on only one copy at a time. Postgres row-level security keeps accounts apart on most requests. Every decision, including the reversed ones, is written down.</p>
       <p class="small"><a href="/docs/internals/architecture/">Architecture →</a> · <a href="/docs/internals/decisions/">Design decisions →</a> · <a href={`${REPO}`}>The code →</a></p>
     </div>
   </section>

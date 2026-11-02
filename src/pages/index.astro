@@ -12,7 +12,7 @@ import { doc, START_HERE, CONTACT_EMAIL, QUICK_START, REPO, RELEASE } from '../s
 // Why choose it over the alternatives. What it does lives on /product.
 const gets = [
   { lead: 'No Stripe Billing fee.', rest: 'Stripe charges the card at its normal fee. Hardcount takes nothing on what you bill.', link: ['Pricing', '/pricing/'] },
-  { lead: 'Every model on one meter.', rest: 'Each model and token type gets its own price, on one meter.', link: ['Price per model', '/product/#pricing'] },
+  { lead: 'Every model on one meter.', rest: 'All token usage goes to one meter (the counter for what you sell), and each model and token type gets its own price.', link: ['Price per model', '/product/#pricing'] },
   { lead: 'One free edition.', rest: 'MIT, with no paid edition: every feature is in the same code.', link: ['Licence', '/docs/project/license/'] },
   { lead: 'Light to run.', rest: 'One Go program and Postgres, plus Redis for rate limits, on your own servers.', link: ['Self-host', '/docs/self-host/overview/'] },
 ];
@@ -70,7 +70,7 @@ const demoEnd = `━━━ Done: every step above ran and was checked ━━━
       <ol class="steps">
         <li><strong>Your app sends usage.</strong> One event for each thing you count, such as the tokens of one AI call. A <a href={doc('integrations/litellm.md')}>LiteLLM proxy</a> can send them for you.</li>
         <li><strong>Hardcount prices it.</strong> It uses your plan’s prices, and at the end of each billing period it makes the invoice and its PDF.</li>
-        <li><strong>Stripe charges the card.</strong> If a charge fails, Hardcount retries on a schedule and, once email is set up, emails your customer. The subscription doesn’t switch to “past due”: your app decides when to limit access.</li>
+        <li><strong>Stripe charges the card.</strong> If a charge fails, Hardcount retries on a schedule and, once email is set up, emails your customer. While it retries, the subscription stays active (Hardcount has no “past due” status), so your app decides when to limit access.</li>
       </ol>
       <UsageCurl />
       <p class="prose">There are no SDKs yet. <a href={doc('first-invoice.md')}>Send usage, get an invoice →</a> does every request with curl, step by step.</p>
@@ -80,7 +80,7 @@ const demoEnd = `━━━ Done: every step above ran and was checked ━━━
   <section id="looks">
     <div class="wrap">
       <h2>What it looks like</h2>
-      <p class="prose muted">One month of AI usage for one customer, from the demo in test mode. Its dates follow the demo’s test clock, a month ahead. The commands to run the demo yourself are below, in <a href="#try">Run it locally</a>.</p>
+      <p class="prose muted">One month of AI usage for one customer, from the demo in test mode. The dates are a month ahead because the demo moves a test clock (a pretend clock for test customers) forward a month. The commands to run the demo yourself are below, in <a href="#try">Run it locally</a>.</p>
       {showVideos && <Video video={videos.walkthrough} />}
       <div class="shots">
         <figure>
@@ -88,7 +88,7 @@ const demoEnd = `━━━ Done: every step above ran and was checked ━━━
           <Shot shot={shots.invoice} />
         </figure>
         <figure>
-          <figcaption><strong>Your margin, per model.</strong> Each model's usage revenue against what the AI provider charged you: Sonnet 67.1%, Haiku 20.0%. Only you see this.</figcaption>
+          <figcaption><strong>Your margin, per model.</strong> Each model's usage revenue against what the AI provider charged you: Sonnet 67.1%, Haiku 20.0%. Only you see this, never your customer.</figcaption>
           <Shot shot={shots.margin} />
         </figure>
       </div>
@@ -164,7 +164,7 @@ cd hardcount/deploy/compose
       <p class="prose"><code>./quickstart.sh</code> prints your dashboard address and sign-in, and saves them in <code>quickstart-credentials.json</code>. The demo then sets prices for AI tokens, sends a customer’s token usage the way LiteLLM does, moves a test clock to the end of the month, and makes the invoice, its PDF and your margin report.</p>
       <p class="prose">The demo ends like this, with links to open in the dashboard:</p>
       <Code class="out" copy={false} label="The end of the demo's output" html={demoEnd} />
-      <p class="prose">Done? <code>./quickstart.sh stop</code> keeps your data. <code>./quickstart.sh destroy</code> deletes it.</p>
+      <p class="prose">Done? <code>./quickstart.sh stop</code> stops Hardcount and keeps your data. <code>./quickstart.sh destroy</code> stops it and deletes the data.</p>
       <p class="small">
         The full walkthrough, and where to click: <a href={doc('quick-start.md')}>Quick start →</a>
       </p>

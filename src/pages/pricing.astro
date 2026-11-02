@@ -21,7 +21,7 @@ const usd = (n: number) => '$' + n.toLocaleString('en-US');
     <div class="wrap prose">
       <h2>What you pay for</h2>
       <ul class="plain">
-        <li><strong>Your server.</strong> One server listed at €6.49 a month before VAT in October 2026 (2 shared CPUs, 4 GB memory) handled 12 usage events a second, with bursts to 60, for 20 minutes. It had no errors, and its CPU was 12% busy on average. At 12 a second that is about 1 million events a day. That was the load sent, not a limit. The test used v0.8.0, released as Velox, Hardcount’s earlier name. At that rate its 40 GB disk fills in about two months, so add a volume for the database. <a href={doc('scale.md')}>How it was measured →</a></li>
+        <li><strong>Your server.</strong> In a 20-minute test, a server costing €6.49 a month (2 shared CPUs, 4 GB memory; price before VAT, October 2026) handled 12 usage events a second, with bursts to 60. That is about 1 million events a day. It had no errors, and its CPU was 12% busy on average. 12 a second was the load sent, not the server’s limit. At that rate its 40 GB disk fills in about two months, so add a separate disk (a volume) for the database. The test ran v0.8.0, released under Hardcount’s earlier name, Velox. <a href={doc('scale.md')}>How it was measured →</a></li>
         <li><strong>Stripe’s card fee</strong> on each payment (for example 2.9% + 30¢ for a US card; see <a href="https://stripe.com/pricing">stripe.com/pricing</a>), and Stripe Tax’s fee if you turn it on.</li>
         <li><strong>Your time to run it:</strong> one program plus Postgres and Redis. <a href={doc('self-host.md')}>What running it takes →</a></li>
       </ul>
@@ -31,7 +31,7 @@ const usd = (n: number) => '$' + n.toLocaleString('en-US');
   <section>
     <div class="wrap prose">
       <h2>What Stripe Billing’s fee would be</h2>
-      <p>Stripe Billing’s pay-as-you-go plan takes 0.7% of what you bill, on top of the card fee (<a href="https://stripe.com/billing/pricing">Stripe Billing pricing</a>). Hardcount uses Stripe to charge the card, and to work out tax if you turn on Stripe Tax.</p>
+      <p>Stripe Billing’s pay-as-you-go plan takes 0.7% of what you bill, on top of the card fee (<a href="https://stripe.com/billing/pricing">Stripe Billing pricing</a>). Hardcount uses Stripe only to charge the card, and to work out tax if you turn on Stripe Tax, so this fee does not apply.</p>
       <table>
         <thead><tr><th>You bill each month</th><th>Stripe Billing’s 0.7%</th><th>Each year</th></tr></thead>
         <tbody>
