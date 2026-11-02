@@ -14,6 +14,9 @@ import { sections, plannedPages, movedToSite, redirects, nearestUntilBuilt } fro
 
 const SRC = process.env.HC_SRC;
 const REF = process.env.HC_REF;
+// The release the docs describe. HC_REF can be a later docs-only commit, so the
+// release's name comes separately (it defaults to HC_REF when that is the tag).
+const RELEASE = process.env.HC_RELEASE || REF;
 if (!SRC || !REF) {
   console.error('HC_SRC and HC_REF are required, e.g. HC_SRC=.hc-src HC_REF=v0.9.1');
   process.exit(2);
@@ -286,7 +289,7 @@ const fixes = {
   // "Read this page at the version you run" links the page to itself here:
   // every page on this site is the release's.
   'docs/first-invoice.md': (body) =>
-    replaceOnce(body, /Read this page at the version you run\.[\s\S]*?ahead of that release\.\n/, () => `This page describes ${REF}, the release the quick start runs.\n`, 'docs/first-invoice.md'),
+    replaceOnce(body, /Read this page at the version you run\.[\s\S]*?ahead of that release\.\n/, () => `This page describes ${RELEASE}, the release the quick start runs.\n`, 'docs/first-invoice.md'),
   // The overview's "In the repository" link to api/openapi.yaml becomes the
   // endpoint reference on this site, so the bullet names the site's copies.
   'docs/api-surface.md': (body) =>
@@ -575,7 +578,7 @@ console.log(
   `endpoint samples: ${shown.samples.defaults} optional parameters show their default, ${shown.samples.leftOut} optional filters are left out, ${shown.samples.ids} path IDs are real IDs; ${shown.descriptions} oneOf/anyOf descriptions kept`,
 );
 
-console.log(`synced ${pages.length} pages from ${SRC} at ${REF}`);
+console.log(`synced ${pages.length} pages from ${SRC} at ${REF} (release ${RELEASE})`);
 if (warnings.length) {
   console.log(`${warnings.length} links point to files that do not exist:`);
   for (const w of warnings.slice(0, 40)) console.log('  ' + w);

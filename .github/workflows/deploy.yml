@@ -27,8 +27,11 @@ jobs:
       - name: Read the release the docs follow
         id: release
         run: |
-          ref=$(sed -n "s/^export const RELEASE = '\(.*\)';/\1/p" src/site.ts)
-          [ -n "$ref" ] || { echo "::error::src/site.ts names no RELEASE"; exit 1; }
+          release=$(sed -n "s/^export const RELEASE = '\(.*\)';/\1/p" src/site.ts)
+          [ -n "$release" ] || { echo "::error::src/site.ts names no RELEASE"; exit 1; }
+          ref=$(sed -n "s/^export const DOCS_REF = '\(.*\)';/\1/p" src/site.ts)
+          [ -n "$ref" ] || ref=$release
+          echo "release=$release" >> "$GITHUB_OUTPUT"
           echo "ref=$ref" >> "$GITHUB_OUTPUT"
 
       - uses: actions/checkout@v7
@@ -49,6 +52,7 @@ jobs:
         env:
           HC_SRC: .hc-src
           HC_REF: ${{ steps.release.outputs.ref }}
+          HC_RELEASE: ${{ steps.release.outputs.release }}
 
       - run: npx astro build
 
