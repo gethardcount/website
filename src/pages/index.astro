@@ -80,8 +80,8 @@ const demoEnd = `━━━ Done: every step above ran and was checked ━━━
   <section id="looks">
     <div class="wrap">
       <h2>What it looks like</h2>
-      <p class="prose muted">One month of AI usage for one customer, from the <a href="#try">demo</a> in test mode. Its dates follow the demo’s test clock, a month ahead.</p>
-      {showVideos && <Video video={videos.tour} />}
+      <p class="prose muted">One month of AI usage for one customer, from the demo in test mode. Its dates follow the demo’s test clock, a month ahead. The commands to run the demo yourself are below, in <a href="#try">Run it locally</a>.</p>
+      {showVideos && <Video video={videos.walkthrough} />}
       <div class="shots">
         <figure>
           <figcaption><strong>The demo invoice.</strong> One line per model and token type, priced per million tokens.</figcaption>
@@ -162,7 +162,6 @@ cd hardcount/deploy/compose
 ./quickstart.sh
 ./quickstart.sh demo`} />
       <p class="prose"><code>./quickstart.sh</code> prints your dashboard address and sign-in, and saves them in <code>quickstart-credentials.json</code>. The demo then sets prices for AI tokens, sends a customer’s token usage the way LiteLLM does, moves a test clock to the end of the month, and makes the invoice, its PDF and your margin report.</p>
-      {showVideos && <Video video={videos.demo} />}
       <p class="prose">The demo ends like this, with links to open in the dashboard:</p>
       <Code class="out" copy={false} label="The end of the demo's output" html={demoEnd} />
       <p class="prose">Done? <code>./quickstart.sh stop</code> keeps your data. <code>./quickstart.sh destroy</code> deletes it.</p>
