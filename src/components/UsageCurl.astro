@@ -13,5 +13,5 @@ const text = `curl -X POST http://localhost:8080/v1/usage-events \\
        "dimensions": {"model": "claude-sonnet-4.5", "token_type": "input"},
        "idempotency_key": "req-42:input"}'`;
 ---
-<p class="prose">One usage event, sent with curl. <code>$HARDCOUNT_KEY</code> is the test key <code>./quickstart.sh</code> prints; customer <code>acme-1</code> and the <code>tokens</code> meter must exist first (<a href={doc('first-invoice.md')}>Send usage, get an invoice</a> creates them):</p>
+<p class="prose">This is one usage event, sent with curl. <code>$HARDCOUNT_KEY</code> is the test key that <code>./quickstart.sh</code> prints. The customer <code>acme-1</code> and the <code>tokens</code> meter must exist first: <a href={doc('first-invoice.md')}>Send usage, get an invoice</a> creates them.</p>
 <Code text={text} label="One usage event sent with curl" />
