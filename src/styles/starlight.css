@@ -1,9 +1,9 @@
 /* Docs theme: the site's paper, ink and copper, mapped onto Starlight's
    colour scale. Starlight's default theme is dark; light is the attribute. */
 :root {
-  --sl-font: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --sl-font: Inter, "Inter fallback", system-ui, -apple-system, "Segoe UI", sans-serif;
   --sl-font-mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
-  --hc-serif: "Source Serif 4", Georgia, serif;
+  --hc-serif: "Source Serif 4", "Source Serif fallback", Georgia, serif;
   --copper: #D9894F;
 
   --sl-color-accent-low: #3A2414;
@@ -12,7 +12,9 @@
   --sl-color-white: #EFE7DA;
   --sl-color-gray-1: #E3DACB;
   --sl-color-gray-2: #BDB2A3;
-  --sl-color-gray-3: #8E8476;
+  /* The website pages' faint ink (global.css --ink-faint): 4.8:1 on gray-6,
+     the status line's background. */
+  --sl-color-gray-3: #948A7C;
   --sl-color-gray-4: #5E554B;
   --sl-color-gray-5: #3A332B;
   --sl-color-gray-6: #24201B;
@@ -24,6 +26,8 @@
   /* A primary button on hover (src/styles/global.css has the same pair). */
   --hc-btn-hover-bg: #E8A272;
   --hc-btn-hover-ink: #1B1814;
+  /* The edge shadow of a box that scrolls sideways (tables, diagrams). */
+  --hc-scroll-shadow: rgb(239 231 218 / 0.2);
 }
 
 :root[data-theme='light'] {
@@ -31,6 +35,10 @@
   --sl-color-accent-low: #F1DCCB;
   --sl-color-accent: #B4612A;
   --sl-color-accent-high: #6E3713;
+  /* Link and highlight text: the accent fails 4.5:1 on paper (3.95:1), so
+     text uses the deeper copper the website pages use for links (5.9:1 on
+     paper, 4.6:1 on gray-6). */
+  --sl-color-text-accent: #8F4A1C;
   --sl-color-white: #221D18;
   --sl-color-gray-1: #2E2822;
   --sl-color-gray-2: #4A4239;
@@ -45,6 +53,7 @@
   --sl-color-blue-high: #4A4239;
   --hc-btn-hover-bg: #8F4A1C;
   --hc-btn-hover-ink: #FFFFFF;
+  --hc-scroll-shadow: rgb(34 29 24 / 0.22);
 }
 
 /* Headings in the site's serif, like the website pages. */
@@ -63,16 +72,84 @@ h1#_top {
 .sl-markdown-content .hc-table > table { display: table; width: 100%; margin: 0; }
 .sl-markdown-content :not(.hc-table) > table { display: block; overflow-x: auto; max-width: 100%; }
 .sl-markdown-content .hc-table + * { margin-top: 1rem; }
+/* Long code in a cell (a metric name, a list of URLs) breaks after "_", ".",
+   "/" or "," (the build adds <wbr>), so a column is only as wide as the
+   longest part and the table fits the column at desktop width. */
+
+/* A box that scrolls sideways shows a shadow at each edge that has more past
+   it, at any height (touch browsers hide scrollbars), and its scrollbar where
+   the browser lets a page style it (Chrome and Safari on a desktop). The
+   covers move with the content (local), the shadows stay at the edges. */
+.sl-markdown-content .hc-table,
+:root .sl-markdown-content pre.mermaid {
+  background-image:
+    linear-gradient(to right, var(--sl-color-bg) 30%, transparent),
+    linear-gradient(to left, var(--sl-color-bg) 30%, transparent),
+    radial-gradient(farthest-side at 0 50%, var(--hc-scroll-shadow), transparent),
+    radial-gradient(farthest-side at 100% 50%, var(--hc-scroll-shadow), transparent);
+  background-position: left, right, left, right;
+  background-size: 32px 100%, 32px 100%, 12px 100%, 12px 100%;
+  background-repeat: no-repeat;
+  background-attachment: local, local, scroll, scroll;
+}
+.sl-markdown-content :is(.hc-table, .mermaid, :not(.hc-table) > table)::-webkit-scrollbar { height: 8px; }
+.sl-markdown-content :is(.hc-table, .mermaid, :not(.hc-table) > table)::-webkit-scrollbar-track { background: var(--sl-color-gray-6); border-radius: 4px; }
+.sl-markdown-content :is(.hc-table, .mermaid, :not(.hc-table) > table)::-webkit-scrollbar-thumb { background: var(--sl-color-gray-4); border-radius: 4px; }
 
 /* Object field tables (scripts/gen-objects.mjs): fixed columns, so a long
-   field name wraps instead of squeezing "What it means" off the side. */
+   field name wraps instead of squeezing "What it means" off the side, and
+   most of the width goes to what each field means. */
 .sl-markdown-content .hc-fields > table { table-layout: fixed; min-width: 36rem; }
-.sl-markdown-content .hc-fields th:nth-child(1) { width: 28%; }
-.sl-markdown-content .hc-fields th:nth-child(2) { width: 20%; }
-.sl-markdown-content .hc-fields th:nth-child(3) { width: 12%; }
+.sl-markdown-content .hc-fields th:nth-child(1) { width: 26%; }
+.sl-markdown-content .hc-fields th:nth-child(2) { width: 15%; }
+.sl-markdown-content .hc-fields th:nth-child(3) { width: 11%; }
 .sl-markdown-content .hc-fields td code { overflow-wrap: anywhere; white-space: normal; }
+/* On a phone each field is a block: its name and type, whether it is always
+   present, then what it means at full width. No sideways scrolling. */
+@media (max-width: 40rem) {
+  .sl-markdown-content .hc-fields > table,
+  .sl-markdown-content .hc-fields tbody { display: block; min-width: 0; }
+  .sl-markdown-content .hc-fields thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .sl-markdown-content .hc-fields tr { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 1rem; padding: 0.75rem 0; border-bottom: 1px solid var(--sl-color-gray-5); }
+  .sl-markdown-content .hc-fields td { display: block; padding: 0; border: 0; margin: 0; }
+  .sl-markdown-content .hc-fields td:nth-child(2) { text-align: end; color: var(--sl-color-gray-2); }
+  .sl-markdown-content .hc-fields td:nth-child(3) { grid-column: 1 / -1; font-size: var(--sl-text-sm); color: var(--sl-color-gray-2); }
+  .sl-markdown-content .hc-fields td:nth-child(3)::before { content: 'Always present: '; }
+  .sl-markdown-content .hc-fields td:nth-child(4) { grid-column: 1 / -1; margin-top: 0.4rem; }
+}
 
-/* Flowcharts keep a readable size; a wide one scrolls inside itself, from
-   its left edge (centred only when it fits). */
+/* Endpoint pages: on a phone a request or response field's name sits above
+   its description, so a long name is not broken mid-word in a narrow column,
+   and the route in the header takes its own line instead of being cut off.
+   (:root outranks the plugin's own rules, which load later.) */
+@media (max-width: 40rem) {
+  :root .sl-openapi-keys { grid-template-columns: minmax(0, 1fr); }
+  :root .sl-openapi-key-description { grid-column: 1; margin-top: 0.25rem; }
+  :root .sl-openapi-operation-method { flex-wrap: wrap; }
+  :root .sl-openapi-operation-method-path { flex-basis: 100%; overflow-x: visible; overflow-wrap: break-word; }
+}
+/* Request and response examples keep each line whole and scroll sideways;
+   the plugin wrapped them anywhere, splitting values ("HC-00004" / "2"). */
+:root .sl-openapi-example div.expressive-code pre > code { text-wrap: nowrap; word-break: normal; }
+/* The endpoint index's routes break at a slash (the build adds <wbr>), not
+   mid-word. */
+:root .sl-openapi-overview-navigation-link a { overflow-wrap: break-word; }
+/* Links in a field's description, in the docs' link colour. */
+.sl-openapi-markdown a { color: var(--sl-color-text-accent); }
+.sl-openapi-markdown a:hover { color: var(--sl-color-white); }
+
+/* Endpoint pages in light mode: "required" in a red that reads on the
+   panels (Starlight's light red is 2.5:1 on gray-6), and examples on the
+   code blocks' own background, not gray-5, which their colours were not
+   made for. */
+:root[data-theme='light'] :is(.sl-openapi-key-required, .sl-openapi-request-body-required) { color: var(--sl-color-red-high); }
+:root[data-theme='light'] .sl-openapi-example div.expressive-code .frame pre { background-color: var(--ec-codeBg); }
+
+/* A diagram shrinks to fit the column, down to 80% of its drawn size (text
+   about 11px); a wider one scrolls inside itself, from its left edge
+   (centred only when it fits). DocsContent.astro sets each one's minimum
+   width once it is drawn. Colours: mermaidThemeCSS in astro.config.mjs. */
 .sl-markdown-content .mermaid { overflow-x: auto; justify-content: flex-start; justify-content: safe center; }
-.sl-markdown-content .mermaid svg { min-width: 720px; height: auto; flex-shrink: 0; }
+.sl-markdown-content .mermaid svg { height: auto; flex-shrink: 0; }
+/* A wide table or diagram that takes focus to scroll (DocsContent.astro). */
+.sl-markdown-content :is(.hc-table, .mermaid, table):focus-visible { outline: 2px solid var(--sl-color-accent); outline-offset: 2px; }

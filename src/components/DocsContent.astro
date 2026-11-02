@@ -1,23 +1,24 @@
 ---
 // The docs page body, with additions the repo's pages cannot make:
 // - /docs/ opens with three links for a first visit;
-// - the endpoint reference opens with what every call needs, and the API
-//   overview with where on the page each of those is;
+// - the endpoint reference opens with what every call needs, linked to the
+//   page that explains each part;
 // - in search, explanations count for more than endpoint pages, so a search
 //   for "idempotency" or "pagination" finds the page that explains it before
-//   an endpoint that mentions it.
+//   an endpoint that mentions it;
+// - every page ends with where to ask, or report a bug (kept out of search).
 import Default from '@astrojs/starlight/components/MarkdownContent.astro';
-import { QUICK_START, doc } from '../site';
+import { QUICK_START, ASK, NEW_ISSUE, doc } from '../site';
 
 const path = Astro.url.pathname.replace(/\/?$/, '/');
 const landing = path === '/docs/';
 const endpointsIndex = path === '/docs/api/endpoints/';
 const endpointPage = path.startsWith('/docs/api/endpoints/') && !endpointsIndex;
-const api = doc('api-surface.md');
-const apiOverview = path === api;
 // The changelog names every feature in passing; it should not outrank the
 // page about one.
 const weight = endpointPage ? '0.2' : path === '/docs/project/changelog/' ? '0.4' : '2';
+// Search also matches a page's keywords (scripts/docs-map.mjs), as metadata.
+const keywords = Astro.locals.starlightRoute.entry.data.keywords;
 ---
 {landing && (
   <nav class="hc-start not-content" aria-label="Start here">
@@ -27,32 +28,64 @@ const weight = endpointPage ? '0.2' : path === '/docs/project/changelog/' ? '0.4
   </nav>
 )}
 <div data-pagefind-weight={weight}>
-{/* A <div>, not a <nav>: search skips <nav>, and these words should find this page. */}
-{apiOverview && (
-  <div class="hc-before not-content" role="navigation" aria-label="On this page">
-    <p class="hc-before-h">On this page</p>
-    <ul class="hc-inline">
-      <li><a href="#make-your-first-call">Base URL and authentication</a></li>
-      <li><a href="#lists">Pagination (lists)</a></li>
-      <li><a href="#sending-usage-safely">Idempotency</a></li>
-      <li><a href="#errors">Errors, error codes and 429 rate limits</a></li>
-    </ul>
-  </div>
-)}
+{keywords?.length ? <div hidden data-pagefind-meta={`keywords:${keywords.join(', ')}`}></div> : null}
 {endpointsIndex && (
   <aside class="hc-before not-content" aria-label="Before you call">
     <p class="hc-before-h">Before you call</p>
     <ul>
       <li><strong>Base URL:</strong> your Hardcount server’s address, such as <code>http://localhost:8080</code> after the <a href={QUICK_START}>quick start</a>. Every route starts with <code>/v1/</code>.</li>
-      <li><strong>Authentication:</strong> send <code>Authorization: Bearer hc_secret_test_…</code> with a secret key. <a href={doc('api-keys.md')}>Authentication and keys</a></li>
-      <li><strong>Pagination, errors and idempotency:</strong> lists take <code>limit</code> and <code>offset</code> (<a href={`${api}#lists`}>Lists</a>); every error has one shape and a code (<a href={`${api}#errors`}>Errors and error codes</a>); usage events carry an idempotency key, and other writes take an <code>Idempotency-Key</code> header (<a href={`${api}#sending-usage-safely`}>Sending usage safely</a>).</li>
-      <li><strong>Rate limits:</strong> by default 100 requests a minute for each API key, and 1,000 usage events a second. A <code>429</code> answer says how many seconds to wait in <code>Retry-After</code>. <a href={doc('self-host.md') + '#settings'}>Settings</a></li>
-      <li><strong>Generate a client:</strong> download the OpenAPI spec, <a href="/openapi.yaml" download><code>/openapi.yaml</code></a>, and use any OpenAPI generator. There are no official SDKs yet.</li>
+      <li><strong>Authentication:</strong> send <code>Authorization: Bearer hc_secret_test_…</code> with a secret key. <a href={doc('api/authentication.md')}>Authentication and keys</a></li>
+      <li><strong>Pagination, errors and idempotency:</strong> lists take <code>limit</code> and <code>offset</code> (<a href={doc('api/pagination.md')}>Pagination</a>); every error has one shape and a code (<a href={doc('api/errors.md')}>Errors</a>); usage events carry an idempotency key, and other writes take an <code>Idempotency-Key</code> header (<a href={doc('api/idempotency.md')}>Idempotency</a>).</li>
+      <li><strong>Rate limits:</strong> by default 1,000 requests a minute for each API key, and 1,000 usage requests a second. A <code>429</code> answer says how many seconds to wait in <code>Retry-After</code>. <a href={doc('api/rate-limits.md')}>Rate limits</a></li>
+      <li><strong>Generate a client:</strong> download the OpenAPI spec, <a href="/openapi.yaml" download><code>/openapi.yaml</code></a>, and use any OpenAPI generator. There are no official SDKs yet. The spec also lists routes your code does not call, such as the dashboard’s own, marked <code>x-internal: true</code>; this reference leaves them out.</li>
     </ul>
   </aside>
 )}
 <Default><slot /></Default>
 </div>
+<p class="hc-help not-content" data-pagefind-ignore>Stuck, or found a bug? <a href={ASK}>Ask in Discussions</a> · <a href={NEW_ISSUE}>Open an issue</a></p>
+
+<script>
+  // A diagram, once drawn (after load, and again when the theme changes),
+  // shrinks to fit the column but no further than 80% of its drawn size, so
+  // its text stays readable; past that its box scrolls (starlight.css).
+  const sizeDiagrams = () => {
+    for (const svg of document.querySelectorAll('.sl-markdown-content .mermaid svg')) {
+      const drawn = svg.viewBox.baseVal?.width;
+      if (drawn) svg.style.minWidth = `${Math.round(drawn * 0.8)}px`;
+    }
+  };
+  // A table or diagram wider than the page scrolls inside its box. While it
+  // does, the box takes keyboard focus, so it can be scrolled with the arrow
+  // keys. Diagrams are drawn after load, so each box is watched for size.
+  const boxes = document.querySelectorAll('.sl-markdown-content :is(.hc-table, .mermaid, :not(.hc-table) > table)');
+  const mark = () => {
+    for (const box of boxes) {
+      if (box.scrollWidth > box.clientWidth + 1) box.setAttribute('tabindex', '0');
+      else box.removeAttribute('tabindex');
+    }
+  };
+  const watch = new ResizeObserver(mark);
+  for (const box of boxes) watch.observe(box);
+  const drawn = new MutationObserver(() => { sizeDiagrams(); mark(); });
+  for (const box of document.querySelectorAll('.sl-markdown-content .mermaid')) drawn.observe(box, { childList: true });
+
+  // Expressive Code makes a code block that scrolls sideways a region, with no
+  // name, so two on one page are landmarks a screen reader cannot tell apart.
+  // Each gets a name from the heading above it, made unique on the page.
+  const headings = [...document.querySelectorAll('main :is(h1, h2, h3, h4)')];
+  const names = new Map();
+  const nameRegions = () => {
+    for (const pre of document.querySelectorAll('.expressive-code pre[role="region"]:not([aria-label])')) {
+      const above = headings.filter((h) => h.compareDocumentPosition(pre) & Node.DOCUMENT_POSITION_FOLLOWING).pop();
+      const base = `Code: ${above?.textContent?.trim() || document.title}`;
+      const n = (names.get(base) ?? 0) + 1;
+      names.set(base, n);
+      pre.setAttribute('aria-label', n > 1 ? `${base} (${n})` : base);
+    }
+  };
+  new MutationObserver(nameRegions).observe(document.body, { subtree: true, attributes: true, attributeFilter: ['role'] });
+</script>
 
 <style>
   .hc-start { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; margin: 0 0 2rem; }
@@ -67,5 +100,7 @@ const weight = endpointPage ? '0.2' : path === '/docs/project/changelog/' ? '0.4
   .hc-before ul { margin: 0; padding-left: 1.1rem; display: grid; gap: 0.4rem; font-size: var(--sl-text-sm); color: var(--sl-color-gray-2); }
   .hc-before a { color: var(--sl-color-text-accent); }
   .hc-before code { font-size: 0.85em; }
-  .hc-inline { list-style: none; padding: 0 !important; display: flex !important; flex-wrap: wrap; gap: 0.25rem 1.25rem !important; }
+
+  .hc-help { margin: 2.5rem 0 0; padding-top: 1rem; border-top: 1px solid var(--sl-color-gray-5); font-size: var(--sl-text-sm); color: var(--sl-color-gray-2); }
+  .hc-help a { color: var(--sl-color-text-accent); }
 </style>

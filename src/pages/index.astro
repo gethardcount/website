@@ -72,7 +72,6 @@ const demoEnd = `━━━ Done: every step above ran and was checked ━━━
         <li><strong>Hardcount prices it.</strong> It uses your plan’s prices, and at the end of each billing period it makes the invoice and its PDF.</li>
         <li><strong>Stripe charges the card.</strong> If a charge fails, Hardcount retries on a schedule and, once email is set up, emails your customer. The subscription doesn’t switch to “past due”: your app decides when to limit access.</li>
       </ol>
-      <p class="prose">One usage event, sent with curl. <code>$HARDCOUNT_KEY</code> is the test key <code>./quickstart.sh</code> prints; customer <code>acme-1</code> and the <code>tokens</code> meter must exist first (<a href={doc('first-invoice.md')}>Send usage, get an invoice</a> creates them):</p>
       <UsageCurl />
       <p class="prose">There are no SDKs yet. <a href={doc('first-invoice.md')}>Send usage, get an invoice →</a> does every request with curl, step by step.</p>
     </div>
@@ -158,7 +157,7 @@ const demoEnd = `━━━ Done: every step above ran and was checked ━━━
     <div class="wrap">
       <h2>Run it locally</h2>
       <p class="prose">This starts Hardcount on your computer in test mode and runs a demo. You need git and Docker 24 or newer, with Compose. On Windows, use WSL.</p>
-      <Code label="Commands to start Hardcount and run the demo" text={`git clone https://github.com/gethardcount/hardcount.git
+      <Code label="Commands to start Hardcount and run the demo" text={`git clone --branch ${RELEASE} https://github.com/gethardcount/hardcount.git
 cd hardcount/deploy/compose
 ./quickstart.sh
 ./quickstart.sh demo`} />

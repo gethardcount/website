@@ -9,7 +9,8 @@
 // a site pinned to one release; each is named below.
 import fs from 'node:fs';
 import path from 'node:path';
-import { sections, plannedPages, movedToSite, redirects, plannedNearest } from './docs-map.mjs';
+import YAML from 'yaml';
+import { sections, plannedPages, movedToSite, redirects, nearestUntilBuilt } from './docs-map.mjs';
 
 const SRC = process.env.HC_SRC;
 const REF = process.env.HC_REF;
@@ -200,6 +201,14 @@ function wrapTables(chunk) {
   return out.join('\n');
 }
 
+// A heading that is only a code name ("### `invoice.payment_recorded`") can
+// break only mid-word on a phone, as "." and "_" are not break points. It is
+// written as HTML with <wbr> after each, which adds no text, so the heading's
+// anchor stays the same.
+function breakableCodeHeadings(chunk) {
+  return chunk.replace(/^(#{2,6}) `([\w.\-]*[._][\w.\-]*)`[ \t]*$/gm, (m, hashes, name) => `${hashes} <code>${name.replace(/([._])/g, '$1<wbr>')}</code>`);
+}
+
 function rewriteBody(text, fromFile) {
   // Fenced code blocks are left alone.
   return text
@@ -215,6 +224,7 @@ function rewriteBody(text, fromFile) {
         .replace(/\b(src|href)="([^"]+)"/g, (m, a, t) => `${a}="${rewrite(t, fromFile)}"`)
         // The repo moved from getvelox/velox; old links still name it.
         .replace(/https:\/\/github\.com\/getvelox\/velox\//g, `${REPO}/`);
+      chunk = breakableCodeHeadings(chunk);
       chunk = chunk
         .split('\n')
         .map((line) => outsideInlineCode(line, escapePlaceholders))
@@ -273,14 +283,14 @@ function firstParagraph(md) {
 // Page fixes for a site pinned to one release. Each returns the new body; a
 // fix whose text is no longer in the source warns, so it is not kept by habit.
 const fixes = {
-  // The landing page sends newcomers to the README, which on this site is the
-  // home page they came from.
-  'docs/README.md': (body) =>
-    replaceOnce(body, /\*\*New here\? Read the \[README\]\([^)]*\), then run the\s+\[quick start\]\(([^)]*)\)\.\*\*/, (m, qs) => `**New here? Run the [quick start](${qs}), then read [How it works](/docs/get-started/how-hardcount-works/).**`, 'docs/README.md'),
   // "Read this page at the version you run" links the page to itself here:
   // every page on this site is the release's.
   'docs/first-invoice.md': (body) =>
     replaceOnce(body, /Read this page at the version you run\.[\s\S]*?ahead of that release\.\n/, () => `This page describes ${REF}, the release the quick start runs.\n`, 'docs/first-invoice.md'),
+  // The overview's "In the repository" link to api/openapi.yaml becomes the
+  // endpoint reference on this site, so the bullet names the site's copies.
+  'docs/api-surface.md': (body) =>
+    replaceOnce(body, /^- In the repository: \[`api\/openapi\.yaml`\]\(\.\.\/api\/openapi\.yaml\)\.$/m, () => '- On this site: the [endpoint reference](/docs/api/endpoints/), or download [`/openapi.yaml`](/openapi.yaml).', 'docs/api-surface.md'),
   // The changelog shows the latest releases; the full history is on GitHub.
   'CHANGELOG.md': (body) => {
     const parts = body.split(/^(?=## \[)/m);
@@ -289,9 +299,10 @@ const fixes = {
       .filter((b) => !/^How to write an entry/.test(b.trim()) && !/^Long entries from/.test(b.trim()))
       .join('\n\n');
     const releases = parts.slice(1).filter((r) => !/^## \[Unreleased\]\s*$/.test(r.trim()));
-    // Releases of the current and the previous minor version.
+    // Releases of the current and the previous minor version, after an
+    // Unreleased section that has entries (a release's own is empty).
     const minors = [...new Set(releases.map((r) => r.match(/^## \[(\d+\.\d+)\./)?.[1]).filter(Boolean))].slice(0, 2);
-    const kept = releases.filter((r) => minors.includes(r.match(/^## \[(\d+\.\d+)\./)?.[1]));
+    const kept = releases.filter((r) => /^## \[Unreleased\]/.test(r) || minors.includes(r.match(/^## \[(\d+\.\d+)\./)?.[1]));
     const full = `${REPO}/blob/${REF}/CHANGELOG.md`;
     return `${head.trim()}\n\nThis page shows the ${minors.map((m) => `${m}.x`).join(' and ')} releases. Every earlier release is in the [full changelog on GitHub](${full}).\n\n${kept.join('').trim()}\n\nEarlier releases: [the full changelog on GitHub](${full}).\n`;
   },
@@ -319,6 +330,7 @@ function writePage(p, title, body) {
     // "View source" opens the file this page shows, at the release.
     p.src && `editUrl: ${JSON.stringify(`${REPO}/blob/${REF}/${p.src}`)}`,
     unsearched(p.slug) && 'pagefind: false',
+    p.keywords && `keywords: ${JSON.stringify(p.keywords)}`,
     p.next !== undefined && `next: ${link(p.next)}`,
     p.prev !== undefined && `prev: ${link(p.prev)}`,
     p.noindex && `head:\n${yamlList([{ tag: 'meta', attrs: { name: 'robots', content: 'noindex' } }])}`,
@@ -370,11 +382,11 @@ fs.writeFileSync(
 const built = new Set(pages.map((p) => pageUrl(p.slug)));
 const redirectMap = {};
 for (const [from, to] of Object.entries(redirects)) if (!built.has(from)) redirectMap[from] = to;
-for (const [slug, to] of Object.entries(plannedNearest)) {
+for (const [slug, to] of Object.entries(nearestUntilBuilt)) {
   const from = pageUrl(slug);
   if (!built.has(from)) redirectMap[from] = to;
 }
-for (const p of plannedPages) if (!plannedNearest[p.slug]) warn(`planned page ${p.slug} has no entry in plannedNearest`);
+for (const p of plannedPages) if (!nearestUntilBuilt[p.slug]) warn(`planned page ${p.slug} has no entry in nearestUntilBuilt`);
 fs.writeFileSync(path.join(GEN, 'redirects.json'), JSON.stringify(redirectMap, null, 2));
 
 // 6. Pages left out of llms-full.txt (astro.config.mjs filters it by page
@@ -393,11 +405,175 @@ for (const p of pages) {
 skipTitles.add('Page not found');
 fs.writeFileSync(path.join(GEN, 'llms-full-skip.json'), JSON.stringify([...skipTitles].sort(), null, 2));
 
-// 7. The API spec, for the reference and as a download.
+// 7. The API spec, from the same checkout as the docs. The download
+// (/openapi.yaml) and the Objects pages (gen-objects.mjs) use it as it is.
 const spec = read(SPEC);
 fs.mkdirSync('public', { recursive: true });
 fs.writeFileSync('public/openapi.yaml', spec);
 fs.writeFileSync(path.join(GEN, 'openapi.yaml'), spec);
+
+// The endpoint reference shows the API an integration calls. Routes marked
+// `x-internal: true` (the dashboard's own routes, the receivers Stripe and
+// Postmark call, first-run setup) are left out of the copy it reads, and so
+// is a tag or a security scheme that no route left uses. Everything else is
+// the spec's own text.
+const METHODS = ['get', 'put', 'post', 'delete', 'options', 'head', 'patch', 'trace'];
+
+// starlight-openapi writes each endpoint's curl and fetch sample from the
+// spec. For an optional query parameter it takes the schema's first enum value
+// before its default, so a list sample read "status=draft&billing=failing&
+// collection=paused…&dir=asc", which can never match a row. In the copy:
+// - an optional parameter with a default shows that default (sort, dir);
+// - an optional enum filter with no default is left out of the sample: its
+//   schema is wrapped in an allOf of itself, which the page shows the same
+//   way but gives the sample nothing to fill in;
+// - an ID in the path is a real ID of its kind from the spec's own examples,
+//   not the word "example".
+// The kind of an ID, by parameter name or, for "id", by the path segment
+// before it. Prefixes are the ones the server's NewID() calls use.
+const ID_KIND = {
+  customer_id: 'hc_cus', price_id: 'hc_prc', itemID: 'hc_si', pmID: 'hc_pm', deliveryID: 'hc_whd',
+  customers: 'hc_cus', meters: 'hc_mtr', plans: 'hc_pln', subscriptions: 'hc_sub', invoices: 'hc_inv', 'credit-notes': 'hc_cn',
+  'test-clocks': 'hc_tclk', runs: 'hc_drun', policies: 'hc_dpol', 'price-overrides': 'hc_cpo', 'api-keys': 'hc_key',
+  endpoints: 'hc_whe', webhook_events: 'hc_whevt', 'provider-costs': 'hc_pcr',
+};
+function sampleValues(docu, text) {
+  // The ID the spec's examples use most for each prefix.
+  const counts = new Map();
+  for (const id of text.match(/\bhc_[a-z]+_[0-9a-z]{20,24}\b/g) ?? []) counts.set(id, (counts.get(id) ?? 0) + 1);
+  const idFor = new Map();
+  for (const [id, n] of [...counts].sort((a, b) => b[1] - a[1])) {
+    const prefix = id.slice(0, id.lastIndexOf('_'));
+    if (!idFor.has(prefix)) idFor.set(prefix, id);
+  }
+  const deref = (node) => {
+    const ref = node?.get?.('$ref');
+    return ref ? docu.getIn(ref.replace(/^#\//, '').split('/')) : node;
+  };
+  const done = new Set();
+  const changed = { defaults: 0, leftOut: 0, ids: 0 };
+  for (const pair of docu.get('paths').items) {
+    const route = String(pair.key.value);
+    const item = pair.value;
+    const params = [...(item.get('parameters')?.items ?? []), ...METHODS.flatMap((m) => item.get(m)?.get('parameters')?.items ?? [])];
+    for (const raw of params) {
+      const param = deref(raw);
+      if (!param || done.has(param)) continue;
+      done.add(param);
+      if (param.has('example') || param.has('examples')) continue;
+      const where = param.get('in');
+      const name = String(param.get('name'));
+      if (where === 'query' && param.get('required') !== true) {
+        const schema = deref(param.get('schema'));
+        if (!schema?.has('enum')) continue;
+        if (schema.has('default')) {
+          param.set('example', schema.get('default'));
+          changed.defaults++;
+        } else {
+          param.set('schema', docu.createNode({ allOf: [param.get('schema', true)] }));
+          changed.leftOut++;
+        }
+      } else if (where === 'path') {
+        const before = route.split('/{' + name + '}')[0].split('/').filter((s) => s && !s.startsWith('{')).pop();
+        const id = idFor.get(ID_KIND[name] ?? (name === 'id' ? ID_KIND[before] : undefined));
+        if (id) {
+          param.set('example', id);
+          changed.ids++;
+        }
+      }
+    }
+  }
+  return changed;
+}
+
+// starlight-openapi shows a oneOf or anyOf property as its branches only, and
+// drops the property's own description (quantity: "A JSON number or a string
+// holding one…"). The branches move into an allOf of one member, so the page
+// shows the description, then the same branches.
+function keepChoiceDescriptions(docu) {
+  let moved = 0;
+  const visit = (node) => {
+    if (YAML.isMap(node)) {
+      const choice = ['oneOf', 'anyOf'].find((k) => node.has(k));
+      if (choice && node.has('description') && !node.has('allOf')) {
+        const member = docu.createNode({});
+        member.set(choice, node.get(choice, true));
+        if (node.has('discriminator')) {
+          member.set('discriminator', node.get('discriminator', true));
+          node.delete('discriminator');
+        }
+        node.delete(choice);
+        node.set('allOf', docu.createNode([member]));
+        moved++;
+      }
+      for (const pair of node.items) visit(pair.value);
+    } else if (YAML.isSeq(node)) {
+      for (const child of node.items) visit(child);
+    }
+  };
+  visit(docu.contents);
+  return moved;
+}
+
+function integrationSpec(text) {
+  const docu = YAML.parseDocument(text);
+  if (docu.errors.length) throw new Error(`${SPEC}: ${docu.errors[0].message}`);
+  const paths = docu.get('paths');
+  const usedTags = new Set();
+  const usedSchemes = new Set();
+  for (const req of docu.get('security')?.items ?? []) for (const pair of req.items) usedSchemes.add(String(pair.key.value ?? pair.key));
+  const left = [];
+  let kept = 0;
+  for (const route of paths.items.map((pair) => pair.key.value)) {
+    const item = paths.get(route);
+    const routeInternal = item.get('x-internal') === true;
+    for (const method of METHODS) {
+      const op = item.get(method);
+      if (!op) continue;
+      if (routeInternal || op.get('x-internal') === true) {
+        item.delete(method);
+        left.push(`${method.toUpperCase()} ${route}`);
+        continue;
+      }
+      kept++;
+      for (const tag of op.get('tags')?.items ?? []) usedTags.add(String(tag.value ?? tag));
+      for (const req of op.get('security')?.items ?? []) for (const pair of req.items) usedSchemes.add(String(pair.key.value ?? pair.key));
+    }
+    if (!METHODS.some((m) => item.has(m))) paths.delete(route);
+  }
+  const tags = docu.get('tags');
+  const emptyTags = [];
+  if (tags) {
+    for (let i = tags.items.length - 1; i >= 0; i--) {
+      const name = tags.items[i].get('name');
+      if (!usedTags.has(name)) {
+        emptyTags.unshift(name);
+        tags.delete(i);
+      }
+    }
+  }
+  const schemes = docu.getIn(['components', 'securitySchemes']);
+  const unusedSchemes = [];
+  for (const name of schemes?.items.map((pair) => String(pair.key.value ?? pair.key)) ?? []) {
+    if (!usedSchemes.has(name)) {
+      unusedSchemes.push(name);
+      schemes.delete(name);
+    }
+  }
+  const samples = sampleValues(docu, text);
+  const descriptions = keepChoiceDescriptions(docu);
+  return { text: docu.toString({ lineWidth: 0 }), kept, left, emptyTags, unusedSchemes, samples, descriptions };
+}
+const shown = integrationSpec(spec);
+fs.writeFileSync(path.join(GEN, 'openapi-integration.yaml'), shown.text);
+console.log(
+  `endpoint reference: ${shown.kept} operations; ${shown.left.length} marked x-internal left out` +
+    (shown.emptyTags.length ? `, with the tags (${shown.emptyTags.join(', ')})` : '') +
+    (shown.unusedSchemes.length ? ` and security schemes (${shown.unusedSchemes.join(', ')}) only they used` : ''),
+);
+console.log(
+  `endpoint samples: ${shown.samples.defaults} optional parameters show their default, ${shown.samples.leftOut} optional filters are left out, ${shown.samples.ids} path IDs are real IDs; ${shown.descriptions} oneOf/anyOf descriptions kept`,
+);
 
 console.log(`synced ${pages.length} pages from ${SRC} at ${REF}`);
 if (warnings.length) {

@@ -1,4 +1,5 @@
 ---
+import '../styles/fonts.css';
 import '../styles/global.css';
 import Logo from '../components/Logo.astro';
 import StatusLine from '../components/StatusLine.astro';
@@ -65,9 +66,9 @@ const path = Astro.url.pathname;
       </nav>
     </div>
   </header>
-  <div class="status">
+  <aside class="status" aria-label="Project status">
     <div class="wrap"><p><StatusLine /></p></div>
-  </div>
+  </aside>
 
   <main id="main" data-pagefind-body>
     <slot />

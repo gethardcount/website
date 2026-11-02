@@ -21,6 +21,23 @@ fs.mkdirSync(OUT, { recursive: true });
 const pageOf = new Map(objects.map(([name, slug]) => [name, `/docs/api/objects/${slug}/`]));
 const refName = (ref) => ref.split('/').pop();
 const cell = (s) => String(s ?? '').replace(/\s*\n\s*/g, ' ').replace(/\|/g, '\\|').trim();
+// A description in a table cell: its lines joined, except that each item of a
+// list in it (an enum's values, each with what it means) starts a new line.
+const cellText = (s) =>
+  String(s ?? '')
+    .trim()
+    .split(/\n\s*\n|\n(?=\s*[-*] )/)
+    .map((part) => cell(part.replace(/^\s*[-*]\s+/, '')))
+    .filter(Boolean)
+    .join('<br>');
+// The page's meta description: the first paragraph as plain text, at most
+// 200 characters, as scripts/sync-docs.mjs writes for the synced pages.
+const metaText = (s) => {
+  const text = cell(String(s).trim().split(/\n\s*\n|\n(?=\s*[-*] )/)[0]).replace(/\\\|/g, '|').replace(/`/g, '');
+  return text.length > 200 ? text.slice(0, 197).replace(/\s+\S*$/, '') + '…' : text;
+};
+// Every value of an enum is already a list item of its description.
+const listsEvery = (text, values) => values.every((v) => new RegExp(`^\\s*[-*]\\s+\`${v}\``, 'm').test(text ?? ''));
 // SubscriptionItem → "Subscription item"; its heading id is "subscription-item".
 const human = (name) => name.replace(/([a-z0-9])([A-Z])/g, '$1 $2').toLowerCase().replace(/^./, (c) => c.toUpperCase());
 const anchor = (name) => human(name).toLowerCase().replace(/\s+/g, '-');
@@ -51,9 +68,9 @@ function describe(prop) {
   const { schema } = resolve(prop);
   const parts = [];
   const text = prop.description ?? schema.description;
-  if (text) parts.push(cell(text));
+  if (text) parts.push(cellText(text));
   const values = schema.enum ?? resolve(schema.items ?? {}).schema.enum;
-  if (values) parts.push(`One of: ${values.map((v) => `\`${v}\``).join(', ')}.`);
+  if (values && !listsEvery(text, values)) parts.push(`One of: ${values.map((v) => `\`${v}\``).join(', ')}.`);
   if (prop.nullable || schema.nullable) parts.push('Can be null.');
   return parts.join(' ');
 }
@@ -104,11 +121,11 @@ for (const [name, slug] of objects) {
   const lines = [
     '---',
     `title: ${JSON.stringify(title)}`,
-    `description: ${JSON.stringify(schema.description ? cell(schema.description) : `The ${label.toLowerCase()} object in the Hardcount API: every field and what it means.`)}`,
+    `description: ${JSON.stringify(schema.description ? metaText(schema.description) : `The ${label.toLowerCase()} object in the Hardcount API: every field and what it means.`)}`,
     '---',
     '',
   ];
-  if (schema.description) lines.push(cell(schema.description), '');
+  if (schema.description) lines.push(schema.description.trim(), '');
   if (ex) lines.push('## Example', '', '```json\n' + JSON.stringify(ex, null, 2) + '\n```', '');
   lines.push('## Fields', '', ...fieldTable(schema, nested), '');
 
@@ -123,7 +140,7 @@ for (const [name, slug] of objects) {
     const s = schemas[n];
     const inner = new Set();
     lines.push(`## ${human(n)}`, '');
-    if (s.description) lines.push(cell(s.description), '');
+    if (s.description) lines.push(s.description.trim(), '');
     lines.push(...fieldTable(s, inner), '');
     for (const i of inner) if (!done.has(i)) queue.push(i);
   }
@@ -137,10 +154,10 @@ fs.writeFileSync(
   [
     '---',
     'title: "Objects"',
-    'description: "Every object the Hardcount API returns, with each field explained."',
+    'description: "The core objects the Hardcount API returns, with each field explained."',
     '---',
     '',
-    'Every object the API returns, with each field explained. Each page is generated from the API spec, [`/openapi.yaml`](/openapi.yaml). Field names are checked against the server code by tests.',
+    'The core objects the API returns, with each field explained. Each page is generated from the API spec, [`/openapi.yaml`](/openapi.yaml), which also describes every other shape the API sends. Field names are checked against the server code by tests.',
     '',
     '| Object | Fields | Objects inside it |',
     '|---|---|---|',

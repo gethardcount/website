@@ -16,8 +16,10 @@
   /* The demo's check marks: 4.9:1 on the code background. */
   --ok: #2F6E3B;
 
-  --serif: "Source Serif 4", Georgia, serif;
-  --sans: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+  /* The fallback faces (src/styles/fonts.css) keep lines from rewrapping
+     when the web fonts arrive. */
+  --serif: "Source Serif 4", "Source Serif fallback", Georgia, serif;
+  --sans: Inter, "Inter fallback", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
 
   --wide: 1080px;
@@ -155,4 +157,7 @@ section + section { border-top: 1px solid var(--rule); }
   padding: 8px 10px; min-height: 32px; cursor: pointer;
 }
 .code .copy:hover { color: var(--copper-ink); border-color: var(--copper); }
+/* On a phone the first line starts below the Copy button, which would
+   otherwise cover its visible end. */
+@media (max-width: 640px) { .code pre { padding-top: 48px; } }
 .code .copy:focus-visible { outline: 2px solid var(--copper); outline-offset: 2px; }

@@ -1,0 +1,12 @@
+/* Until the web fonts arrive, text is set in a local font resized to take
+   the same space (Arial for Inter, Georgia Bold for the headings), so lines
+   do not rewrap when the fonts swap in. The Inter faces' sizes come from both
+   fonts' files (average character width and vertical metrics) and match the
+   rendered width within 0.5%. Source Serif narrows as it grows (optical
+   sizing): drawn, it is 0.80 of Georgia Bold's width at 60px and 0.86 at
+   29px, so its face takes 0.82, nearest the largest headings. Where the
+   local font is missing, the stack goes on to the system font. Loaded by the
+   website pages (src/layouts/Base.astro) and the docs (astro.config.mjs). */
+@font-face { font-family: "Inter fallback"; src: local("Arial"), local("ArialMT"); font-weight: 100 549; size-adjust: 107.35%; ascent-override: 90.24%; descent-override: 22.47%; line-gap-override: 0%; }
+@font-face { font-family: "Inter fallback"; src: local("Arial Bold"), local("Arial-BoldMT"); font-weight: 550 900; size-adjust: 101.12%; ascent-override: 95.8%; descent-override: 23.85%; line-gap-override: 0%; }
+@font-face { font-family: "Source Serif fallback"; src: local("Georgia Bold"), local("Georgia-Bold"); font-weight: 500 900; size-adjust: 82%; ascent-override: 126.34%; descent-override: 40.85%; line-gap-override: 0%; }

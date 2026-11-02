@@ -3,7 +3,8 @@
 // in the HTML; CSS shows one, keyed on the same rules as the colour tokens
 // (the system setting, or a choice made with the docs' theme switch), so the
 // picture and the page always agree. A hidden lazy image is not downloaded.
-// "Open full size" opens the image in the theme being shown.
+// The image links to itself at full size, in the theme being shown. On a
+// phone, where the picture is too small to read, the link also says so.
 import type { Shot } from '../data/media';
 interface Props { shot: Shot; eager?: boolean }
 const { shot, eager = false } = Astro.props;
@@ -13,6 +14,7 @@ const src = (t: string) => `/shots/${shot.name}-${t}.png`;
   {['light', 'dark'].map((t) => (
     <a href={src(t)} class={`shot-link shot-${t}`} title="Open full size">
       <img src={src(t)} width={shot.w} height={shot.h} loading={eager ? 'eager' : 'lazy'} decoding="async" alt={shot.alt} />
+      <span class="shot-open">Open full size</span>
     </a>
   ))}
 </span>
@@ -22,6 +24,10 @@ const src = (t: string) => `/shots/${shot.name}-${t}.png`;
   .shot-link { display: block; }
   .shot img { display: block; width: 100%; height: auto; border: 1px solid var(--rule); border-radius: 12px; box-shadow: 0 2px 14px rgb(34 29 24 / 0.08); }
   .shot-dark { display: none; }
+  .shot-open { display: none; }
+  @media (max-width: 640px) {
+    .shot-open { display: inline-block; margin-top: 8px; font-size: 15px; color: var(--copper-ink); text-decoration: underline; text-underline-offset: 3px; }
+  }
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) .shot-light { display: none; }
     :root:not([data-theme="light"]) .shot-dark { display: block; }
