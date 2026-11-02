@@ -82,12 +82,18 @@ const demoEnd = `━━━ Done: every step above ran and was checked ━━━
       <h2>What it looks like</h2>
       <p class="prose muted">One month of AI usage for one customer, from the demo in test mode. The dates are a month ahead because the demo moves a test clock (a pretend clock for test customers) forward a month. The commands to run the demo yourself are below, in <a href="#try">Run it locally</a>.</p>
       {showVideos && <Video video={videos.walkthrough} />}
-      <div class="shots">
-        <figure>
+      {/* Two screenshots under one switch, so the section stays short. Without
+          JavaScript the switch stays hidden and both show, one under the other. */}
+      <div class="shots" data-tabs>
+        <div class="tabs" role="tablist" aria-label="Screenshots from the demo" hidden>
+          <button type="button" role="tab" id="tab-invoice" aria-controls="shot-invoice" aria-selected="true">The invoice</button>
+          <button type="button" role="tab" id="tab-margin" aria-controls="shot-margin" aria-selected="false" tabindex="-1">Your margin</button>
+        </div>
+        <figure id="shot-invoice" role="tabpanel" aria-labelledby="tab-invoice">
           <figcaption><strong>The demo invoice.</strong> One line per model and token type, priced per million tokens.</figcaption>
           <Shot shot={shots.invoice} />
         </figure>
-        <figure>
+        <figure id="shot-margin" role="tabpanel" aria-labelledby="tab-margin">
           <figcaption><strong>Your margin, per model.</strong> Each model's usage revenue against what the AI provider charged you: Sonnet 67.1%, Haiku 20.0%. Only you see this, never your customer.</figcaption>
           <Shot shot={shots.margin} />
         </figure>
@@ -185,6 +191,37 @@ cd hardcount/deploy/compose
   <TryIt />
 </Base>
 
+<script>
+  // The screenshot switch: show one panel at a time, with arrow keys between tabs.
+  for (const box of document.querySelectorAll<HTMLElement>('[data-tabs]')) {
+    const list = box.querySelector<HTMLElement>('[role="tablist"]');
+    const tabs = [...box.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
+    if (!list || tabs.length < 2) continue;
+    const select = (tab: HTMLButtonElement) => {
+      for (const t of tabs) {
+        const on = t === tab;
+        t.setAttribute('aria-selected', String(on));
+        t.tabIndex = on ? 0 : -1;
+        const panel = document.getElementById(t.getAttribute('aria-controls') ?? '');
+        if (panel) panel.hidden = !on;
+      }
+    };
+    list.hidden = false;
+    box.classList.add('on');
+    select(tabs[0]);
+    for (const [i, t] of tabs.entries()) {
+      t.addEventListener('click', () => select(t));
+      t.addEventListener('keydown', (e) => {
+        const step = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+        if (!step) return;
+        const next = tabs[(i + step + tabs.length) % tabs.length];
+        select(next);
+        next.focus();
+      });
+    }
+  }
+</script>
+
 <style>
   .hero { padding-top: 88px; }
   .accent { color: var(--copper); }
@@ -210,6 +247,15 @@ cd hardcount/deploy/compose
 
   /* One picture per row, wide enough to read its numbers. */
   .shots { display: grid; gap: 36px; margin-top: 24px; max-width: 920px; }
+  .tabs { display: flex; gap: 8px; }
+  .tabs button {
+    font: inherit; font-size: 15px; padding: 8px 16px; border-radius: 999px; cursor: pointer;
+    border: 1px solid var(--rule); background: transparent; color: var(--ink-soft);
+  }
+  .tabs button:hover { border-color: var(--copper); color: var(--ink); }
+  .tabs button[aria-selected="true"] { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+  .tabs button:focus-visible { outline: 2px solid var(--copper); outline-offset: 2px; }
+  .shots[data-tabs].on { gap: 16px; }
   .shots figure { margin: 0; }
   .shots figcaption { font-size: 16px; color: var(--ink-soft); margin-bottom: 12px; }
   .shots figcaption strong { color: var(--ink); }
