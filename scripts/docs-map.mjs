@@ -64,7 +64,7 @@ const allSections = [
       { src: 'docs/versioning.md', slug: 'api/versioning', label: 'Versioning' },
       { src: 'docs/api/rate-limits.md', slug: 'api/rate-limits', label: 'Rate limits', keywords: ['X-RateLimit', 'X-RateLimit-Remaining', 'Retry-After', '429'] },
       { src: 'docs/api/timing-and-limits.md', slug: 'api/timing-and-limits', label: 'Timing and limits', keywords: ['timeout', 'request timeout'] },
-      { src: 'docs/api/two-calls.md', slug: 'api/two-calls', label: 'Code samples: Node, Python, Go' },
+      { src: 'docs/api/two-calls.md', slug: 'api/two-calls', label: 'Code samples: curl, Node, Python, Go' },
       { src: 'docs/webhooks.md', slug: 'api/webhooks', label: 'Webhooks', keywords: ['verify webhook', 'verify signature', 'Hardcount-Signature'] },
       { src: 'docs/api/webhook-events.md', slug: 'api/webhook-events', label: 'Webhook events' },
       { objects: true, label: 'Objects' },
