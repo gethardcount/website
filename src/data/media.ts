@@ -2,7 +2,8 @@
 //
 // A screenshot is two files in public/shots: <name>-light.png and
 // <name>-dark.png, shown to match the reader's light or dark setting. A video
-// is public/media/<name>.webm with a still from it as <name>-poster.png.
+// is public/media/<name>.webm, narrated, with a still from it as
+// <name>-poster.png and captions of its narration as <name>.vtt.
 //
 // `live: true` files are published and match the release in src/site.ts. The
 // others render only when MEDIA_READY (src/site.ts) is true. Before flipping
@@ -41,8 +42,7 @@ export const shots = {
 } satisfies Record<string, Shot>;
 
 export const videos = {
-  tour: { name: 'dashboard-tour', w: 1280, h: 720, label: 'A short tour of the Hardcount dashboard after the demo has run.' },
-  demo: { name: 'demo-terminal', w: 1280, h: 720, label: 'The quick start demo running in a terminal, from start to finish.' },
+  walkthrough: { name: 'demo-walkthrough', w: 1280, h: 720, label: 'A narrated walkthrough, with captions: the quick start demo runs in a terminal, then the dashboard shows what it made.' },
 } satisfies Record<string, Video>;
 
 export const showShot = (s: Shot) => s.live || MEDIA_READY;

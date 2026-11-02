@@ -1,14 +1,17 @@
 ---
-// A silent screen recording: it plays only when the reader presses play, has
-// controls, and stays inline on a phone. Files: public/media/<name>.webm and
-// its first frame, public/media/<name>-poster.png (src/data/media.ts).
+// A narrated screen recording: it plays, with its sound, only when the reader
+// presses play, has controls, and stays inline on a phone. It offers English
+// captions of the narration, off until the reader turns them on. Files:
+// public/media/<name>.webm, a still from it as <name>-poster.png, and the
+// captions as <name>.vtt (src/data/media.ts).
 import type { Video } from '../data/media';
 interface Props { video: Video }
 const { video } = Astro.props;
 ---
 <figure class="video">
-  <video controls muted playsinline preload="none" width={video.w} height={video.h} poster={`/media/${video.name}-poster.png`} aria-label={video.label}>
+  <video controls playsinline preload="none" width={video.w} height={video.h} poster={`/media/${video.name}-poster.png`} aria-label={video.label}>
     <source src={`/media/${video.name}.webm`} type="video/webm" />
+    <track kind="captions" srclang="en" label="English" src={`/media/${video.name}.vtt`} />
   </video>
   <figcaption>{video.label}</figcaption>
 </figure>

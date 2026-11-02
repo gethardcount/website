@@ -1,0 +1,42 @@
+WEBVTT
+
+1
+00:00:00.600 --> 00:00:02.520
+One command runs the whole demo.
+
+2
+00:00:04.000 --> 00:00:10.165
+It loads prices for Claude tokens, creates a customer on a test clock, and sends ten AI calls.
+
+3
+00:00:11.400 --> 00:00:15.155
+Then it moves the clock a month and builds the invoice. Here's what it made.
+
+4
+00:00:18.003 --> 00:00:22.547
+These are the prices it loaded: each Claude model, priced per token type.
+
+5
+00:00:23.603 --> 00:00:28.211
+Here's the customer it created, on a test clock, with a subscription to that plan.
+
+6
+00:00:30.945 --> 00:00:33.761
+Its AI calls show up as usage, day by day.
+
+7
+00:00:36.912 --> 00:00:40.155
+The test clock moved a month forward, so the period closed.
+
+8
+00:00:43.617 --> 00:00:49.100
+And the invoice: one line per model and token type, five dollars seventy-three in total.
+
+9
+00:00:53.094 --> 00:00:59.494
+Finally, your margin: what you billed against what the model provider charged. Fifty-one point nine percent.
+
+10
+00:01:00.301 --> 00:01:03.501
+Run the same demo on your machine with the commands below.
+
