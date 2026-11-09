@@ -1,15 +1,15 @@
 // One place for the site's shared words and links. Page copy lives in the pages.
 export const REPO = 'https://github.com/gethardcount/hardcount';
 // Doc links pin the release, so the site describes the code people install.
-export const RELEASE = 'v0.9.2';
+export const RELEASE = 'v0.9.3';
 // The hardcount commit the docs are built from: the release tag, or a later
 // commit on main that changes only docs, so the docs still describe RELEASE
 // with fixes made since. Set it back to RELEASE with the next release bump.
-export const DOCS_REF = 'c4c67a93be1f321257d9d7e443105b2d740df67a';
+export const DOCS_REF = RELEASE;
 // The release's date, as the changelog heading gives it, and for reading.
-export const RELEASE_ISO = '2026-11-02';
-export const RELEASE_DATE = '2 Nov 2026';
-// The release's entry in the changelog page ("## [0.9.2] - 2026-11-02").
+export const RELEASE_ISO = '2026-11-09';
+export const RELEASE_DATE = '9 Nov 2026';
+// The release's entry in the changelog page ("## [0.9.3] - 2026-11-09").
 export const WHATS_NEW = `/docs/project/changelog/#${RELEASE.slice(1).replaceAll('.', '')}---${RELEASE_ISO}`;
 // Screenshots and videos of the dashboard, listed in src/data/media.ts. The
 // ones marked `live` match the release now. The rest, and the videos, show
