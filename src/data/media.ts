@@ -36,8 +36,8 @@ export const shots = {
     alt: 'An invoice in the Hardcount dashboard whose card Stripe declined: the $5.73 payment and its first retry both failed with “Card declined by the bank”, payment recovery is running, and the next retry is on Dec 8, 2026.',
   },
   testclock: {
-    name: 'testclock', w: 2256, h: 1462, live: false,
-    alt: 'A test clock in the Hardcount dashboard, moved forward a month from Nov 1 to Dec 3, 2026, with one invoice generated, and the demo customer and its subscription on the clock.',
+    name: 'testclock', w: 2316, h: 1150, live: false,
+    alt: 'A test clock in the Hardcount dashboard, moved forward a month from Nov 23 to Dec 25, 2026, with one invoice generated, and the demo customer on the clock.',
   },
 } satisfies Record<string, Shot>;
 
